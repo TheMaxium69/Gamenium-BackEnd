@@ -1,5 +1,5 @@
 <?php
-// src/Controller/BadgeController.php
+
 
 namespace App\Controller;
 
@@ -69,3 +69,4 @@ class BadgeController extends AbstractController
         return $this->json(['message' => 'Badge deleted successfully']);
     }
 }
+
