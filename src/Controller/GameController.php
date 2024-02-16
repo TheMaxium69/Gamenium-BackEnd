@@ -49,8 +49,8 @@ class GameController extends AbstractController
 
         $game = new Game();
         
-        $manager->persist($game);
-        $manager->flush();
+        $this->manager->persist($game);
+        $this->manager->flush();
 
         return $this->json(['message' => 'Game created successfully', 'id' => $game->getId()]);
     }
@@ -65,8 +65,8 @@ class GameController extends AbstractController
             return $this->json(['message' => 'Game not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $manager->remove($game);
-        $manager->flush();
+        $this->manager->remove($game);
+        $this->manager->flush();
 
         return $this->json(['message' => 'Game deleted successfully']);
     }
