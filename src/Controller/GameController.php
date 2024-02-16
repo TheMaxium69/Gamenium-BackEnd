@@ -31,8 +31,14 @@ class GameController extends AbstractController
     }
 
     #[Route('/game/{id}', name: 'game_by_id', methods:"GET")]
-    public function getGameById(Game $game):JsonResponse
+    public function getGameById(int $id):JsonResponse
     {
+        $game = $this->game->find($id);
+
+        if (!$game) {
+            return $this->json(['message' => 'Game not found'], Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json(['id' => $game->getId()]);
     }
 
@@ -42,8 +48,7 @@ class GameController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         $game = new Game();
-
-        $entityManager = $this->getDoctrine()->getManager();
+        
         $entityManager->persist($game);
         $entityManager->flush();
 
@@ -53,7 +58,13 @@ class GameController extends AbstractController
     #[Route('/game/{id}', name: 'game_delete', methods:"DELETE")]
     public function deleteGame(Game $game):JsonResponse
     {
-        $entityManager = $this->getDoctrine()->getManager();
+        $game = $this->game->find($id);
+
+        if (!$game) {
+            
+            return $this->json(['message' => 'Game not found'], Response::HTTP_NOT_FOUND);
+        }
+        
         $entityManager->remove($game);
         $entityManager->flush();
 
