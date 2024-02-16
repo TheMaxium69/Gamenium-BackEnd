@@ -39,7 +39,7 @@ class GameController extends AbstractController
             return $this->json(['message' => 'Game not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->json(['id' => $game->getId()]);
+        return $this->json($game);
     }
 
     #[Route('/game/', name: 'game_create', methods:"POST")]
