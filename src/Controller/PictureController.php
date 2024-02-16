@@ -37,17 +37,21 @@ class PictureController extends AbstractController
         return $this->json($picture);
     }
 
-    #[Route('/picture/', name: 'picture_create', methods:"POST")]
-    public function createPicture (Request $request):JsonResponse
+    #[Route('/picture', name: 'create_picture', methods: ['POST'])]
+    public function createPicture(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
         $picture = new Picture();
+        $picture->setUrl($data['url']);
+        $picture->setIdUser($data['id_user']);
+        $picture->setPostedAt(new \DateTime());
+        $picture->setIp($data['ip']);
 
         $this->manager->persist($picture);
         $this->manager->flush();
 
-        return $this->json(['message' => 'Picture created successfully', 'id' => $picture]);
+        return $this->json(['message' => 'Picture created successfully'], Response::HTTP_CREATED);
     }
 
     #[Route('/picture/{id}', name: 'picture_delete', methods:"DELETE")]
