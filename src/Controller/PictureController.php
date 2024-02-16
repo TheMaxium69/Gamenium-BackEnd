@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;   
 
-class GameController extends AbstractController
+class PictureController extends AbstractController
 {
 
     private $manager;
