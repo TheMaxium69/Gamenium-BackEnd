@@ -6,6 +6,11 @@
       "url": "https://127.0.0.1:8000/",
       "name": "Welcome to Symfony!",
       "createdAt": "2024-02-16T10:34:18Z"
+    },
+    {
+      "url": "http://127.0.0.1/",
+      "name": "Index of /",
+      "createdAt": "2024-02-16T11:22:51Z"
     }
   ]
 }]]></component>
