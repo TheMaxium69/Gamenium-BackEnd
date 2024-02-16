@@ -11,7 +11,6 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['allGames'])]
     private ?int $id = null;
 
     public function getId(): ?int

@@ -12,23 +12,18 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['allPictures'])]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(['allPictures'])]
     private ?string $url = null;
 
     #[ORM\Column]
-    #[Groups(['allPictures'])]
     private ?int $id_user = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['allPictures'])]
     private ?\DateTimeInterface $posted_at = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allPictures'])]
     private ?string $ip = null;
 
     public function getId(): ?int
