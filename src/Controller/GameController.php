@@ -8,19 +8,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GameController extends AbstractController
 {
-    #[Route('/game', name: 'app_game')]
-    public function index(): Response
+    #[Route('/games/', name: 'game_all', methods:"GET")]
+    public function getGameAll(Game $game):JsonResponse
     {
-        return $this->render('game/index.html.twig', [
-            'controller_name' => 'GameController',
-        ]);
+        return $this->json(['id' => $game->getId()]);
     }
-
-    #[Route('/game/{id}', name: 'game_details', methods:"GET")]
-    public function getGameDetails(Game $game):JsonResponse
+    #[Route('/game/{id}', name: 'game_by_id', methods:"GET")]
+    public function getGameById(Game $game):JsonResponse
     {
-        return $this->json(['id' => $game->getId()
-    ]);
+        return $this->json(['id' => $game->getId()]);
 
     }
 }
