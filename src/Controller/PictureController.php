@@ -31,9 +31,10 @@ class PictureController extends AbstractController
     }
 
     #[Route('/picture/{id}', name: 'picture_by_id', methods:"GET")]
-    public function getPictureById(Picture $picture):JsonResponse
+    public function getPictureById(int $id):JsonResponse
     {
-        return $this->json(['id' => $picture->getId()]);
+        $picture = $this->picture->find($id);
+        return $this->json($picture);
     }
 
     #[Route('/picture/', name: 'picture_create', methods:"POST")]
@@ -43,19 +44,23 @@ class PictureController extends AbstractController
 
         $picture = new Picture();
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($picture);
-        $entityManager->flush();
+        $this->manager->persist($picture);
+        $this->manager->flush();
 
-        return $this->json(['message' => 'Picture created successfully', 'id' => $picture->getId()]);
+        return $this->json(['message' => 'Picture created successfully', 'id' => $picture]);
     }
 
     #[Route('/picture/{id}', name: 'picture_delete', methods:"DELETE")]
-    public function deletePicture(Picture $picture):JsonResponse
+    public function deletePicture(int $id):JsonResponse
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($picture);
-        $entityManager->flush();
+        $picture=$this->picture->find($id);
+
+        if(!$picture) {
+            return $this->json(['message' => 'Picture not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->manager->remove($picture);
+        $this->manager->flush();
 
         return $this->json(['message' => 'Picture deleted successfully']);
     }
