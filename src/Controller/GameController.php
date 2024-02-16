@@ -16,8 +16,11 @@ class GameController extends AbstractController
         ]);
     }
 
+    #[Route('/game/{id}', name: 'game_details', methods:"GET")]
+    public function getGameDetails(Game $game):JsonResponse
+    {
+        return $this->json(['id' => $game->getId()
+    ]);
 
-    public function getGameDetails(Game $game):JsonResponse{
-        
     }
 }
