@@ -49,14 +49,14 @@ class GameController extends AbstractController
 
         $game = new Game();
         
-        $entityManager->persist($game);
-        $entityManager->flush();
+        $manager->persist($game);
+        $manager->flush();
 
         return $this->json(['message' => 'Game created successfully', 'id' => $game->getId()]);
     }
 
     #[Route('/game/{id}', name: 'game_delete', methods:"DELETE")]
-    public function deleteGame(Game $game):JsonResponse
+    public function deleteGame(int $id):JsonResponse
     {
         $game = $this->game->find($id);
 
@@ -64,9 +64,9 @@ class GameController extends AbstractController
             
             return $this->json(['message' => 'Game not found'], Response::HTTP_NOT_FOUND);
         }
-        
-        $entityManager->remove($game);
-        $entityManager->flush();
+
+        $manager->remove($game);
+        $manager->flush();
 
         return $this->json(['message' => 'Game deleted successfully']);
     }
