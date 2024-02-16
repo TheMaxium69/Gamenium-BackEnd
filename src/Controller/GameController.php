@@ -52,7 +52,7 @@ class GameController extends AbstractController
         $this->manager->persist($game);
         $this->manager->flush();
 
-        return $this->json(['message' => 'Game created successfully', 'id' => $game->getId()]);
+        return $this->json(['message' => 'Game created successfully', 'games' => $game]);
     }
 
     #[Route('/game/{id}', name: 'game_delete', methods:"DELETE")]
