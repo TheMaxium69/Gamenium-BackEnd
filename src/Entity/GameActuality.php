@@ -12,11 +12,12 @@ class GameActuality
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id = null;
+    private ?int $id = null;
+
     #[ORM\Column]
-    private int $idPicture = null;
+    private ?int $idPicture = null;
     #[ORM\Column]
-    private DateTimeImmutable $JoinedAt = null;
+    private ?\DateTimeImmutable $JoinedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'gameActualities')]
     #[ORM\JoinColumn(nullable: false)]
