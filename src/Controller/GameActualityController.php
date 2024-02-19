@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GameActualityController extends AbstractController
 {
-    public function __constructor(
+    public function __construct(
          private EntityManagerInterface $entityManager,
          private GameActualityRepository $gameActualityRepository) {}
 
