@@ -12,13 +12,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+
 class CommentController extends AbstractController
 {
 
     private $manager;
-    private $picture;
+    private $comment;
 
-    public function __construct(EntityManagerInterface $manager, PictureRepository $picture)
+    public function __construct(EntityManagerInterface $manager, CommentRepository $comment)
     {
         $this->manager = $manager;
         $this->comment = $comment;
@@ -49,7 +50,7 @@ class CommentController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         $comment = new Comment();
-        $comment->setContent($data['content']);
+        $comment ->setContent($data['content']);
         $comment->setCreatedAt(new \DateTimeImmutable());
         $comment->setIdPost($data['id_post']);
         $comment->setIdUser($data['id_user']);
