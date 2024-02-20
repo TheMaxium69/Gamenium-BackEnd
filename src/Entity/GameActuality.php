@@ -16,6 +16,7 @@ class GameActuality
 
     #[ORM\Column]
     private ?int $idPicture = null;
+    
     #[ORM\Column]
     private ?\DateTimeImmutable $JoinedAt = null;
 
