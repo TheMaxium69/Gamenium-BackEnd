@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Platform;
-use app\Repository\PlatformRepository;
+use App\Repository\PlatformRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
