@@ -50,7 +50,18 @@ public function __construct(EntityManagerInterface $manager, UserRepository $use
     {
         $data = json_decode($request->getContent(), true);
 
+        if (!isset($data['id_useritium']) || !isset($data['userRole']) || !isset($data['ip']) || !isset($data['id_picture'])) {
+            return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+        }
+
         $user = new User();
+
+        $user->setIdUseritium($data['id_useritium']);
+        $user->setUserRole($data['user_role']);
+        $user->setCreatedAt(new \DateTimeImmutable());
+        $user->setLastConnection(new \DateTimeImmutable());
+        $user->setIp($data['ip']);
+        $user->setIdPicture($data['id_picture']);
 
         $this->manager->persist($user);
         $this->manager->flush();
