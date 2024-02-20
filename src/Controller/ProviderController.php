@@ -37,7 +37,7 @@ class ProviderController extends AbstractController
         return $this->json($provider);
     }
 
-    #[Route('/provider', game:'provider_create', methods:'POST')]
+    #[Route('/provider', name:'provider_create', methods:'POST')]
     public function createProvider(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
