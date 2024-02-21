@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,9 +14,11 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('game:read')]
     private int $id;
 
     #[ORM\OneToMany(targetEntity: GameActuality::class, mappedBy: 'game')]
+    #[Groups('game:read')]
     private Collection $gameActualities;
 
     public function __construct()

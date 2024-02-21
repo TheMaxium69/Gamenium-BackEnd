@@ -21,7 +21,8 @@ class GameActualityController extends AbstractController
     public function getGameActualityAll(): JsonResponse
     {
         $gameActualies = $this->gameActualityRepository->findAll();
-        return $this->json($gameActualies);
+        return $this->json($gameActualies, 200, [], ['groups' => 'game:read']);
+        
     }
 
     #[Route('/actuality/{id}', name: 'game_actuality_by_id', methods:"GET")]
@@ -41,8 +42,12 @@ class GameActualityController extends AbstractController
     {
         $data = json_encode($request->getContent(), true);
 
+        $idPicture = $data['idPicture'] ?? null;
+
         $gameActivity = new GameActuality();
 
+        $gameActivity->setPictureId($idPicture);
+        $gameActivity->setCreatedAt(new \DateTimeImmutable());
         $this->entityManager->persist($gameActivity);
         $this->entityManager->flush();
 
