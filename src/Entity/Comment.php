@@ -25,8 +25,8 @@ class Comment
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $last_edit = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $last_edit = null;
 
     #[ORM\Column]
     private ?int $nb_edit = null;

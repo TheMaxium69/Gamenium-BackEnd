@@ -26,7 +26,7 @@ class UserRateController extends AbstractController
         return $this->json($userRates);
     }
 
-    #[Route('/userRates/{id}', name: 'get_userRate_by_id', methods: ['GET'])]
+    #[Route('/userRate/{id}', name: 'get_userRate_by_id', methods: ['GET'])]
     public function getuserRateById(int $id): JsonResponse
     {
         $userRate = $this->userRateRepository->find($id);
@@ -38,7 +38,7 @@ class UserRateController extends AbstractController
         return $this->json($userRate);
     }
 
-    #[Route('/userRates', name: 'create_userRate', methods: ['POST'])]
+    #[Route('/userRate', name: 'create_userRate', methods: ['POST'])]
     public function createuserRate(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -56,7 +56,7 @@ class UserRateController extends AbstractController
         return $this->json(['message' => 'userRate created successfully'], Response::HTTP_CREATED);
     }
 
-    #[Route('/userRates/{id}', name: 'delete_userRate', methods: ['DELETE'])]
+    #[Route('/userRate/{id}', name: 'delete_userRate', methods: ['DELETE'])]
     public function deleteuserRate(int $id): JsonResponse
     {
         $userRate = $this->userRateRepository->find($id);

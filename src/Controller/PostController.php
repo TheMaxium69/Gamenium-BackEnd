@@ -26,7 +26,7 @@ class PostController extends AbstractController
         return $this->json($posts);
     }
 
-    #[Route('/posts/{id}', name: 'get_post_by_id', methods: ['GET'])]
+    #[Route('/post/{id}', name: 'get_post_by_id', methods: ['GET'])]
     public function getPostById(int $id): JsonResponse
     {
         $post = $this->postRepository->find($id);
@@ -38,7 +38,7 @@ class PostController extends AbstractController
         return $this->json($post);
     }
 
-    #[Route('/posts', name: 'create_post', methods: ['POST'])]
+    #[Route('/post', name: 'create_post', methods: ['POST'])]
     public function createPost(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -58,7 +58,7 @@ class PostController extends AbstractController
         return $this->json(['message' => 'Post created successfully'], Response::HTTP_CREATED);
     }
 
-    #[Route('/posts/{id}', name: 'delete_post', methods: ['DELETE'])]
+    #[Route('/post/{id}', name: 'delete_post', methods: ['DELETE'])]
     public function deletePost(int $id): JsonResponse
     {
         $post = $this->postRepository->find($id);

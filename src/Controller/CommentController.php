@@ -25,7 +25,7 @@ class CommentController extends AbstractController
         $this->comment = $comment;
     }
 
-    #[Route('/comment/', name: 'comment_all', methods:"GET")]
+    #[Route('/comments/', name: 'comment_all', methods:"GET")]
     public function getCommentByAll():JsonResponse{
 
         $comment = $this->comment->findAll();
@@ -55,7 +55,7 @@ class CommentController extends AbstractController
         $comment->setIdPost($data['id_post']);
         $comment->setIdUser($data['id_user']);
         $comment->setIp($data['ip']);
-        $comment->setLastEdit(new \DateTimeImmutable());
+        $comment->setLastEdit(new \DateTime());
         $comment->setNbEdit(0);
 
         $this->manager->persist($comment);

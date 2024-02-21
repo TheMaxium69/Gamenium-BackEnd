@@ -27,7 +27,7 @@ class BadgeController extends AbstractController
         return $this->json($badges);
     }
 
-    #[Route('/badges/{id}', name: 'get_badge_by_id', methods: ['GET'])]
+    #[Route('/badge/{id}', name: 'get_badge_by_id', methods: ['GET'])]
     public function getBadgeById(int $id): JsonResponse
     {
         $badge = $this->badgeRepository->find($id);
@@ -39,7 +39,7 @@ class BadgeController extends AbstractController
         return $this->json($badge);
     }
 
-    #[Route('/badges', name: 'create_badge', methods: ['POST'])]
+    #[Route('/badge', name: 'create_badge', methods: ['POST'])]
     public function createBadge(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -54,7 +54,7 @@ class BadgeController extends AbstractController
         return $this->json(['message' => 'Badge created successfully'], Response::HTTP_CREATED);
     }
 
-    #[Route('/badges/{id}', name: 'delete_badge', methods: ['DELETE'])]
+    #[Route('/badge/{id}', name: 'delete_badge', methods: ['DELETE'])]
     public function deleteBadge(int $id): JsonResponse
     {
         $badge = $this->badgeRepository->find($id);
