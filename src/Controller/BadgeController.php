@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Badge;
@@ -46,7 +45,15 @@ class BadgeController extends AbstractController
 
         $badge = new Badge();
         $badge->setName($data['name']);
-        $badge->setCreatedAt(new \DateTimeImmutable());
+        $badge->setCreatedAt(new \DateTimeImmutable($data['created_at']));
+
+        // Assuming $data['picture'] contains the Picture data (you might need to adjust this based on your requirements)
+        $picture = new Picture();
+        $picture->setUrl($data['picture']['url']);
+        $picture->setPostedAt(new \DateTimeImmutable($data['picture']['posted_at']));
+        $picture->setIp($data['picture']['ip']);
+
+        $badge->setPicture($picture);
 
         $this->entityManager->persist($badge);
         $this->entityManager->flush();
@@ -69,4 +76,3 @@ class BadgeController extends AbstractController
         return $this->json(['message' => 'Badge deleted successfully']);
     }
 }
-
