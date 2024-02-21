@@ -20,10 +20,17 @@ class GameActuality
     #[ORM\Column]
     private ?\DateTimeImmutable $JoinedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'gameActualities')]
+
+    
+    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: 'game_actuality')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Game $game = null;
 
+    public function __construct(Game $game)
+    {
+        $this->JoinedAt = new DateTimeImmutable();
+
+    }
 
     public function getId(): ?int
     {
