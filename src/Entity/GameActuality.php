@@ -7,6 +7,7 @@ use App\Repository\GameActualityRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: GameActualityRepository::class)]
 class GameActuality
 {
