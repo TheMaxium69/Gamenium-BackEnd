@@ -2,73 +2,96 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Serializer\Annotation\Groups;
-use App\Repository\GameActualityRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\DBAL\Types\Types;
+use App\Repository\GameActualityRepository;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GameActualityRepository::class)]
 class GameActuality
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     #[Groups('game:read')]
-    private ?int $id = null;
-
-    #[ORM\Column]
-    #[Groups('game:read')]
-    private ?int $idPicture = null;
-    
-    #[ORM\Column]
-    #[Groups('game:read')]
-    private ?\DateTimeImmutable $JoinedAt = null;
+    private ?int $id;
 
 
-    
-    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: 'game_actuality')]
-    #[ORM\JoinColumn(nullable: false)]
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups('game:read')]
-    private ?Game $game = null;
+    private ?DateTimeImmutable $joinedAt;
+
+    #[ORM\OneToOne(targetEntity: Picture::class)]
+    #[ORM\JoinColumn(name: 'id_picture_id', referencedColumnName: 'id', nullable: true)]
+    #[Groups('game:read')]
+    private ?Picture $picture;
+
+    #[ORM\ManyToMany(targetEntity: Game::class, inversedBy: 'gameActualities')]
+    #[Groups('game:read')]
+    private Collection $game;
+
 
     public function __construct(Game $game)
-    {
-        $this->JoinedAt = new DateTimeImmutable();
-
-    }
-
+{
+    $this->game = $game;
+    $this->joinedAt = new \DateTimeImmutable();
+}
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getPictureId(): ?int
-    {
-        return $this->idPicture;
-    }
-
-    public function setPictureId($pictureId): static
-    {
-        $this->idPicture = $pictureId;
-        return $this;
-    }
 
     public function getJoinedAt(): ?DateTimeImmutable
+{
+    return $this->joinedAt;
+}
+
+
+    public function setJoinedAt(?DateTimeImmutable $joinedAt): void
     {
-        return $this->JoinedAt;
+        
+        $this->joinedAt = $joinedAt;
     }
 
-    public function getGame(): ?Game
+    public function getPicture(): ?Picture
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?Picture $picture): void
+    {
+        $this->picture = $picture;
+    }
+
+    /**
+     * @return Collection<int, Game>
+     */
+    public function getGame(): Collection
     {
         return $this->game;
     }
 
-    public function setGame(?Game $game): static
+    public function addGame(Game $game): static
     {
-        $this->game = $game;
+        if (!$this->game->contains($game)) {
+            $this->game->add($game);
+            $game->addGameActuality($this);
+        }
 
         return $this;
     }
-    
+
+    public function removeGame(Game $game): static
+    {
+        $this->game->removeElement($game);
+        $game->removeGameActuality($this);
+
+        return $this;
+    }
 }

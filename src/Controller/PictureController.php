@@ -23,11 +23,11 @@ class PictureController extends AbstractController
         $this->picture = $picture;
     }
 
-    #[Route('/pictures/', name: 'picture_all', methods:"GET")]
+    #[Route('/pictures', name: 'picture_all', methods:"GET")]
     public function getPictureAll():JsonResponse
     {
         $pictures = $this->picture->findAll();
-        return $this->json($pictures);
+        return $this->json($pictures, 200, [], ['groups' => 'game:read']);
     }
 
     #[Route('/picture/{id}', name: 'picture_by_id', methods:"GET")]
