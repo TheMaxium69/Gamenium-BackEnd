@@ -11,16 +11,21 @@ class Badge
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('badge:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('badge:read')]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups('badge:read')]
     private ?\DateTimeImmutable $CreatedAt = null;
 
-    #[ORM\Column]
-    private ?int $id_picture = null;
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups('badge:read')]
+    private ?Picture $picture = null;
 
     public function getId(): ?int
     {
@@ -51,14 +56,14 @@ class Badge
         return $this;
     }
 
-    public function getIdPicture(): ?int
+    public function getPicture(): ?Picture
     {
-        return $this->id_picture;
+        return $this->picture;
     }
 
-    public function setIdPicture(int $id_picture): static
+    public function setPicture(Picture $picture): static
     {
-        $this->id_picture = $id_picture;
+        $this->picture = $picture;
 
         return $this;
     }
