@@ -23,8 +23,6 @@ class BadgeController extends AbstractController
     {
         $badges = $this->badgeRepository->findAll();
 
-        
-
         return $this->json($badges);
     }
 

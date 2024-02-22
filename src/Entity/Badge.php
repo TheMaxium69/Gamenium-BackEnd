@@ -67,6 +67,4 @@ class Badge
 
         return $this;
     }
-
-    
 }
