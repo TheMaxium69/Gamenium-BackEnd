@@ -37,8 +37,9 @@ class GameActuality
 
 
     public function __construct(Game $game)
+    
 {
-    $this->game = $game;
+    $this->game = new ArrayCollection();
     $this->joinedAt = new \DateTimeImmutable();
 }
     public function getId(): ?int

@@ -28,6 +28,10 @@ class GameController extends AbstractController
     public function getGameAll():JsonResponse
     {
         $games = $this->game->findAll();
+        if (!$games) {
+            return $this->json(['message' => 'Games not found'], Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json($games, 200, [], ['groups' => 'game:read']);
     }
 
