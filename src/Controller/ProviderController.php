@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProviderController extends AbstractController
 {
-   public function __construct(
+    public function __construct(
         private EntityManagerInterface $entityManager,
         private ProviderRepository $providerRepository
         ) {}
