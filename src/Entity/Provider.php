@@ -12,33 +12,43 @@ class Provider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('post:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('post:read')]
     private ?string $tagName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('post:read')]
     private ?string $displayName = null;
 
     #[ORM\Column]
+    #[Groups('post:read')]
     private ?int $country = null;
 
     #[ORM\Column]
+    #[Groups('post:read')]
     private ?\DateTimeImmutable $joindeAt = null;
 
     #[ORM\Column]
+    #[Groups('post:read')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups('post:read')]
     private ?int $picture = null;
 
     #[ORM\Column]
+    #[Groups('post:read')]
     private ?int $parentCompany = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('post:read')]
     private ?string $content = null;
 
     #[ORM\Column]
+    #[Groups('post:read')]
     private ?int $banner = null;
 
     public function getId(): ?int
