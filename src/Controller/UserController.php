@@ -28,8 +28,8 @@ class UserController extends AbstractController
 
 
 
-    #[Route('/user/', name: 'user_loggin', methods:"POST")]
-    public function logginUser (Request $request):JsonResponse
+    #[Route('/login_user/', name: 'user_loggin', methods:"POST")]
+    public function loginUser (Request $request):JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -97,9 +97,6 @@ class UserController extends AbstractController
                 $this->manager->persist($user);
                 $this->manager->flush();
 
-
-                echo "toi avoir compte";
-
             } else {
 
 
@@ -126,18 +123,15 @@ class UserController extends AbstractController
                 } else {
                     $user->setDisplayname($resultUseritiumArray['result']['username']);
                 }
+                    $randomToken = $this->generateRandomToken();
+                $user->setToken($randomToken);
 
                 $this->manager->persist($user);
                 $this->manager->flush();
 
-
-                echo "toi pas avoir compte";
-
             }
 
-
-            return $this->json(['message' => 'Usertium Test', 'result' => $resultUseritiumArray]);
-//            return $this->json(['message' => 'Connected', 'token' => "41za5e4za65e4za5e5zaeaz4ea-azeza54eaz54eaz"]);
+            return $this->json(['message' => 'Connected', 'token' => $user->getToken()]);
 
 
         } else {
@@ -152,7 +146,61 @@ class UserController extends AbstractController
 
     }
 
+    #[Route('/login_token/', name: 'token_loggin', methods:"POST")]
+    public function loginToken (Request $request):JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
+        // VERIFICATION DES CHAMP
+        if (!isset($data['token'])) {
+
+            return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+
+        } else {
+
+            $token = $data['token'];
+
+            $user = $this->user->findOneBy(['token' => $token]);
+
+
+            if ($user){
+
+                return $this->json(['message' => 'Connected', 'result' => [
+                    "username" => $user->getUsername(),
+                    "email" => $user->getEmail(),
+                    "displayname" => $user->getDisplayname(),
+                    "displaynameUseritium" => $user->getDisplaynameUseritium(),
+                    "joinAt" => $user->getJoinAt(),
+                    "userRole" => $user->getUserRole()
+                ]]);
+
+            } else {
+
+                return $this->json(['message' => 'Token Invalide'], Response::HTTP_BAD_REQUEST);
+
+            }
+
+
+        }
+
+
+    }
+
+
+    function generateRandomToken($length = 32)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        $charLength = strlen($characters);
+
+        $token = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $token .= $characters[random_int(0, $charLength - 1)];
+        }
+
+        return $token;
+    }
 
 
 }
