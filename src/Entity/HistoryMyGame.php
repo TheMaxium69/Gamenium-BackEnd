@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\HistoryMyGameRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HistoryMyGameRepository::class)]
@@ -13,11 +15,7 @@ class HistoryMyGame
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_user = null;
 
-    #[ORM\Column]
-    private ?int $id_game = null;
 
     #[ORM\Column]
     private ?bool $is_favorite = null;
@@ -34,34 +32,24 @@ class HistoryMyGame
     #[ORM\Column]
     private ?int $id_buy_where = null;
 
+    #[ORM\ManyToOne]
+    private ?user $user = null;
+
+
+
+
+    public function __construct()
+    {
+        $this->user = new ArrayCollection();
+    }
+
+
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(int $id_user): static
-    {
-        $this->id_user = $id_user;
-
-        return $this;
-    }
-
-    public function getIdGame(): ?int
-    {
-        return $this->id_game;
-    }
-
-    public function setIdGame(int $id_game): static
-    {
-        $this->id_game = $id_game;
-
-        return $this;
-    }
 
     public function isIsFavorite(): ?bool
     {
@@ -122,4 +110,5 @@ class HistoryMyGame
 
         return $this;
     }
+
 }
