@@ -80,29 +80,58 @@ class UserController extends AbstractController
 
             // CONNECTER
 
+            $user = $this->user->findOneBy(['id_useritium' => $resultUseritiumArray['result']['id']]);
 
-            //requete dans la db
 
-            if ("SI IL EXISTE DEJA DANS NOTRE DB" == 1){
+            if ($user){
 
                 // EDIT celui dans la db
                 $user->setLastConnection(new \DateTimeImmutable());
+                $user->setEmail($resultUseritiumArray['result']['email']);
+                $user->setDisplaynameUseritium($resultUseritiumArray['result']['displayName']);
+                $user->setUsername($resultUseritiumArray['result']['username']);
+                    $ip = $user->getIp();
+                    array_push($ip, "10.10.10.10");
+                $user->setIp($ip);
 
+                $this->manager->persist($user);
+                $this->manager->flush();
+
+
+                echo "toi avoir compte";
 
             } else {
 
 
                 // créer une db
-
                 $user = new User();
 
                 $user->setIdUseritium($resultUseritiumArray['result']['id']);
+                    $role = [
+                        "user"
+                    ];
+                $user->setUserRole($role);
                 $user->setJoinAt(new \DateTimeImmutable());
                 $user->setLastConnection(new \DateTimeImmutable());
-//                $user->setIp($data['ip']);
+                $user->setIdPicture(1);
+                    $ip = [
+                        "10.0.0.1"
+                    ];
+                $user->setIp($ip);
+                $user->setEmail($resultUseritiumArray['result']['email']);
+                $user->setDisplaynameUseritium($resultUseritiumArray['result']['displayName']);
+                $user->setUsername($resultUseritiumArray['result']['username']);
+                if ($resultUseritiumArray['result']['displayName']){
+                    $user->setDisplayname($resultUseritiumArray['result']['displayName']);
+                } else {
+                    $user->setDisplayname($resultUseritiumArray['result']['username']);
+                }
 
                 $this->manager->persist($user);
                 $this->manager->flush();
+
+
+                echo "toi pas avoir compte";
 
             }
 
