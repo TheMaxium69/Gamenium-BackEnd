@@ -21,7 +21,7 @@ class GameActualityController extends AbstractController
     public function getGameActualityAll(): JsonResponse
     {
         $gameActualies = $this->gameActualityRepository->findAll();
-        return $this->json($gameActualies, 200, [], ['groups' => 'game:read']);
+        return $this->json($gameActualies, 200, ['groups' => 'game:read']);
         
     }
 
