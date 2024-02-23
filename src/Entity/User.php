@@ -21,16 +21,28 @@ class User
     private array $user_role = [] ;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTimeImmutable $joinAt = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $lastConnection = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $ip = null;
-
     #[ORM\Column]
     private ?int $id_picture = null;
+
+    #[ORM\Column]
+    private array $ip = [];
+
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $displayname_useritium = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $username = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $displayname = null;
 
     public function getId(): ?int
     {
@@ -63,14 +75,14 @@ class User
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getJoinAt(): ?\DateTimeImmutable
     {
-        return $this->createdAt;
+        return $this->joinAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setJoinAt(\DateTimeImmutable $joinAt): static
     {
-        $this->createdAt = $createdAt;
+        $this->joinAt = $joinAt;
 
         return $this;
     }
@@ -87,18 +99,6 @@ class User
         return $this;
     }
 
-    public function getIp(): ?string
-    {
-        return $this->ip;
-    }
-
-    public function setIp(string $ip): static
-    {
-        $this->ip = $ip;
-
-        return $this;
-    }
-
     public function getIdPicture(): ?int
     {
         return $this->id_picture;
@@ -107,6 +107,66 @@ class User
     public function setIdPicture(int $id_picture): static
     {
         $this->id_picture = $id_picture;
+
+        return $this;
+    }
+
+    public function getIp(): array
+    {
+        return $this->ip;
+    }
+
+    public function setIp(array $ip): static
+    {
+        $this->ip = $ip;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getDisplaynameUseritium(): ?string
+    {
+        return $this->displayname_useritium;
+    }
+
+    public function setDisplaynameUseritium(?string $displayname_useritium): static
+    {
+        $this->displayname_useritium = $displayname_useritium;
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getDisplayname(): ?string
+    {
+        return $this->displayname;
+    }
+
+    public function setDisplayname(string $displayname): static
+    {
+        $this->displayname = $displayname;
 
         return $this;
     }

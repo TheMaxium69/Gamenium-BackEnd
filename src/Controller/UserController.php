@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,69 +20,110 @@ class UserController extends AbstractController
     private $user;
 
 
-public function __construct(EntityManagerInterface $manager, UserRepository $user)
-{
-    $this->manager = $manager;
-    $this->user = $user;
-}
-
-
-    #[Route('/users/', name: 'user_all', methods:"GET")]
-    public function getUserAll():JsonResponse
+    public function __construct(EntityManagerInterface $manager, UserRepository $user)
     {
-        $users = $this->user->findAll();
-        return $this->json($users);
+        $this->manager = $manager;
+        $this->user = $user;
     }
 
-    #[Route('/user/{id}', name: 'user_by_id', methods:"GET")]
-    public function getUserById(int $id):JsonResponse
-    {
-        $user = $this->user->find($id);
 
-        if (!$user) {
-            return $this->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
-        }
 
-        return $this->json($user);
-    }
-
-    #[Route('/user/', name: 'user_create', methods:"POST")]
-    public function createUser (Request $request):JsonResponse
+    #[Route('/user/', name: 'user_loggin', methods:"POST")]
+    public function logginUser (Request $request):JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['id_useritium']) || !isset($data['userRole']) || !isset($data['ip']) || !isset($data['id_picture'])) {
+        // VERIFICATION DES CHAMP
+        if (!isset($data['email_auth']) || !isset($data['mdp_auth'])) {
+
             return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+
         }
 
-        $user = new User();
 
-        $user->setIdUseritium($data['id_useritium']);
-        $user->setUserRole($data['user_role']);
-        $user->setCreatedAt(new \DateTimeImmutable());
-        $user->setLastConnection(new \DateTimeImmutable());
-        $user->setIp($data['ip']);
-        $user->setIdPicture($data['id_picture']);
+        // CONNECTION USERITIUM
+        $emailForm = $data['email_auth'];
+        $mdpForm = $data['mdp_auth'];
 
-        $this->manager->persist($user);
-        $this->manager->flush();
+        $client = HttpClient::create();
 
-        return $this->json(['message' => 'User created successfully', 'users' => $user]);
-    }
+        $url = 'https://useritium.fr/api-externe/index.php?controller=gamenium&task=connect';
 
-    #[Route('/user/{id}', name: 'user_delete', methods:"DELETE")]
-    public function deleteUser(int $id):JsonResponse
-    {
-        $user = $this->user->find($id);
+        $body = [
+            'email_useritium' => $emailForm,
+            'mdp_useritium' => $mdpForm,
+        ];
 
-        if (!$user) {
+        $response = $client->request('POST', $url, [
+            'body' => $body,
+        ]);
 
-            return $this->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+        $content = $response->getContent();
+
+        $resultUseritiumArray = json_decode($content, true);
+
+
+        // VERIFICATION DU SERVEUR
+        if(!$resultUseritiumArray){
+
+            return $this->json(['message' => 'Erreur Base de donnée'], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->manager->remove($user);
-        $this->manager->flush();
 
-        return $this->json(['message' => 'User deleted successfully']);
+        // VERIFICATION DE CONNEXION
+        if ($resultUseritiumArray['status'] == "err"){
+
+            // PAS CONNECTER
+            return $this->json(['message' => $resultUseritiumArray['why']], Response::HTTP_BAD_REQUEST);
+
+        } else if($resultUseritiumArray['status'] == "true"){
+
+            // CONNECTER
+
+
+            //requete dans la db
+
+            if ("SI IL EXISTE DEJA DANS NOTRE DB" == 1){
+
+                // EDIT celui dans la db
+                $user->setLastConnection(new \DateTimeImmutable());
+
+
+            } else {
+
+
+                // créer une db
+
+                $user = new User();
+
+                $user->setIdUseritium($resultUseritiumArray['result']['id']);
+                $user->setJoinAt(new \DateTimeImmutable());
+                $user->setLastConnection(new \DateTimeImmutable());
+//                $user->setIp($data['ip']);
+
+                $this->manager->persist($user);
+                $this->manager->flush();
+
+            }
+
+
+            return $this->json(['message' => 'Usertium Test', 'result' => $resultUseritiumArray]);
+//            return $this->json(['message' => 'Connected', 'token' => "41za5e4za65e4za5e5zaeaz4ea-azeza54eaz54eaz"]);
+
+
+        } else {
+
+            // ERR API (NI ERR NI TRUE)
+            return $this->json(['message' => 'Erreur Base de donnée'], Response::HTTP_BAD_REQUEST);
+
+        }
+
+
+
+
     }
+
+
+
+
 }
