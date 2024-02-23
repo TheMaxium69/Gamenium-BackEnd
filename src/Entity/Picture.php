@@ -14,15 +14,15 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('badge:read' , 'profile:read')]
+    #[Groups('badge:read' , 'profile:read' , 'post:read')]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups('badge:read', 'profile:read'  )]
+    #[Groups('badge:read', 'profile:read' , 'post:read')]
     private ?string $url = null;
 
     #[ORM\Column]
-    #[Groups('badge:read' , 'profile:read' )]
+    #[Groups('badge:read' , 'profile:read' , 'post:read')]
     private ?int $id_user = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -30,7 +30,7 @@ class Picture
     private ?\DateTimeInterface $posted_at = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('badge:read' , 'profile:read')]
+    #[Groups('badge:read' , 'profile:read' , 'post:read')]
     private ?string $ip = null;
 
 

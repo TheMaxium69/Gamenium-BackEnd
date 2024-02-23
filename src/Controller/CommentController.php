@@ -25,7 +25,7 @@ class CommentController extends AbstractController
         $this->comment = $comment;
     }
 
-    #[Route('/comments/', name: 'comment_all', methods:"GET")]
+    #[Route('/comments', name: 'comment_all', methods:"GET")]
     public function getCommentByAll():JsonResponse{
 
         $comment = $this->comment->findAll();
@@ -44,7 +44,7 @@ class CommentController extends AbstractController
         return $this->json($comment);
     }
 
-    #[Route('/comment/', name: 'comment_create', methods:"POST")]
+    #[Route('/comment', name: 'comment_create', methods:"POST")]
     public function createComment (Request $request):JsonResponse{
 
         $data = json_decode($request->getContent(), true);

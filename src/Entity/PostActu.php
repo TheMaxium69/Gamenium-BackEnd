@@ -36,10 +36,6 @@ class PostActu
 
     #[ORM\ManyToOne(inversedBy: 'postActus')]
     #[Groups('post:read')]
-    private ?game $game = null;
-
-    #[ORM\ManyToOne(inversedBy: 'postActus')]
-    #[Groups('post:read')]
     private ?GameProfile $GameProfile = null;
 
     public function getId(): ?int
@@ -103,18 +99,6 @@ class PostActu
     public function setProvider(?Provider $Provider): static
     {
         $this->Provider = $Provider;
-
-        return $this;
-    }
-
-    public function getGame(): ?game
-    {
-        return $this->game;
-    }
-
-    public function setGame(?game $game): static
-    {
-        $this->game = $game;
 
         return $this;
     }
