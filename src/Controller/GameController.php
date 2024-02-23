@@ -32,7 +32,7 @@ class GameController extends AbstractController
             return $this->json(['message' => 'Games not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->json($games, 200, [], ['groups' => 'game:read']);
+        return $this->json($games, 200, ['groups' => 'game:read']);
     }
 
     #[Route('/game/{id}', name: 'game_by_id', methods:"GET")]

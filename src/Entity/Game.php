@@ -17,8 +17,17 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('game:read')]
+    #[Groups('profile:read' , 'game:read')]
     private ?int $id = null;
+
+    #[ORM\OneToMany(targetEntity: GameProfile::class, mappedBy: 'game')]
+    #[Groups('profile:read' , 'game:read')]
+    private Collection $gameProfiles;
+
+    public function __construct()
+    {
+        $this->gameProfiles = new ArrayCollection();
+    }
 
 
 
@@ -26,6 +35,36 @@ class Game
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return Collection<int, GameProfile>
+     */
+    public function getGameProfiles(): Collection
+    {
+        return $this->gameProfiles;
+    }
+
+    public function addGameProfile(GameProfile $gameProfile): static
+    {
+        if (!$this->gameProfiles->contains($gameProfile)) {
+            $this->gameProfiles->add($gameProfile);
+            $gameProfile->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameProfile(GameProfile $gameProfile): static
+    {
+        if ($this->gameProfiles->removeElement($gameProfile)) {
+            // set the owning side to null (unless already changed)
+            if ($gameProfile->getGame() === $this) {
+                $gameProfile->setGame(null);
+            }
+        }
+
+        return $this;
     }
 
 
