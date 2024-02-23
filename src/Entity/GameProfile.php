@@ -27,6 +27,10 @@ class GameProfile
     #[Groups('profile:read')]
     private ?picture $picture = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?game $game = null;
+
 
     public function getId(): ?int
     {
@@ -53,6 +57,18 @@ class GameProfile
     public function setPicture(?picture $picture): static
     {
         $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function getGame(): ?game
+    {
+        return $this->game;
+    }
+
+    public function setGame(?game $game): static
+    {
+        $this->game = $game;
 
         return $this;
     }
