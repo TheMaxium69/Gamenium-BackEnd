@@ -33,6 +33,7 @@ class HistoryMyGame
     private ?int $id_buy_where = null;
 
     #[ORM\ManyToOne]
+    #[Groups('user:read')]
     private ?user $user = null;
 
 
