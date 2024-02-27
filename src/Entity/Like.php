@@ -14,8 +14,6 @@ class Like
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idPost = null;
 
     #[ORM\Column]
     private ?int $idComment = null;
@@ -30,21 +28,12 @@ class Like
     #[ORM\ManyToOne]
     private ?user $user = null;
 
+    #[ORM\ManyToOne]
+    private ?PostActu $post = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdPost(): ?int
-    {
-        return $this->idPost;
-    }
-
-    public function setIdPost(int $idPost): static
-    {
-        $this->idPost = $idPost;
-
-        return $this;
     }
 
     public function getIdComment(): ?int
@@ -91,6 +80,18 @@ class Like
     public function setUser(?user $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPost(): ?PostActu
+    {
+        return $this->post;
+    }
+
+    public function setPost(?PostActu $post): static
+    {
+        $this->post = $post;
 
         return $this;
     }
