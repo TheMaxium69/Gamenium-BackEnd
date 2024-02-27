@@ -17,12 +17,6 @@ class Comment
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
-    private ?int $id_post = null;
-
-    #[ORM\Column]
-    private ?int $id_user = null;
-
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
@@ -34,6 +28,12 @@ class Comment
 
     #[ORM\Column(length: 255)]
     private ?string $content = null;
+
+    #[ORM\ManyToOne]
+    private ?postactu $post = null;
+
+    #[ORM\ManyToOne]
+    private ?user $user = null;
 
     public function getId(): ?int
     {
@@ -52,30 +52,6 @@ class Comment
         return $this;
     }
 
-    public function getIdPost(): ?int
-    {
-        return $this->id_post;
-    }
-
-    public function setIdPost(int $id_post): static
-    {
-        $this->id_post = $id_post;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(int $id_user): static
-    {
-        $this->id_user = $id_user;
-
-        return $this;
-    }
-
     public function getIp(): ?string
     {
         return $this->ip;
@@ -88,12 +64,12 @@ class Comment
         return $this;
     }
 
-    public function getLastEdit(): ?\DateTimeImmutable
+    public function getLastEdit(): ?\DateTime
     {
         return $this->last_edit;
     }
 
-    public function setLastEdit(\DateTimeImmutable $last_edit): static
+    public function setLastEdit(\DateTime $last_edit): static
     {
         $this->last_edit = $last_edit;
 
@@ -120,6 +96,30 @@ class Comment
     public function setContent(string $content): static
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function getPost(): ?postactu
+    {
+        return $this->post;
+    }
+
+    public function setPost(?postactu $post): static
+    {
+        $this->post = $post;
+
+        return $this;
+    }
+
+    public function getUser(): ?user
+    {
+        return $this->user;
+    }
+
+    public function setUser(?user $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
