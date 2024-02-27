@@ -14,41 +14,17 @@ class BadgeVersUser
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $id_user = null;
-
-    #[ORM\Column]
-    private ?int $id_badge = null;
-
-    #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\ManyToOne]
+    private ?user $user = null;
+
+    #[ORM\ManyToOne]
+    private ?Badge $badge = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(int $id_user): static
-    {
-        $this->id_user = $id_user;
-
-        return $this;
-    }
-
-    public function getIdBadge(): ?int
-    {
-        return $this->id_badge;
-    }
-
-    public function setIdBadge(int $id_badge): static
-    {
-        $this->id_badge = $id_badge;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -59,6 +35,30 @@ class BadgeVersUser
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUser(): ?user
+    {
+        return $this->user;
+    }
+
+    public function setUser(?user $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getBadge(): ?Badge
+    {
+        return $this->badge;
+    }
+
+    public function setBadge(?Badge $badge): static
+    {
+        $this->badge = $badge;
 
         return $this;
     }
