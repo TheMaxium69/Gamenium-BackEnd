@@ -14,12 +14,6 @@ class UserRate
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $idUser = null;
-
-    #[ORM\Column]
-    private ?int $idGame = null;
-
-    #[ORM\Column]
     private ?int $rating = null;
 
     #[ORM\Column]
@@ -28,33 +22,17 @@ class UserRate
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?user $user = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?game $game = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->idUser;
-    }
-
-    public function setIdUser(int $idUser): static
-    {
-        $this->idUser = $idUser;
-
-        return $this;
-    }
-
-    public function getIdGame(): ?int
-    {
-        return $this->idGame;
-    }
-
-    public function setIdGame(int $idGame): static
-    {
-        $this->idGame = $idGame;
-
-        return $this;
     }
 
     public function getRating(): ?int
@@ -92,4 +70,29 @@ class UserRate
 
         return $this;
     }
+
+    public function getUser(): ?user
+    {
+        return $this->user;
+    }
+
+    public function setUser(?user $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getGame(): ?game
+    {
+        return $this->game;
+    }
+
+    public function setGame(?game $game): static
+    {
+        $this->game = $game;
+
+        return $this;
+    }
 }
+
