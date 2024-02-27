@@ -20,21 +20,22 @@ class HistoryMyGame
     #[ORM\Column]
     private ?bool $is_favorite = null;
 
-    #[ORM\Column]
-    private ?int $id_note_user = null;
-
     #[ORM\Column(length: 255)]
     private ?string $content = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $buy_at = null;
 
-    #[ORM\Column]
-    private ?int $id_buy_where = null;
-
     #[ORM\ManyToOne]
     #[Groups('user:read')]
     private ?user $user = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?userrate $userrate = null;
+
+    #[ORM\ManyToOne]
+    private ?buywhere $buywhere = null;
 
 
 
@@ -51,7 +52,6 @@ class HistoryMyGame
         return $this->id;
     }
 
-
     public function isIsFavorite(): ?bool
     {
         return $this->is_favorite;
@@ -60,18 +60,6 @@ class HistoryMyGame
     public function setIsFavorite(bool $is_favorite): static
     {
         $this->is_favorite = $is_favorite;
-
-        return $this;
-    }
-
-    public function getIdNoteUser(): ?int
-    {
-        return $this->id_note_user;
-    }
-
-    public function setIdNoteUser(int $id_note_user): static
-    {
-        $this->id_note_user = $id_note_user;
 
         return $this;
     }
@@ -100,16 +88,27 @@ class HistoryMyGame
         return $this;
     }
 
-    public function getIdBuyWhere(): ?int
+    public function getUserrate(): ?userrate
     {
-        return $this->id_buy_where;
+        return $this->userrate;
     }
 
-    public function setIdBuyWhere(int $id_buy_where): static
+    public function setUserrate(?userrate $userrate): static
     {
-        $this->id_buy_where = $id_buy_where;
+        $this->userrate = $userrate;
 
         return $this;
     }
 
+    public function getBuywhere(): ?buywhere
+    {
+        return $this->buywhere;
+    }
+
+    public function setBuywhere(?buywhere $buywhere): static
+    {
+        $this->buywhere = $buywhere;
+
+        return $this;
+    }
 }
