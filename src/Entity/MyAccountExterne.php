@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MyAccountExterneRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MyAccountExterneRepository::class)]
@@ -14,44 +16,22 @@ class MyAccountExterne
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $id_network = null;
-
-    #[ORM\Column]
-    private ?int $id_user = null;
-
-    #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(length: 255)]
     private ?string $api_key = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?socialnetwork $network = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?user $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdNetwork(): ?int
-    {
-        return $this->id_network;
-    }
-
-    public function setIdNetwork(int $id_network): static
-    {
-        $this->id_network = $id_network;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(int $id_user): static
-    {
-        $this->id_user = $id_user;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -74,6 +54,30 @@ class MyAccountExterne
     public function setApiKey(string $api_key): static
     {
         $this->api_key = $api_key;
+
+        return $this;
+    }
+
+    public function getNetwork(): ?socialnetwork
+    {
+        return $this->network;
+    }
+
+    public function setNetwork(?socialnetwork $network): static
+    {
+        $this->network = $network;
+
+        return $this;
+    }
+
+    public function getUser(): ?user
+    {
+        return $this->user;
+    }
+
+    public function setUser(user $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
