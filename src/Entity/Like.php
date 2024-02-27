@@ -14,11 +14,6 @@ class Like
     #[ORM\Column]
     private ?int $id = null;
 
-
-    #[ORM\Column]
-    private ?int $idComment = null;
-
-
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
@@ -31,21 +26,12 @@ class Like
     #[ORM\ManyToOne]
     private ?PostActu $post = null;
 
+    #[ORM\ManyToOne]
+    private ?Comment $comment = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdComment(): ?int
-    {
-        return $this->idComment;
-    }
-
-    public function setIdComment(int $idComment): static
-    {
-        $this->idComment = $idComment;
-
-        return $this;
     }
 
     public function getIp(): ?string
@@ -92,6 +78,18 @@ class Like
     public function setPost(?PostActu $post): static
     {
         $this->post = $post;
+
+        return $this;
+    }
+
+    public function getComment(): ?Comment
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?Comment $comment): static
+    {
+        $this->comment = $comment;
 
         return $this;
     }

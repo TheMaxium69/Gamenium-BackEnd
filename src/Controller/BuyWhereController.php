@@ -22,7 +22,7 @@ class BuyWhereController extends AbstractController
         $this->buywhere = $buywhere;
     }
 
-    #[Route('/buywhere/', name: 'all_places', methods:"GET")]
+    #[Route('/buywheres', name: 'all_places', methods:"GET")]
 
     public function getAllPlaces():JSONResponse
     {

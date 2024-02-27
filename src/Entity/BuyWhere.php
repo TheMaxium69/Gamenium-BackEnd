@@ -17,8 +17,6 @@ class BuyWhere
     #[ORM\Column]
     private ?bool $is_public = null;
 
-    #[ORM\Column]
-    private ?int $id_user = null;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -28,6 +26,9 @@ class BuyWhere
 
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
+
+    #[ORM\ManyToOne]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -42,18 +43,6 @@ class BuyWhere
     public function setIsPublic(bool $is_public): static
     {
         $this->is_public = $is_public;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(int $id_user): static
-    {
-        $this->id_user = $id_user;
 
         return $this;
     }
@@ -90,6 +79,18 @@ class BuyWhere
     public function setIp(string $ip): static
     {
         $this->ip = $ip;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
