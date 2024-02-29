@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\BadgeVersUserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BadgeVersUserRepository::class)]
 class BadgeVersUser
@@ -17,6 +18,7 @@ class BadgeVersUser
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['buywhere:read' ,'user:read'])]
     private ?user $user = null;
 
     #[ORM\ManyToOne]

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\BadgeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: BadgeRepository::class)]
 class Badge
@@ -19,7 +21,6 @@ class Badge
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups('badge:read')]
     private ?\DateTimeImmutable $CreatedAt = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

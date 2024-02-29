@@ -27,7 +27,7 @@ class BuyWhereController extends AbstractController
     public function getAllPlaces():JSONResponse
     {
         $buywhere = $this->buywhere->findAll();
-        return $this->json($buywhere);
+        return $this->json($buywhere, 200, [], ['groups' => 'buywhere:read']);
     }
 
     #[Route('/buywhere/{id}', name: 'place_by_id', methods:"GET")]
