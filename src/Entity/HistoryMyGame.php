@@ -80,8 +80,7 @@ class HistoryMyGame
     {
         return $this->buy_at;
     }
-
-    public function setBuyAt(\DateTimeImmutable $buy_at): static
+public function setBuyAt(\DateTimeImmutable $buy_at): static
     {
         $this->buy_at = $buy_at;
 
