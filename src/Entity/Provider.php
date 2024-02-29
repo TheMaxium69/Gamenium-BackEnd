@@ -37,10 +37,6 @@ class Provider
 
     #[ORM\Column]
     #[Groups('post:read')]
-    private ?int $picture = null;
-
-    #[ORM\Column]
-    #[Groups('post:read')]
     private ?int $parentCompany = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -50,6 +46,9 @@ class Provider
     #[ORM\Column]
     #[Groups('post:read')]
     private ?int $banner = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Picture $picture = null;
 
     public function getId(): ?int
     {
@@ -116,18 +115,6 @@ class Provider
         return $this;
     }
 
-    public function getPicture(): ?int
-    {
-        return $this->picture;
-    }
-
-    public function setPicture(int $picture): static
-    {
-        $this->picture = $picture;
-
-        return $this;
-    }
-
     public function getParentCompany(): ?int
     {
         return $this->parentCompany;
@@ -160,6 +147,18 @@ class Provider
     public function setBanner(int $banner): static
     {
         $this->banner = $banner;
+
+        return $this;
+    }
+
+    public function getPicture(): ?Picture
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?Picture $picture): static
+    {
+        $this->picture = $picture;
 
         return $this;
     }
