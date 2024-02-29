@@ -29,7 +29,7 @@ class CommentController extends AbstractController
     public function getCommentByAll():JsonResponse{
 
         $comment = $this->comment->findAll();
-        return $this->json($comment);
+        return $this->json($comment , 200, [], ['groups' => 'comment:read' ]);
     }
 
     #[Route('/comment/{id}', name: 'comment_by_id', methods:"GET")]

@@ -14,23 +14,23 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('badge:read' , 'profile:read' , 'post:read')]
+    #[Groups('comment:read')]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups('badge:read', 'profile:read' , 'post:read')]
+    #[Groups('comment:read')]
     private ?string $url = null;
 
     #[ORM\Column]
-    #[Groups('badge:read' , 'profile:read' , 'post:read')]
+    #[Groups('comment:read')]
     private ?int $id_user = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups('badge:read')]
+    #[Groups('comment:read')]
     private ?\DateTimeInterface $posted_at = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('badge:read' , 'profile:read' , 'post:read')]
+    
     private ?string $ip = null;
 
 

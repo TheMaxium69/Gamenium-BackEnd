@@ -5,8 +5,8 @@ namespace App\Entity;
 use App\Repository\GameProfileRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 use Symfony\Component\Serializer\Annotation\Exclude;
 
@@ -16,15 +16,14 @@ class GameProfile
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('profile:read')]
+    #[Groups('comment:read')]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups('profile:read')]
+    #[Groups('comment:read')]
     private ?\DateTimeImmutable $joined_at = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups('profile:read')]
     private ?picture $picture = null;
 
     #[ORM\ManyToOne]

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PostActuRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PostActuRepository::class)]
 class PostActu
@@ -12,34 +13,35 @@ class PostActu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('comment:read')]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?\DateTimeInterface $last_edit = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?int $nb_edit = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus')]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?Provider $Provider = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus')]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?GameProfile $GameProfile = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus')]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?Game $Game = null;
 
     #[ORM\ManyToOne]

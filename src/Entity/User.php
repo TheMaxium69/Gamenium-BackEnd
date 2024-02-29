@@ -13,38 +13,45 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['buywhere:read','comment:read'])]
     private ?int $id_useritium = null;
 
     #[ORM\Column]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private array $user_role = [] ;
 
-    #[ORM\Column]
+    #[ORM\Column]#[Groups(['buywhere:read' ,'comment:read'])]
     private ?\DateTimeImmutable $joinAt = null;
 
     #[ORM\Column]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private ?\DateTimeImmutable $lastConnection = null;
 
     #[ORM\Column]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private ?int $id_picture = null;
 
     #[ORM\Column]
     private array $ip = [];
 
     #[ORM\Column(length: 255)]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['buywhere:read' ,'comment:read'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ProviderRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProviderRepository::class)]
 class Provider
@@ -12,42 +13,43 @@ class Provider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?string $tagName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?string $displayName = null;
 
     #[ORM\Column]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?int $country = null;
 
     #[ORM\Column]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?\DateTimeImmutable $joindeAt = null;
 
     #[ORM\Column]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?int $parentCompany = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Groups('post:read')]
+    #[Groups('comment:read')]
     private ?int $banner = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups('comment:read')]
     private ?Picture $picture = null;
 
     public function getId(): ?int
