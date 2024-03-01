@@ -51,6 +51,10 @@ class Provider
     #[Groups(['provider:read'])]
     private ?Picture $picture = null;
 
+    #[ORM\Column(length: 255)]
+    #[Groups(['provider:read'])]
+    private ?string $color = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -160,6 +164,18 @@ class Provider
     public function setPicture(?Picture $picture): static
     {
         $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): static
+    {
+        $this->color = $color;
 
         return $this;
     }
