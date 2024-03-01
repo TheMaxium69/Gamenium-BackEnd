@@ -26,7 +26,7 @@ class PlatformController extends AbstractController
         return $this->json($platforms);
     }
 
-    #[Route('/platforms/{id}', name: 'get_platform_by_id', methods: ['GET'])]
+    #[Route('/platform/{id}', name: 'get_platform_by_id', methods: ['GET'])]
     public function getplatformById(int $id): JsonResponse
     {
         $platform = $this->platformRepository->find($id);
