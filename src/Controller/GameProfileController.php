@@ -32,7 +32,7 @@ class GameProfileController extends AbstractController
         
     }
 
-    #[Route('/gameprofiles/{id}', name: 'get_gameprofile_by_id', methods: ['GET'])]
+    #[Route('/gameprofile/{id}', name: 'get_gameprofile_by_id', methods: ['GET'])]
     public function getGameProfileById(int $id): JsonResponse
     {
         $gameProfile = $this->gameProfileRepository->find($id);
