@@ -13,43 +13,42 @@ class Provider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read','post:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?string $tagName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?string $displayName = null;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?int $country = null;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?\DateTimeImmutable $joindeAt = null;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?int $parentCompany = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?int $banner = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups('comment:read')]
+    #[Groups(['provider:read'])]
     private ?Picture $picture = null;
 
     public function getId(): ?int

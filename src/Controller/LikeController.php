@@ -23,7 +23,7 @@ class LikeController extends AbstractController
     {
         $likes = $this->likeRepository->findAll();
 
-        return $this->json($likes);
+        return $this->json($likes , 200 , [], ['groups' => 'like:read']);
     }
 
     #[Route('/like/{id}', name: 'get_like_by_id', methods: ['GET'])]

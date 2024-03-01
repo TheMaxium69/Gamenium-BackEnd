@@ -28,7 +28,7 @@ class GameProfileController extends AbstractController
             return $this->json(['message' => 'GameProfiles not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->json($gameProfiles , 200);
+        return $this->json($gameProfiles , 200 , [], ['groups' => 'gameprofile:read']);
         
     }
 

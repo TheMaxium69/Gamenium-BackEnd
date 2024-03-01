@@ -13,39 +13,39 @@ class PostActu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['post:read' ,'comment:read' , 'like:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['post:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('comment:read')]
+    #[Groups(['post:read'])]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['post:read'])]
     private ?\DateTimeInterface $last_edit = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
     private ?int $nb_edit = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus')]
-    #[Groups('comment:read')]
+    #[Groups(['post:read'])]
     private ?Provider $Provider = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus')]
-    #[Groups('comment:read')]
+    #[Groups(['post:read'])]
     private ?GameProfile $GameProfile = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus')]
-    #[Groups('comment:read')]
+    #[Groups(['post:read'])]
     private ?Game $Game = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['post:read'])]
     private ?user $user = null;
 
     public function getId(): ?int

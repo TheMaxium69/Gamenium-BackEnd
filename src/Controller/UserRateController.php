@@ -23,7 +23,7 @@ class UserRateController extends AbstractController
     {
         $userRates = $this->userRateRepository->findAll();
 
-        return $this->json($userRates);
+        return $this->json($userRates , 200 , [], ['groups' => 'userRate:read']);
     }
 
     #[Route('/userRate/{id}', name: 'get_userRate_by_id', methods: ['GET'])]

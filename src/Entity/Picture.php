@@ -14,24 +14,22 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['gameprofile:read' , 'picture:read' , 'provider:read' , 'badge:read'])]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups('comment:read')]
+    #[Groups(['picture:read'])]
     private ?string $url = null;
 
-    #[ORM\Column]
-    #[Groups('comment:read')]
-    private ?int $id_user = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups('comment:read')]
     private ?\DateTimeInterface $posted_at = null;
 
     #[ORM\Column(length: 255)]
-    
     private ?string $ip = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['picture:read'])]
+    private ?User $user = null;
 
 
 
@@ -50,18 +48,6 @@ class Picture
     public function setUrl(string $url): static
     {
         $this->url = $url;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(int $id_user): static
-    {
-        $this->id_user = $id_user;
 
         return $this;
     }
@@ -86,6 +72,18 @@ class Picture
     public function setIp(string $ip): static
     {
         $this->ip = $ip;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

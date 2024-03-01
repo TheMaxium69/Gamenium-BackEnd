@@ -23,7 +23,7 @@ class BadgeVersUserController extends AbstractController
     {
         $badgeVersUsers = $this->badgeVersUserRepository->findAll();
 
-        return $this->json($badgeVersUsers);
+        return $this->json($badgeVersUsers , 200 , [], ['groups' => 'badgesversuser:read']);
     }
 
     #[Route('/badgeversuser/{id}', name: 'get_badgeversuser_by_id', methods: ['GET'])]

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\SocialNetworkRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SocialNetworkRepository::class)]
 class SocialNetwork
@@ -11,9 +12,11 @@ class SocialNetwork
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['socialnetwork:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['socialnetwork:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]

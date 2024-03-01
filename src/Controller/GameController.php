@@ -23,7 +23,7 @@ class GameController extends AbstractController
     {
         $games = $this->gameRepository->findAll();
 
-        return $this->json($games);
+        return $this->json($games , 200 , [], ['groups' => 'game:read']);
     }
 
     #[Route('/game/{id}', name: 'get_game_by_id', methods: ['GET'])]

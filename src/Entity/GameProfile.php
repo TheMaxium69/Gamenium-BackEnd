@@ -16,18 +16,20 @@ class GameProfile
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['gameprofile:read' , 'post:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups('gameprofile:read')]
     private ?\DateTimeImmutable $joined_at = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups('gameprofile:read')]
     private ?picture $picture = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('gameprofile:read')]
     private ?game $game = null;
 
 

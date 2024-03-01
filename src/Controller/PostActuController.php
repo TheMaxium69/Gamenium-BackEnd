@@ -23,7 +23,7 @@ class PostActuController extends AbstractController
     {
         $postActus = $this->postActuRepository->findAll();
 
-        return $this->json($postActus, 200, ['groups' => 'post:read']);
+        return $this->json($postActus , 200 , [], ['groups' => 'post:read']);
     }
 
     #[Route('/postactu/{id}', name: 'get_postactu_by_id', methods: ['GET'])]

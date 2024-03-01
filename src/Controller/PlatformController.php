@@ -23,7 +23,7 @@ class PlatformController extends AbstractController
     {
         $platforms = $this->platformRepository->findAll();
 
-        return $this->json($platforms);
+        return $this->json($platforms , 200 , [], ['groups' => 'platform:read']);
     }
 
     #[Route('/platform/{id}', name: 'get_platform_by_id', methods: ['GET'])]

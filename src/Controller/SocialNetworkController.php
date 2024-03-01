@@ -23,7 +23,7 @@ class SocialNetworkController extends AbstractController
     {
         $socialNetworks = $this->socialNetworkRepository->findAll();
 
-        return $this->json($socialNetworks);
+        return $this->json($socialNetworks , 200 , [], ['groups' => 'socialnetwork:read']);
     }
 
     #[Route('/socialnetwork/{id}', name: 'get_socialnetwork_by_id', methods: ['GET'])]

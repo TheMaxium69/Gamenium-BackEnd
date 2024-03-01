@@ -13,7 +13,7 @@ class BuyWhere
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['buywhere:read'])]
+    #[Groups(['buywhere:read' ,'historygame:read'])]
     private ?int $id = null;
 
     #[ORM\Column]

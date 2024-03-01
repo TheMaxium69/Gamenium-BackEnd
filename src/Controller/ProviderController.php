@@ -22,7 +22,7 @@ class ProviderController extends AbstractController
     public function getProviderAll(): JsonResponse
     {
         $providers = $this->providerRepository->findAll();
-        return $this->json($providers);
+        return $this->json($providers , 200 , [], ['groups' => 'provider:read']);
     }
 
     #[Route('/provider/{id}', name: 'provider_by_id', methods:'GET')]

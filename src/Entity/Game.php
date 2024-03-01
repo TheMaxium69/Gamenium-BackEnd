@@ -16,86 +16,85 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['game:read','gameprofile:read', 'post:read' , 'userRate:read'])]
     private ?int $id = null;
 
     #[ORM\OneToMany(targetEntity: PostActu::class, mappedBy: 'Game')]
     private Collection $postActus;
 
     #[ORM\Column]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?int $id_GiantBomb = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $guid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $aliasses = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $apiDetailUrl = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?\DateTimeImmutable $dateAdded = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?\DateTimeInterface $dateLastUpdated = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $deck = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?int $expectedReleaseDay = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $expectedReleaseMonth = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?int $expectedReleaseYear = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?array $image = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?array $imageTags = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?int $numberOfUserReviews = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?array $originalGameRating = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('comment:read')]
     private ?string $originalReleaseDate = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?array $platforms = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('comment:read')]
+    #[Groups(['game:read'])]
     private ?string $siteDetailUrl = null;
 
     public function __construct()

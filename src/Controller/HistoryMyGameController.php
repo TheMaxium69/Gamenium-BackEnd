@@ -23,7 +23,7 @@ class HistoryMyGameController extends AbstractController
     {
         $historyMyGames = $this->historyMyGameRepository->findAll();
 
-        return $this->json($historyMyGames);
+        return $this->json($historyMyGames , 200 , [], ['groups' => 'historygame:read']);
     }
 
     #[Route('/historymygame/{id}', name: 'get_historymygame_by_id', methods: ['GET'])]

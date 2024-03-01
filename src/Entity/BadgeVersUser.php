@@ -12,16 +12,19 @@ class BadgeVersUser
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['badgesversuser:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['badgesversuser:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['buywhere:read' ,'user:read'])]
+    #[Groups(['badgesversuser:read'])]
     private ?user $user = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['badgesversuser:read'])]
     private ?Badge $badge = null;
 
     public function getId(): ?int

@@ -27,7 +27,7 @@ class PictureController extends AbstractController
     public function getPictureAll():JsonResponse
     {
         $pictures = $this->picture->findAll();
-        return $this->json($pictures, 200);
+        return $this->json($pictures, 200 , [], ['groups' => 'picture:read']);
     }
 
     #[Route('/picture/{id}', name: 'picture_by_id', methods:"GET")]
