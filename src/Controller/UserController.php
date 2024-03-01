@@ -66,7 +66,7 @@ class UserController extends AbstractController
         // VERIFICATION DU SERVEUR
         if(!$resultUseritiumArray){
 
-            return $this->json(['message' => 'Erreur Base de donnée'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Erreur Base de donnée']);
         }
 
 
@@ -74,7 +74,7 @@ class UserController extends AbstractController
         if ($resultUseritiumArray['status'] == "err"){
 
             // PAS CONNECTER
-            return $this->json(['message' => $resultUseritiumArray['why']], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => $resultUseritiumArray['why']]);
 
         } else if($resultUseritiumArray['status'] == "true"){
 
@@ -137,7 +137,7 @@ class UserController extends AbstractController
         } else {
 
             // ERR API (NI ERR NI TRUE)
-            return $this->json(['message' => 'Erreur Base de donnée'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Erreur Base de donnée']);
 
         }
 
