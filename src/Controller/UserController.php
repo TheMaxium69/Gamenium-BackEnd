@@ -110,7 +110,7 @@ class UserController extends AbstractController
                 $user->setUserRole($role);
                 $user->setJoinAt(new \DateTimeImmutable());
                 $user->setLastConnection(new \DateTimeImmutable());
-                $user->setIdPicture(1);
+//                $user->setIdPicture(1);
                     $ip = [
                         "10.0.0.1"
                     ];
