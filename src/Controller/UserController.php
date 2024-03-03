@@ -36,7 +36,7 @@ class UserController extends AbstractController
         // VERIFICATION DES CHAMP
         if (!isset($data['email_auth']) || !isset($data['mdp_auth'])) {
 
-            return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Missing required fields']);
 
         }
 
