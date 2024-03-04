@@ -46,6 +46,12 @@ class User
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
+    #[ORM\ManyToOne]
+    private ?picture $pp = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $color = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -171,6 +177,30 @@ class User
     public function setToken(string $token): static
     {
         $this->token = $token;
+
+        return $this;
+    }
+
+    public function getPp(): ?picture
+    {
+        return $this->pp;
+    }
+
+    public function setPp(?picture $pp): static
+    {
+        $this->pp = $pp;
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(?string $color): static
+    {
+        $this->color = $color;
 
         return $this;
     }
