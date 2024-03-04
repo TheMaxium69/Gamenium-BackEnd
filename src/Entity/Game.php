@@ -36,7 +36,7 @@ class Game
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['game:read'])]
-    private ?string $aliasses = null;
+    private ?string $aliases = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['game:read'])]
@@ -96,6 +96,9 @@ class Game
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['game:read'])]
     private ?string $siteDetailUrl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $expected_release_quarter = null;
 
     public function __construct()
     {
@@ -332,6 +335,18 @@ class Game
     public function setSiteDetailUrl(?string $siteDetailUrl): static
     {
         $this->siteDetailUrl = $siteDetailUrl;
+
+        return $this;
+    }
+
+    public function getExpectedReleaseQuarter(): ?string
+    {
+        return $this->expected_release_quarter;
+    }
+
+    public function setExpectedReleaseQuarter(?string $expected_release_quarter): static
+    {
+        $this->expected_release_quarter = $expected_release_quarter;
 
         return $this;
     }
