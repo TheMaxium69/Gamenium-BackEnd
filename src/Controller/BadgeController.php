@@ -45,6 +45,8 @@ class BadgeController extends AbstractController
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);
 
+
+
         if (!$user){
 
             return $this->json(['message' => 'user not found'], 200, [], ['groups' => 'badge:read']);
@@ -59,7 +61,22 @@ class BadgeController extends AbstractController
                 $badges[] = $entry->getBadge();
             }
 
-            return $this->json($badges, 200, [], ['groups' => 'badge:read']);
+            if ($badges == []){
+
+                $message = [
+                    'message' => "nada"
+                ];
+
+            } else {
+
+                $message = [
+                    'message' => "good",
+                    'result' => $badges
+                ];
+
+            }
+
+            return $this->json($message, 200, [], ['groups' => 'badge:read']);
         }
     }
 

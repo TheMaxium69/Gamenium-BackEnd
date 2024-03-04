@@ -166,6 +166,7 @@ class UserController extends AbstractController
             if ($user){
 
                 return $this->json(['message' => 'Connected', 'result' => [
+                    "id" => $user->getId(),
                     "username" => $user->getUsername(),
                     "email" => $user->getEmail(),
                     "displayname" => $user->getDisplayname(),
