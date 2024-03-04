@@ -147,14 +147,14 @@ class Game
         return $this;
     }
 
-    public function getAliasses(): ?string
+    public function getAliases(): ?string
     {
-        return $this->aliasses;
+        return $this->aliases;
     }
 
-    public function setAliasses(?string $aliasses): static
+    public function setAliases(?string $aliases): static
     {
-        $this->aliasses = $aliasses;
+        $this->aliases = $aliases;
 
         return $this;
     }

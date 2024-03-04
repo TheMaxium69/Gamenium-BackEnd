@@ -26,6 +26,17 @@ class GameController extends AbstractController
         return $this->json($games , 200 , [], ['groups' => 'game:read']);
     }
 
+    #[Route('/games/{page}/{limit}', name: 'get_all_games_paginated', methods: ['GET'])]
+public function getAllGamesPaginated(Request $request, int $page, int $limit, GameRepository $gameRepository): JsonResponse
+{
+
+    $offset = ($page - 1) * $limit;
+
+    $games = $gameRepository->findBy([], null, $limit, $offset);
+
+    return $this->json($games , 200 , [], ['groups' => 'game:read']);
+}
+
     #[Route('/game/{id}', name: 'get_game_by_id', methods: ['GET'])]
     public function getGameById(int $id): JsonResponse
     {
