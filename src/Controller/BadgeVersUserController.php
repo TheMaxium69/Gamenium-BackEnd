@@ -32,7 +32,7 @@ class BadgeVersUserController extends AbstractController
         $badgeVersUser = $this->badgeVersUserRepository->find($id);
 
         if (!$badgeVersUser) {
-            return $this->json(['message' => 'Badge Vers User not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'Badge Vers User not found']);
         }
 
         return $this->json($badgeVersUser);

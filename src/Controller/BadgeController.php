@@ -38,6 +38,19 @@ class BadgeController extends AbstractController
         return $this->json($badge);
     }
 
+    #[Route('/badges/user/{id}', name: 'get_badges_by_user', methods: ['GET'])]
+    public function getBadgesByUser(): JsonResponse
+    {
+
+
+
+
+
+
+
+        return $this->json("test", 200, [], ['groups' => 'badge:read']);
+    }
+
     #[Route('/badge', name: 'create_badge', methods: ['POST'])]
     public function createBadge(Request $request): JsonResponse
     {
