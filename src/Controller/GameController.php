@@ -62,7 +62,6 @@ class GameController extends AbstractController
                 'limit' => $limit,
             ];
             return $this->json($message);
-
         }
 
     }
