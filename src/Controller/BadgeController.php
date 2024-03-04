@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Badge;
+use App\Entity\BadgeVersUser;
+use App\Entity\User;
 use App\Repository\BadgeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,16 +41,26 @@ class BadgeController extends AbstractController
     }
 
     #[Route('/badges/user/{id}', name: 'get_badges_by_user', methods: ['GET'])]
-    public function getBadgesByUser(): JsonResponse
+    public function getBadgesByUser(int $id): JsonResponse
     {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
 
+        if (!$user){
 
+            return $this->json(['message' => 'user not found'], 200, [], ['groups' => 'badge:read']);
 
+        } else {
 
+            $badgeToUserRepository = $this->entityManager->getRepository(BadgeVersUser::class);
+            $badgeToUserEntries = $badgeToUserRepository->findBy(['user' => $user]);
 
+            $badges = [];
+            foreach ($badgeToUserEntries as $entry) {
+                $badges[] = $entry->getBadge();
+            }
 
-
-        return $this->json("test", 200, [], ['groups' => 'badge:read']);
+            return $this->json($badges, 200, [], ['groups' => 'badge:read']);
+        }
     }
 
     #[Route('/badge', name: 'create_badge', methods: ['POST'])]

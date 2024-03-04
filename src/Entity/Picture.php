@@ -18,7 +18,7 @@ class Picture
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(['picture:read'])]
+    #[Groups(['gameprofile:read' , 'picture:read' , 'provider:read' , 'badge:read'])]
     private ?string $url = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
