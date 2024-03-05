@@ -111,14 +111,18 @@ class GameController extends AbstractController
         return $this->json(['message' => 'Game deleted successfully']);
     }
 
-    
+
+    #[Route('/games/search', name: 'search_games', methods: ['POST'])]
     public function searchGames(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         $searchValue = $data['searchValue'] ?? '';
-    
-        $results = $this->gameRepository->searchByName($searchValue, 5);
+        $limit = $data['limit'];
+
+        $results = $this->gameRepository->searchByName($searchValue, $limit);
     
         return $this->json($results, 200, [], ['groups' => 'game:read']);
     }
+
+
 }
