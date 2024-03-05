@@ -31,7 +31,7 @@ class ProviderController extends AbstractController
         $provider = $this->providerRepository->find($id);
 
         if(!$provider){
-            return $this->json(['message' => 'Provider not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'Provider not found']);
         }
 
         return $this->json($provider);
