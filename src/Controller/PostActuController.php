@@ -32,7 +32,7 @@ class PostActuController extends AbstractController
         $postActu = $this->postActuRepository->find($id);
 
         if (!$postActu) {
-            return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'PostActu not found']);
         }
 
         return $this->json($postActu);
