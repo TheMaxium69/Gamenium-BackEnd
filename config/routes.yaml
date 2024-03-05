@@ -1,3 +1,8 @@
 controllers:
     resource: ../src/Controller/
     type: attribute
+
+search_games:
+    path: /games/search
+    controller: App\Controller\GameController::searchGames
+    methods: ['POST']
