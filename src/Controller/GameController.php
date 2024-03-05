@@ -97,7 +97,7 @@ class GameController extends AbstractController
         $game = $this->gameRepository->find($id);
 
         if (!$game) {
-            return $this->json(['message' => 'Game not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'Game not found']);
         }
 
         $this->entityManager->remove($game);
@@ -105,4 +105,17 @@ class GameController extends AbstractController
 
         return $this->json(['message' => 'Game deleted successfully']);
     }
+
+    
+    #[Route('/games/search', name: 'search_games', methods: ['POST'])]
+    public function searchGames(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $searchValue = $data['searchValue'] ?? '';
+
+        $results = $this->gameRepository->searchByName($searchValue);
+
+        return $searchValue;
+    }
+
 }
