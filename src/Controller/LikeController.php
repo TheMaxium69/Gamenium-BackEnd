@@ -26,6 +26,41 @@ class LikeController extends AbstractController
         return $this->json($likes , 200 , [], ['groups' => 'like:read']);
     }
 
+    #[Route('/like/post-actu/{idPost}', name: 'get_likes_count', methods: ['GET'])]
+    public function getLikesCount(int $idPost): JsonResponse
+    {
+
+        $likesCount = $this->likeRepository->count(['post' => $idPost]);
+
+
+        $likedUsers = $this->likeRepository->findBy(['post' => $idPost]);
+
+        $response = [
+            'message' => 'good',
+            'total' => $likesCount,
+            'result' => array_map(fn($like) => ['id' => $like->getUser()->getId()], $likedUsers)
+        ];
+
+        // Retourner la réponse JSON
+        return $this->json($response);
+    }
+
+    #[Route('/like/comment/{idComment}', name: 'get_likes_count_by_comment', methods: ['GET'])]
+    public function getLikesCountByComment(int $idComment): JsonResponse
+    {
+        $likesCount = $this->likeRepository->count(['comment' => $idComment]);
+
+        $likedUsers = $this->likeRepository->findBy(['comment' => $idComment]);
+
+        $response = [
+            'message' => 'good',
+            'total' => $likesCount,
+            'result' => array_map(fn($like) => ['id' => $like->getUser()->getId()], $likedUsers)
+        ];
+
+        return $this->json($response);
+    }
+
     #[Route('/like/{id}', name: 'get_like_by_id', methods: ['GET'])]
     public function getlikeById(int $id): JsonResponse
     {
