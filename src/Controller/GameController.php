@@ -18,13 +18,13 @@ class GameController extends AbstractController
         private GameRepository $gameRepository
     ) {}
 
-    #[Route('/games', name: 'get_all_games', methods: ['GET'])]
-    public function getAllGames(): JsonResponse
-    {
-        $games = $this->gameRepository->findAll();
-
-        return $this->json($games , 200 , [], ['groups' => 'game:read']);
-    }
+//    #[Route('/games', name: 'get_all_games', methods: ['GET'])]
+//    public function getAllGames(): JsonResponse
+//    {
+//        $games = $this->gameRepository->findAll();
+//
+//        return $this->json($games , 200 , [], ['groups' => 'game:read']);
+//    }
 
     #[Route('/games/{page}/{limit}', name: 'get_all_games_paginated', methods: ['GET'])]
     public function getAllGamesPaginated(Request $request, int $page, int $limit, GameRepository $gameRepository): JsonResponse
@@ -71,11 +71,16 @@ class GameController extends AbstractController
     {
         $game = $this->gameRepository->find($id);
 
-        if (!$game) {
-            return $this->json(['message' => 'Game not found'], Response::HTTP_NOT_FOUND);
+        if(!$game){
+            return $this->json(['message' => 'Game not found']);
+        } else {
+            $message = [
+                'message' => "good",
+                'result' => $game
+            ];
         }
 
-        return $this->json($game);
+        return $this->json($message);
     }
 
     #[Route('/game', name: 'create_game', methods: ['POST'])]

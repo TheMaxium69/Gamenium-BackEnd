@@ -32,9 +32,15 @@ class ProviderController extends AbstractController
 
         if(!$provider){
             return $this->json(['message' => 'Provider not found']);
+        } else {
+            $message = [
+                'message' => "good",
+                'result' => $provider
+            ];
+
+            return $this->json($message);
         }
 
-        return $this->json($provider);
     }
 
     #[Route('/provider', name:'provider_create', methods:'POST')]

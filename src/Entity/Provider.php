@@ -28,14 +28,14 @@ class Provider
     #[Groups(['provider:read'])]
     private ?int $country = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['provider:read'])]
     private ?\DateTimeImmutable $joindeAt = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['provider:read'])]
     private ?int $parentCompany = null;
 
@@ -43,7 +43,7 @@ class Provider
     #[Groups(['provider:read'])]
     private ?string $content = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['provider:read'])]
     private ?int $banner = null;
 
