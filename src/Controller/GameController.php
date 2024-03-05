@@ -112,15 +112,13 @@ class GameController extends AbstractController
     }
 
     
-    #[Route('/games/search', name: 'search_games', methods: ['POST'])]
     public function searchGames(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         $searchValue = $data['searchValue'] ?? '';
-
-        $results = $this->gameRepository->searchByName($searchValue);
-
-        return $this->json($results , 200 , [], ['groups' => 'game:read']);
+    
+        $results = $this->gameRepository->searchByName($searchValue, 5);
+    
+        return $this->json($results, 200, [], ['groups' => 'game:read']);
     }
-
 }
