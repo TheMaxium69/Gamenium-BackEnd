@@ -115,7 +115,7 @@ class GameController extends AbstractController
 
         $results = $this->gameRepository->searchByName($searchValue);
 
-        return $searchValue;
+        return $this->json($results , 200 , [], ['groups' => 'game:read']);
     }
 
 }
