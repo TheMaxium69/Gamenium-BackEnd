@@ -17,11 +17,11 @@ class Provider
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read'])]
+    #[Groups(['provider:read','post:read'])]
     private ?string $tagName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read'])]
+    #[Groups(['provider:read','post:read'])]
     private ?string $displayName = null;
 
     #[ORM\Column]
@@ -36,7 +36,7 @@ class Provider
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['provider:read'])]
+    #[Groups(['provider:read','post:read'])]
     private ?int $parentCompany = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -44,15 +44,15 @@ class Provider
     private ?string $content = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['provider:read'])]
+    #[Groups(['provider:read','post:read'])]
     private ?int $banner = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['provider:read'])]
+    #[Groups(['provider:read','post:read'])]
     private ?Picture $picture = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read'])]
+    #[Groups(['provider:read','post:read'])]
     private ?string $color = null;
 
     public function getId(): ?int
