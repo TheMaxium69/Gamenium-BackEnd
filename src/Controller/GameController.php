@@ -80,36 +80,36 @@ class GameController extends AbstractController
             ];
         }
 
-        return $this->json($message);
+        return $this->json($message, 200 , [], ['groups' => 'game:read']);
     }
 
-    #[Route('/game', name: 'create_game', methods: ['POST'])]
-    public function createGame(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
+//    #[Route('/game', name: 'create_game', methods: ['POST'])]
+//    public function createGame(Request $request): JsonResponse
+//    {
+//        $data = json_decode($request->getContent(), true);
+//
+//        $game = new Game();
+//
+//        $this->entityManager->persist($game);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'Game created successfully'], Response::HTTP_CREATED);
+//    }
 
-        $game = new Game();
-
-        $this->entityManager->persist($game);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Game created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/game/{id}', name: 'delete_game', methods: ['DELETE'])]
-    public function deleteGame(int $id): JsonResponse
-    {
-        $game = $this->gameRepository->find($id);
-
-        if (!$game) {
-            return $this->json(['message' => 'Game not found']);
-        }
-
-        $this->entityManager->remove($game);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Game deleted successfully']);
-    }
+//    #[Route('/game/{id}', name: 'delete_game', methods: ['DELETE'])]
+//    public function deleteGame(int $id): JsonResponse
+//    {
+//        $game = $this->gameRepository->find($id);
+//
+//        if (!$game) {
+//            return $this->json(['message' => 'Game not found']);
+//        }
+//
+//        $this->entityManager->remove($game);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'Game deleted successfully']);
+//    }
 
 
     #[Route('/games/search', name: 'search_games', methods: ['POST'])]
