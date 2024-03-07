@@ -18,13 +18,24 @@ class PostActuController extends AbstractController
         private PostActuRepository $postActuRepository
     ) {}
 
-//    #[Route('/postactus', name: 'get_all_postactus', methods: ['GET'])]
-//    public function getAllPostActus(): JsonResponse
-//    {
-//        $postActus = $this->postActuRepository->findAll();
-//
-//        return $this->json($postActus , 200 , [], ['groups' => 'post:read']);
-//    }
+    #[Route('/postactus', name: 'get_all_postactus', methods: ['GET'])]
+    public function getAllPostActus(): JsonResponse
+    {
+        $postActus = $this->postActuRepository->findAll();
+
+        if(!$postActus){
+            return $this->json(['message' => 'Provider not found']);
+        } else {
+            $message = [
+                'message' => "good",
+                'result' => $postActus
+            ];
+
+            return $this->json($message);
+        }
+
+        return $this->json($message , 200 , [], ['groups' => 'post:read']);
+    }
 
     #[Route('/postactu/{id}', name: 'get_postactu_by_id', methods: ['GET'])]
     public function getPostActuById(int $id): JsonResponse
