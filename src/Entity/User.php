@@ -46,7 +46,7 @@ class User
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     private ?picture $pp = null;
 
     #[ORM\Column(length: 255, nullable: true)]

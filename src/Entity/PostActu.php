@@ -48,6 +48,13 @@ class PostActu
     #[Groups(['post:read'])]
     private ?user $user = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Picture $picture = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -145,6 +152,30 @@ class PostActu
     public function setUser(?user $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getPicture(): ?Picture
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?Picture $picture): static
+    {
+        $this->picture = $picture;
 
         return $this;
     }
