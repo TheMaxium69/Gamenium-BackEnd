@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 
-
+use App\Entity\Picture;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -190,8 +190,9 @@ class UserController extends AbstractController
 
     }
 
+
     #[Route('/upload-profile-picture/{userId}', name: 'upload_profile_picture', methods: ['POST'])]
-    public function uploadProfilePicture(int $userId, Request $request): Response
+    public function uploadProfilePicture(int $userId, Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = $this->userRepository->find($userId);
     
@@ -207,8 +208,20 @@ class UserController extends AbstractController
             return $this->json(['message' => 'No image URL provided'], Response::HTTP_BAD_REQUEST);
         }
         
+        $picture = new Picture();
+        $picture->setUrl($imageUrl);
+        $picture->setPostedAt(new \DateTimeImmutable());
+        $picture->setIp($request->getClientIp());
+        $picture->setUser($user);
+        $user->setPp($picture);
+        
+        $entityManager->persist($picture);
+        $entityManager->persist($user);
+        $entityManager->flush();
+    
         return $this->json(['message' => 'Profile picture uploaded successfully'], Response::HTTP_OK);
     }
+    
 
     function generateRandomToken($length = 32)
     {
