@@ -238,5 +238,35 @@ class UserController extends AbstractController
         return $token;
     }
 
+    #[Route('/get-theme-color/{userId}', name: 'get_theme_color', methods: ['GET'])]
+    public function getThemeColor(int $userId): JsonResponse
+    {
 
+        $user = $this->userRepository->find($userId);
+        $themeColor = $user ? $user->getColor() : '';
+    
+        return $this->json([$themeColor]);
+    }
+
+    #[Route('/update-theme-color/{userId}', name: 'update_theme_color', methods: ['POST'])]
+    public function updateThemeColor(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, $userId): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['themeColor'])) {
+            return $this->json(['message' => 'Missing required fields'], 400);
+        }
+
+        $user = $userRepository->find($userId);
+        if (!$user) {
+            return $this->json(['message' => 'User not found'], 404);
+        }
+
+        $user->setColor($data['themeColor']); 
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Theme color updated successfully']);
+
+    }
+    
 }
