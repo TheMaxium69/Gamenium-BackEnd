@@ -175,7 +175,8 @@ class UserController extends AbstractController
                     "displayname" => $user->getDisplayname(),
                     "displaynameUseritium" => $user->getDisplaynameUseritium(),
                     "joinAt" => $user->getJoinAt(),
-                    "userRole" => $user->getUserRole()
+                    "userRole" => $user->getUserRole(),
+                    "themeColor" => $user->getColor()
                 ]]);
 
             } else {
