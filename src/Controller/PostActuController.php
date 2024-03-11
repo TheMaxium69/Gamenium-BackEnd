@@ -31,10 +31,9 @@ class PostActuController extends AbstractController
                 'result' => $postActus
             ];
 
-            return $this->json($message);
+            return $this->json($message , 200 , [], ['groups' => 'post:read']);
         }
 
-        return $this->json($message , 200 , [], ['groups' => 'post:read']);
     }
 
     #[Route('/postactu/{id}', name: 'get_postactu_by_id', methods: ['GET'])]

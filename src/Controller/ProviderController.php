@@ -31,11 +31,10 @@ class ProviderController extends AbstractController
                 'result' => $providers
             ];
 
-            return $this->json($message);
+            return $this->json($message , 200 , [], ['groups' => 'provider:read']);
         }
 
 
-        return $this->json($message , 200 , [], ['groups' => 'provider:read']);
     }
 
     #[Route('/provider/{id}', name: 'provider_by_id', methods:'GET')]
@@ -51,7 +50,7 @@ class ProviderController extends AbstractController
                 'result' => $provider
             ];
 
-            return $this->json($message);
+            return $this->json($message  , 200 , [], ['groups' => 'provider:read']);
         }
 
     }
