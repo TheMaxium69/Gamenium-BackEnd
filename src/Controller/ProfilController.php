@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\ProfilSocialNetwork;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,36 +26,7 @@ class ProfilController extends AbstractController
 
         } else {
 
-            if ($user->getId() == 2){
-                $reseau = [
-                    [
-                        "url" => "https://instagram.com/the_maxime_san",
-                        "serice" => [
-                            "id"=>0,
-                            "name"=>"instagram",
-                            "icon_class"=>"ri-instagram-line"
-                        ]
-                    ],
-                    [
-                        "url" => "https://github.com/TheMaxium69",
-                        "serice" => [
-                            "id"=>1,
-                            "name"=>"github",
-                            "icon_class"=>"ri-github-fill"
-                        ]
-                    ],
-                    [
-                        "url" => "https://linkedin.com/in/maxime-tournier-tyrolium",
-                        "serice" => [
-                            "id"=>2,
-                            "name"=>"linkedin",
-                            "icon_class"=>"ri-linkedin-box-fill"
-                        ]
-                    ],
-                ];
-            } else {
-                $reseau = null;
-            }
+            $profilSocialNetworks = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findBy(['user' => $user]);
 
             $message = [
                 'message' => "good",
@@ -68,11 +40,11 @@ class ProfilController extends AbstractController
                     "picture" => $user->getPp()->getUrl(),
                     "nbGame" => 10,
                     "nbNote" => 5,
-                    "reseau" => $reseau
+                    "reseau" => $profilSocialNetworks
                 ]
             ];
 
-            return $this->json($message);
+            return $this->json($message, 200, [], ['groups' => 'profilSocialNetwork:read']);
         }
     }
 
