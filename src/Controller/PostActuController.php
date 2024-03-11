@@ -24,7 +24,7 @@ class PostActuController extends AbstractController
         $postActus = $this->postActuRepository->findAll();
 
         if(!$postActus){
-            return $this->json(['message' => 'Provider not found']);
+            return $this->json(['message' => 'PostActu not found']);
         } else {
             $message = [
                 'message' => "good",
