@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\HistoryMyGameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -19,28 +20,34 @@ class HistoryMyGame
 
     #[ORM\Column]
     #[Groups(['historygame:read'])]
-    private ?bool $is_favorite = null;
+    private ?bool $is_pinned = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['historygame:read'])]
     private ?string $content = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['historygame:read'])]
     private ?\DateTimeImmutable $buy_at = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['historygame:read'])]
-    private ?user $user = null;
+    private ?\DateTimeInterface $added_at = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['historygame:read'])]
-    private ?userrate $userrate = null;
+    private ?user $user = null;
+
 
     #[ORM\ManyToOne]
     #[Groups(['historygame:read'])]
     private ?buywhere $buywhere = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['historygame:read'])]
+    private ?game $game = null;
 
 
     public function __construct()
@@ -48,21 +55,19 @@ class HistoryMyGame
         $this->user = new ArrayCollection();
     }
 
-
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function isIsFavorite(): ?bool
+    public function isIsPinned(): ?bool
     {
-        return $this->is_favorite;
+        return $this->is_pinned;
     }
 
-    public function setIsFavorite(bool $is_favorite): static
+    public function setIsPinned(bool $is_pinned): static
     {
-        $this->is_favorite = $is_favorite;
+        $this->is_pinned = $is_pinned;
 
         return $this;
     }
@@ -83,21 +88,10 @@ class HistoryMyGame
     {
         return $this->buy_at;
     }
-public function setBuyAt(\DateTimeImmutable $buy_at): static
+
+    public function setBuyAt(\DateTimeImmutable $buy_at): static
     {
         $this->buy_at = $buy_at;
-
-        return $this;
-    }
-
-    public function getUserrate(): ?userrate
-    {
-        return $this->userrate;
-    }
-
-    public function setUserrate(?userrate $userrate): static
-    {
-        $this->userrate = $userrate;
 
         return $this;
     }
@@ -125,4 +119,29 @@ public function setBuyAt(\DateTimeImmutable $buy_at): static
 
         return $this;
     }
+
+    public function getGame(): ?game
+    {
+        return $this->game;
+    }
+
+    public function setGame(?game $game): static
+    {
+        $this->game = $game;
+
+        return $this;
+    }
+
+    public function getAddedAt(): ?\DateTimeInterface
+    {
+        return $this->added_at;
+    }
+
+    public function setAddedAt(\DateTimeInterface $added_at): static
+    {
+        $this->added_at = $added_at;
+
+        return $this;
+    }
+
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\HistoryMyGame;
+use App\Entity\User;
 use App\Repository\HistoryMyGameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,13 +19,43 @@ class HistoryMyGameController extends AbstractController
         private HistoryMyGameRepository $historyMyGameRepository
     ) {}
 
-    #[Route('/historymygames', name: 'get_all_historymygames', methods: ['GET'])]
-    public function getAllHistoryMyGames(): JsonResponse
+    #[Route('/MyGameByUser/{id}', name: 'get_mygame_by_user', methods: ['GET'])]
+    public function getMyGameByUser(int $id): JsonResponse
     {
-        $historyMyGames = $this->historyMyGameRepository->findAll();
+        $user = $this->entityManager->getRepository(User::class)->find($id);
 
-        return $this->json($historyMyGames , 200 , [], ['groups' => 'historygame:read']);
+        if (!$user){
+
+            return $this->json(['message' => 'user not found']);
+
+        } else {
+
+            $MyUserToUserEntries = $this->historyMyGameRepository->findBy(['user' => $user]);
+
+            $mygame = [];
+            foreach ($MyUserToUserEntries as $entry) {
+                $mygame[] = $entry;
+            }
+
+            if ($mygame == []){
+
+                $message = [
+                    'message' => "aucun jeux"
+                ];
+
+            } else {
+
+                $message = [
+                    'message' => "good",
+                    'result' => $mygame
+                ];
+
+            }
+
+            return $this->json($message, 200, [], ['groups' => 'historygame:read']);
+        }
     }
+
 
     #[Route('/historymygame/{id}', name: 'get_historymygame_by_id', methods: ['GET'])]
     public function getHistoryMyGameById(int $id): JsonResponse

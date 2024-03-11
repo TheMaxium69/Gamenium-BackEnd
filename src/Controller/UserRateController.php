@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\UserRate;
 use App\Repository\UserRateRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,13 +19,43 @@ class UserRateController extends AbstractController
         private UserRateRepository $userRateRepository
     ) {}
 
-    #[Route('/userRates', name: 'get_all_userRates', methods: ['GET'])]
-    public function getAlluserRates(): JsonResponse
+    #[Route('/RatingByUser/{id}', name: 'get_rates_by_user', methods: ['GET'])]
+    public function getRatesByUser(int $id): JsonResponse
     {
-        $userRates = $this->userRateRepository->findAll();
+        $user = $this->entityManager->getRepository(User::class)->find($id);
 
-        return $this->json($userRates , 200 , [], ['groups' => 'userRate:read']);
+        if (!$user){
+
+            return $this->json(['message' => 'user not found']);
+
+        } else {
+
+            $RatesToUserEntries = $this->userRateRepository->findBy(['user' => $user]);
+
+            $userRates = [];
+            foreach ($RatesToUserEntries as $entry) {
+                $userRates[] = $entry;
+            }
+
+            if ($userRates == []){
+
+                $message = [
+                    'message' => "aucune note"
+                ];
+
+            } else {
+
+                $message = [
+                    'message' => "good",
+                    'result' => $userRates
+                ];
+
+            }
+
+            return $this->json($message, 200, [], ['groups' => 'userRate:read']);
+        }
     }
+
 
     #[Route('/userRate/{id}', name: 'get_userRate_by_id', methods: ['GET'])]
     public function getuserRateById(int $id): JsonResponse
