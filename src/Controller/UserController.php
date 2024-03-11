@@ -190,53 +190,46 @@ class UserController extends AbstractController
 
     }
 
-
     #[Route('/upload-profile-picture/{userId}', name: 'upload_profile_picture', methods: ['POST'])]
     public function uploadProfilePicture(int $userId, Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = $this->userRepository->find($userId);
-    
+
         if (!$user) {
             return $this->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
-    
-        $data = json_decode($request->getContent(), true);
-    
-        $imageUrl = $data['url'] ?? null;
-    
-        if (!$imageUrl) {
-            return $this->json(['message' => 'No image URL provided'], Response::HTTP_BAD_REQUEST);
+
+
+        $uploadsDirectory = $this->getParameter('uploads_directory'); 
+
+        $file = $request->files->get('image');
+
+
+        if ($file) {
+
+            $filename = md5(uniqid()) . '.' . $file->guessExtension();
+
+
+            $file->move($uploadsDirectory, $filename);
+
+
+            $picture = new Picture();
+            $picture->setUrl($filename);
+            $picture->setPostedAt(new \DateTimeImmutable());
+            $picture->setIp($request->getClientIp());
+            $picture->setUser($user);
+            $user->setPp($picture);
+
+            $entityManager->persist($picture);
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->json(['message' => 'Profile picture uploaded successfully'], Response::HTTP_OK);
+        } else {
+            return $this->json(['message' => 'No image provided'], Response::HTTP_BAD_REQUEST);
         }
-        
-        $picture = new Picture();
-        $picture->setUrl($imageUrl);
-        $picture->setPostedAt(new \DateTimeImmutable());
-        $picture->setIp($request->getClientIp());
-        $picture->setUser($user);
-        $user->setPp($picture);
-        
-        $entityManager->persist($picture);
-        $entityManager->persist($user);
-        $entityManager->flush();
-    
-        return $this->json(['message' => 'Profile picture uploaded successfully'], Response::HTTP_OK);
     }
-    
 
-    function generateRandomToken($length = 32)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-        $charLength = strlen($characters);
-
-        $token = '';
-
-        for ($i = 0; $i < $length; $i++) {
-            $token .= $characters[random_int(0, $charLength - 1)];
-        }
-
-        return $token;
-    }
 
     #[Route('/get-theme-color/{userId}', name: 'get_theme_color', methods: ['GET'])]
     public function getThemeColor(int $userId): JsonResponse
