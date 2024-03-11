@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\HistoryMyGame;
 use App\Entity\ProfilSocialNetwork;
 use App\Entity\User;
+use App\Entity\UserRate;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,6 +29,9 @@ class ProfilController extends AbstractController
         } else {
 
             $profilSocialNetworks = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findBy(['user' => $user]);
+            $historyMyGames = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $user]);
+            $userRates = $this->entityManager->getRepository(UserRate::class)->findBy(['user' => $user]);
+
 
             $message = [
                 'message' => "good",
@@ -38,8 +43,8 @@ class ProfilController extends AbstractController
                     "joinAt" => $user->getJoinAt(),
                     "themeColor" => $user->getColor(),
                     "picture" => $user->getPp()->getUrl(),
-                    "nbGame" => 10,
-                    "nbNote" => 5,
+                    "nbGame" => count($historyMyGames),
+                    "nbNote" => count($userRates),
                     "reseau" => $profilSocialNetworks
                 ]
             ];
