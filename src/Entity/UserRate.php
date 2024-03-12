@@ -23,6 +23,7 @@ class UserRate
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?string $ip = null;
 
     #[ORM\ManyToOne]

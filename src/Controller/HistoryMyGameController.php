@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\HistoryMyGame;
 use App\Entity\User;
+use App\Entity\UserRate;
 use App\Repository\HistoryMyGameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,46 +59,41 @@ class HistoryMyGameController extends AbstractController
         }
     }
 
-
-//    #[Route('/historymygame/{id}', name: 'get_historymygame_by_id', methods: ['GET'])]
-//    public function getHistoryMyGameById(int $id): JsonResponse
-//    {
-//        $historyMyGame = $this->historyMyGameRepository->find($id);
-//
-//        if (!$historyMyGame) {
-//            return $this->json(['message' => 'HistoryMyGame not found'], Response::HTTP_NOT_FOUND);
-//        }
-//
-//        return $this->json($historyMyGame);
-//    }
-
-    #[Route('/mygame/', name: 'create_historymygame', methods: ['POST'])]
-    public function createHistoryMyGame(Request $request): JsonResponse
+    #[Route('/addMyGame/', name: 'addMyGame', methods: ['POST'])]
+    public function addHistoryMyGame(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
+        /*SI LE JSON A PAS DE SOUCI */
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
             return $this->json(['message' => 'Invalid JSON format']);
         }
 
+        /*SI LES CHAMP SON REMPLIE */
         if (!isset($data['id_game']) || !isset($data['is_pinned'])){
             return $this->json(['message' => 'undefine of field']);
         }
 
         $authorizationHeader = $request->headers->get('Authorization');
 
+        /*SI LE TOKEN EST REMPLIE */
         if (strpos($authorizationHeader, 'Bearer ') === 0) {
             $token = substr($authorizationHeader, 7);
 
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
             if (!$user){
                 return $this->json(['message' => 'token is failed']);
             }
+
+            /*SI LE JEUX EXISTE*/
             $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $data['id_game']]);
             if (!$game){
                 return $this->json(['message' => 'game is failed']);
             }
 
+            /*SI LE JEUX A DEJA ETE AJOUTER*/
             $MyGameSelectedToUser = $this->historyMyGameRepository->findOneBy(['user' => $user, 'game' => $game]);
             if ($MyGameSelectedToUser){
                 return $this->json(['message' => 'has already been added']);
@@ -118,18 +114,70 @@ class HistoryMyGameController extends AbstractController
         return $this->json(['message' => 'no token']);
     }
 
-//    #[Route('/historymygame/{id}', name: 'delete_historymygame', methods: ['DELETE'])]
-//    public function deleteHistoryMyGame(int $id): JsonResponse
-//    {
-//        $historyMyGame = $this->historyMyGameRepository->find($id);
-//
-//        if (!$historyMyGame) {
-//            return $this->json(['message' => 'HistoryMyGame not found'], Response::HTTP_NOT_FOUND);
-//        }
-//
-//        $this->entityManager->remove($historyMyGame);
-//        $this->entityManager->flush();
-//
-//        return $this->json(['message' => 'HistoryMyGame deleted successfully']);
-//    }
+
+    #[Route('/addNoteMyGame/', name: 'addNoteMyGame', methods: ['POST'])]
+    public function addNoteMyGame(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_game']) || !isset($data['note'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            /*SI LE JEUX EXISTE*/
+            $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $data['id_game']]);
+            if (!$game){
+                return $this->json(['message' => 'game is failed']);
+            }
+
+            /*SI LA NOTE EST AU DESSUS DE 20*/
+            if ($data['note'] > 20){
+                return $this->json(['message' => 'note no valide']);
+            }
+
+            /*SI LE JEUX EST BIEN DANS SA COLLECTION*/
+            $MyGameSelectedToUser = $this->historyMyGameRepository->findOneBy(['user' => $user, 'game' => $game]);
+            if (!$MyGameSelectedToUser){
+                return $this->json(['message' => 'game not in collection']);
+            }
+
+            /*SI LA NOTE A DEJA ETE DONNER*/
+            $MyNoteGameSelectedToUser = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $user, 'game' => $game]);
+            if ($MyNoteGameSelectedToUser){
+                return $this->json(['message' => 'note existing']);
+            }
+
+            $userNote = new UserRate();
+            $userNote->setUser($user);
+            $userNote->setGame($game);
+            $userNote->setRating($data['note']);
+            $userNote->setCreatedAt(New \DateTimeImmutable());
+
+            $this->entityManager->persist($userNote);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'add note is game', 'result' => $userNote], 200, [], ['groups' => 'userRate:read']);
+        }
+
+        return $this->json(['message' => 'no token']);
+    }
+
+
 }
