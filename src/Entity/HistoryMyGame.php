@@ -50,10 +50,10 @@ class HistoryMyGame
     private ?game $game = null;
 
 
-    public function __construct()
-    {
-        $this->user = new ArrayCollection();
-    }
+//    public function __construct()
+//    {
+//        $this->user = new ArrayCollection();
+//    }
 
     public function getId(): ?int
     {
