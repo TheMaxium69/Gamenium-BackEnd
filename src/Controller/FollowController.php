@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\FollowRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,11 +17,15 @@ class FollowController extends AbstractController
 {
     private FollowRepository $followRepository;
     private ProviderRepository $providerRepository;
+    private UserRepository $userRepository;
+    private entityManagerInterface $entityManager;
 
-    public function __construct(FollowRepository $followRepository, ProviderRepository $providerRepository)
+    public function __construct(FollowRepository $followRepository, ProviderRepository $providerRepository, UserRepository $userRepository, entityManagerInterface $entityManager)
     {
         $this->followRepository = $followRepository;
         $this->providerRepository = $providerRepository;
+        $this->userRepository = $userRepository;
+        $this->entityManager = $entityManager;
 
     }
 
@@ -74,4 +80,25 @@ public function providerLikes(int $providerId): JsonResponse
     return $this->json('Nombre total de follow pour le provider ' . $providerId . ' : ' . $totalLikes);
 }
 
+
+    #[Route('/follow', name: 'add_follow', methods: ['POST'])]
+    public function addFollow(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['provider_id'], $data['user_id'])) {
+            return new JsonResponse(['error' => 'Les données fournies sont incomplètes'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $follow = new Follow();
+        $follow->setProvider($this->providerRepository->find($data['provider_id']));
+        $follow->setUser($this->userRepository->find($data['user_id']));
+        $follow->setIp($data['ip']);
+        $follow->setCreatedAt(new \DateTimeImmutable());
+
+        $this->entityManager->persist($follow);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['message' => 'Le suivi a été ajouté avec succès'], Response::HTTP_CREATED);
+    }
 }
