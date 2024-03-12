@@ -49,10 +49,12 @@ class PostActu
     private ?user $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['post:read'])]
     private ?string $title = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['post:read'])]
     private ?Picture $picture = null;
 
     public function getId(): ?int
