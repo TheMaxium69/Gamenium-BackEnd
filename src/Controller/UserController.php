@@ -278,4 +278,11 @@ class UserController extends AbstractController
         return $token;
     }
     
+    #[Route('/get-ip/', name: 'get_ip', methods: ['GET'])]
+    public function getIp(Request $request): JsonResponse
+    {
+        $ip = $request->getClientIp();
+
+        return $this->json(['ip' => $ip]);
+    }
 }
