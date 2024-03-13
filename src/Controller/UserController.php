@@ -262,5 +262,20 @@ class UserController extends AbstractController
         return $this->json(['message' => 'Theme color updated successfully']);
 
     }
+
+    function generateRandomToken($length = 32)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        $charLength = strlen($characters);
+
+        $token = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $token .= $characters[random_int(0, $charLength - 1)];
+        }
+
+        return $token;
+    }
     
 }
