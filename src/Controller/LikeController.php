@@ -106,4 +106,23 @@ class LikeController extends AbstractController
 
         return $this->json(['message' => 'like deleted successfully']);
     }
-}
+
+
+
+
+    #[Route('/like/post-actu/{idPost}', name: 'get_likes_count', methods: ['GET'])]
+    public function LikesCount(int $idPost): JsonResponse
+    {
+        $likesCount = $this->likeRepository->count(['post' => $idPost]);
+
+        $likedUsers = $this->likeRepository->findBy(['post' => $idPost]);
+
+        $response = [
+            'message' => 'good',
+            'total' => $likesCount,
+            'result' => array_map(fn($like) => ['id' => $like->getUser()->getId()], $likedUsers)
+        ];
+
+        return $this->json($response);
+    }
+    }
