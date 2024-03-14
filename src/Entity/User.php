@@ -52,7 +52,7 @@ class User
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
-    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[ORM\ManyToOne(cascade: ['persist'], targetEntity: Picture::class)]
     #[Groups(['user:read'])]
     private ?picture $pp = null;
 

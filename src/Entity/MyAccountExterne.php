@@ -21,7 +21,7 @@ class MyAccountExterne
     #[ORM\Column(length: 255)]
     private ?string $api_key = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: SocialNetwork::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?socialnetwork $network = null;
 

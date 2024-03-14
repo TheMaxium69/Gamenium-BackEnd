@@ -31,19 +31,20 @@ class PostActu
     #[ORM\Column(nullable: true)]
     private ?int $nb_edit = null;
 
-    #[ORM\ManyToOne(inversedBy: 'postActus')]
+
+    #[ORM\ManyToOne(inversedBy: 'postActus', targetEntity: Provider::class)]
     #[Groups(['post:read'])]
     private ?Provider $Provider = null;
 
-    #[ORM\ManyToOne(inversedBy: 'postActus')]
+    #[ORM\ManyToOne(inversedBy: 'postActus', targetEntity: GameProfile::class)]
     #[Groups(['post:read'])]
     private ?GameProfile $GameProfile = null;
 
-    #[ORM\ManyToOne(inversedBy: 'postActus')]
+    #[ORM\ManyToOne(inversedBy: 'postActus', targetEntity: Game::class)]
     #[Groups(['post:read'])]
     private ?Game $Game = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read'])]
     private ?user $user = null;
@@ -52,7 +53,7 @@ class PostActu
     #[Groups(['post:read'])]
     private ?string $title = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Picture::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['post:read'])]
     private ?Picture $picture = null;

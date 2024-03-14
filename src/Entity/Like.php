@@ -22,15 +22,15 @@ class Like
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['like:read'])]
     private ?user $user = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: PostActu::class)]
     #[Groups(['like:read'])]
     private ?PostActu $post = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Comment::class)]
     #[Groups(['like:read'])]
     private ?Comment $comment = null;
 

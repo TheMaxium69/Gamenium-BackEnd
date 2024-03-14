@@ -26,12 +26,12 @@ class UserRate
     #[ORM\JoinColumn(nullable: true)]
     private ?string $ip = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['userRate:read'])]
     private ?user $user = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Game::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['userRate:read'])]
     private ?game $game = null;

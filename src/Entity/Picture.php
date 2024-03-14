@@ -27,7 +27,7 @@ class Picture
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?user $user = null;
 

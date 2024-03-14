@@ -34,17 +34,17 @@ class HistoryMyGame
     #[Groups(['historygame:read'])]
     private ?\DateTimeInterface $added_at = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['historygame:read'])]
     private ?user $user = null;
 
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: BuyWhere::class)]
     #[Groups(['historygame:read'])]
     private ?buywhere $buywhere = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Game::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['historygame:read'])]
     private ?game $game = null;

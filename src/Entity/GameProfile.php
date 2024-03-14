@@ -27,7 +27,7 @@ class GameProfile
     #[Groups('gameprofile:read')]
     private ?picture $picture = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: GameProfile::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups('gameprofile:read')]
     private ?game $game = null;

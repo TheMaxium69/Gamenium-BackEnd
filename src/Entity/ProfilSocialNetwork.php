@@ -19,11 +19,11 @@ class ProfilSocialNetwork
     #[Groups(['profilSocialNetwork:read'])]
     private ?string $url = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?user $user = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: SocialNetwork::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['profilSocialNetwork:read'])]
     private ?SocialNetwork $socialnetwork = null;

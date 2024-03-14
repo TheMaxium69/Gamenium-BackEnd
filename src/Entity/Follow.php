@@ -19,13 +19,13 @@ class Follow
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Provider::class)]
     private ?Provider $provider = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: GameProfile::class)]
     private ?GameProfile $GameProfile = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 

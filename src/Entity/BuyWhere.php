@@ -32,7 +32,7 @@ class BuyWhere
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['buywhere:read'])]
     private ?User $user = null;
 

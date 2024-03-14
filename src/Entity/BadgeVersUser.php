@@ -19,11 +19,11 @@ class BadgeVersUser
     #[Groups(['badgesversuser:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['badgesversuser:read'])]
     private ?user $user = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Badge::class)]
     #[Groups(['badgesversuser:read'])]
     private ?Badge $badge = null;
 

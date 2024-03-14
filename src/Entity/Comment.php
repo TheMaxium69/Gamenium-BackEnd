@@ -35,11 +35,11 @@ class Comment
     #[Groups(['comment:read'])]
     private ?string $content = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: PostActu::class)]
     #[Groups(['comment:read'])]
     private ?postactu $post = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['comment:read'])]
     private ?user $user = null;
 
