@@ -169,6 +169,7 @@ class HistoryMyGameController extends AbstractController
             $userNote->setGame($game);
             $userNote->setRating($data['note']);
             $userNote->setCreatedAt(New \DateTimeImmutable());
+            $userNote->setIp("10.10.10.10");
 
             $this->entityManager->persist($userNote);
             $this->entityManager->flush();
