@@ -106,7 +106,26 @@ class PostActuController extends AbstractController
 
         return $this->json($response);
     }
+
+
+
+    #[Route('/latestactubyprovider/{id}', name: 'get_latest_actu_by_provider', methods: ['GET'])]
+    public function getLatestActuByProvider(int $id): JsonResponse
+    {
+
+        $provider = $this->postActuRepository->findOneBy(['Provider' => $id]);
+
+        if (!$provider) {
+            return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $latestActu = $this->postActuRepository->findOneBy(['Provider' => $id], ['id' => 'DESC']);
+
+        $response = [
+            'message' => 'good',
+            'result' => $latestActu,
+        ];
+        
+        return $this->json($response);
+    }
 }
-
-
-    
