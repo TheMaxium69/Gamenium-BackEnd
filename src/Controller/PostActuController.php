@@ -84,4 +84,29 @@ class PostActuController extends AbstractController
 
         return $this->json(['message' => 'PostActu deleted successfully']);
     }
+    
+
+
+    #[Route('/NbPostByProvider/{id}', name: 'get_postactus_by_provider', methods: ['GET'])]
+    public function getPostActuByProvider(int $id): JsonResponse
+    {
+
+        $provider = $this->postActuRepository->findOneBy(['Provider' => $id]);
+
+        $postCount = $this->postActuRepository->count(['Provider' => $id]);
+    
+        if (!$provider) {
+            return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $response = [
+            'message' => 'good',
+            'result' => $postCount,
+        ];
+
+        return $this->json($response);
+    }
 }
+
+
+    
