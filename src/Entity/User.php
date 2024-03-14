@@ -16,14 +16,14 @@ class User
     #[Groups(['buywhere:read' ,'comment:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read'])]
     private ?int $id = null;
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'comment:read'])]
     private ?int $id_useritium = null;
 
     #[ORM\Column]
     private array $user_role = [] ;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'comment:read'])]
     private ?\DateTimeImmutable $joinAt = null;
 
     #[ORM\Column]
@@ -38,26 +38,26 @@ class User
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'comment:read'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'comment:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read','comment:read'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
     #[ORM\ManyToOne(cascade: ['persist'], targetEntity: Picture::class)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'comment:read'])]
     private ?picture $pp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'comment:read'])]
     private ?string $color = null;
 
     public function getId(): ?int

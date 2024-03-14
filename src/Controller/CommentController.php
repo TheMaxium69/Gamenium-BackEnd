@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\PostActu;
+use App\Entity\User;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,52 +18,110 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommentController extends AbstractController
 {
 
-    private $manager;
-    private $comment;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private CommentRepository $commentRepository
+    ) {}
 
-    public function __construct(EntityManagerInterface $manager, CommentRepository $comment)
+    #[Route('/getCommentByActu/{id}', name: 'comment_by_actu', methods:"GET")]
+    public function getCommentByActu(int $id):JsonResponse
     {
-        $this->manager = $manager;
-        $this->comment = $comment;
-    }
 
-    #[Route('/comments', name: 'comment_all', methods:"GET")]
-    public function getCommentByAll():JsonResponse{
+        $post = $this->entityManager->getRepository(PostActu::class)->find($id);
 
-        $comment = $this->comment->findAll();
-        return $this->json($comment , 200, [], ['groups' => 'comment:read' ]);
-    }
+        if (!$post){
 
-    #[Route('/comment/{id}', name: 'comment_by_id', methods:"GET")]
-    public function getCommentById(int $id):JsonResponse{
+            return $this->json(['message' => 'actuality not found']);
 
-        $comment = $this->comment->find($id);
+        } else {
 
-        if (!$comment) {
-            return $this->json(['message' => 'Comment not found'], Response::HTTP_NOT_FOUND);
+            $CommentMyPost = $this->commentRepository->findBy(['post' => $post]);
+
+            $commentAll = [];
+            foreach ($CommentMyPost as $comment) {
+                $commentAll[] = $comment;
+            }
+
+            if ($commentAll == []){
+
+                $message = [
+                    'message' => "aucun commentaire"
+                ];
+
+            } else {
+
+                $message = [
+                    'message' => "good",
+                    'result' => $commentAll
+                ];
+
+            }
+
+            return $this->json($message, 200, [], ['groups' => 'comment:read']);
         }
 
-        return $this->json($comment);
     }
 
-    #[Route('/comment', name: 'comment_create', methods:"POST")]
-    public function createComment (Request $request):JsonResponse{
-
+    #[Route('/commentInActu/', name: 'comment_create', methods:"POST")]
+    public function createCommentInActu (Request $request):JsonResponse{
         $data = json_decode($request->getContent(), true);
 
-        $comment = new Comment();
-        $comment ->setContent($data['content']);
-        $comment->setCreatedAt(new \DateTimeImmutable());
-        $comment->setIdPost($data['id_post']);
-        $comment->setIdUser($data['id_user']);
-        $comment->setIp($data['ip']);
-        $comment->setLastEdit(new \DateTime());
-        $comment->setNbEdit(0);
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
 
-        $this->manager->persist($comment);
-        $this->manager->flush();
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['content']) || !isset($data['id_post'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
 
-        return $this->json('Comment created successfully', Response::HTTP_CREATED);
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $idActu = $data['id_post'];
+        $content = $data['content'];
+
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            /*SI L'ACTU EXISTE*/
+            $actu = $this->entityManager->getRepository(PostActu::class)->findOneBy(['id' => $idActu]);
+            if (!$actu){
+                return $this->json(['message' => 'actuality is failed']);
+            }
+
+            $comment = new Comment();
+            $comment ->setContent($content);
+            $comment->setCreatedAt(new \DateTimeImmutable());
+            $comment->setUser($user);
+            $comment->setPost($actu);
+            $comment->setIp($newIp);
+            $comment->setLastEdit(new \DateTime());
+            $comment->setNbEdit(0);
+
+            $this->entityManager->persist($comment);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'Comment created successfully', 'result' => $comment], 200, [], ['groups' => 'comment:read']);
+
+        }
+
+
     }
 
     #[Route('/comment/{id}', name: 'comment_delete', methods:"DELETE")]
