@@ -13,18 +13,21 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['buywhere:read' ,'comment:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read'])]
+    #[Groups(['buywhere:read' ,'comment:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read'])]
     private ?int $id = null;
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id_useritium = null;
 
     #[ORM\Column]
     private array $user_role = [] ;
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $joinAt = null;
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $lastConnection = null;
 
 
@@ -35,21 +38,26 @@ class User
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
     #[ORM\ManyToOne(cascade: ['persist'])]
+    #[Groups(['user:read'])]
     private ?picture $pp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read'])]
     private ?string $color = null;
 
     public function getId(): ?int

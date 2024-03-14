@@ -285,4 +285,17 @@ class UserController extends AbstractController
 
         return $this->json(['ip' => $ip]);
     }
+
+    #[Route('/users/search', name: 'search_users', methods: ['POST'])]
+    public function searchUsers(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $searchValue = $data['searchValue'] ?? '';
+        $limit = $data['limit'];
+
+        $results = $this->userRepository->searchUserByName($searchValue, $limit);
+    
+        return $this->json($results, 200, [], ['groups' => 'user:read']);
+    }
+
 }

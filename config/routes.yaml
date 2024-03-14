@@ -6,3 +6,8 @@ search_games:
     path: /games/search
     controller: App\Controller\GameController::searchGames
     methods: ['POST']
+
+search_users:
+    path: /users/search
+    controller: App\Controller\UserController::searchUsers
+    methods: ['POST']
