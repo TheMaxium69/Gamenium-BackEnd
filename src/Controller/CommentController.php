@@ -117,10 +117,11 @@ class CommentController extends AbstractController
             $this->entityManager->persist($comment);
             $this->entityManager->flush();
 
-            return $this->json(['message' => 'Comment created successfully', 'result' => $comment], 200, [], ['groups' => 'comment:read']);
+            return $this->json(['message' => 'good', 'result' => $comment], 200, [], ['groups' => 'comment:read']);
 
         }
 
+        return $this->json(['message' => 'no token']);
 
     }
 
