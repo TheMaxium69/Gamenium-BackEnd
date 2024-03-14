@@ -43,6 +43,12 @@ class UserController extends AbstractController
 
         }
 
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
 
         // CONNECTION USERITIUM
         $emailForm = $data['email_auth'];
@@ -94,7 +100,7 @@ class UserController extends AbstractController
                 $user->setDisplaynameUseritium($resultUseritiumArray['result']['displayName']);
                 $user->setUsername($resultUseritiumArray['result']['username']);
                     $ip = $user->getIp();
-                    array_push($ip, "10.10.10.10");
+                    array_push($ip, $newIp);
                 $user->setIp($ip);
 
                 $this->manager->persist($user);
