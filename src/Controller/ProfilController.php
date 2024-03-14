@@ -32,6 +32,17 @@ class ProfilController extends AbstractController
             $historyMyGames = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $user]);
             $userRates = $this->entityManager->getRepository(UserRate::class)->findBy(['user' => $user]);
 
+            if ($user->getPp() !== null) {
+                $picture = $user->getPp()->getUrl();
+            } else {
+                $picture = null;
+            }
+
+            if ($user->getColor() !== null) {
+                $color = $user->getColor();
+            } else {
+                $color = null;
+            }
 
             $message = [
                 'message' => "good",
@@ -41,8 +52,8 @@ class ProfilController extends AbstractController
                     "displayname" => $user->getDisplayname(),
                     "displaynameUseritium" => $user->getDisplaynameUseritium(),
                     "joinAt" => $user->getJoinAt(),
-                    "themeColor" => $user->getColor(),
-                    "picture" => $user->getPp()->getUrl(),
+                    "themeColor" => $color,
+                    "picture" => $picture,
                     "nbGame" => count($historyMyGames),
                     "nbNote" => count($userRates),
                     "reseau" => $profilSocialNetworks
