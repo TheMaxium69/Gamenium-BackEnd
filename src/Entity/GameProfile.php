@@ -16,7 +16,7 @@ class GameProfile
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['gameprofile:read' , 'post:read'])]
+    #[Groups(['gameprofile:read' , 'post:read', 'follow:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -24,7 +24,7 @@ class GameProfile
     private ?\DateTimeImmutable $joined_at = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups('gameprofile:read')]
+    #[Groups(['gameprofile:read', 'follow:read'])]
     private ?picture $picture = null;
 
     #[ORM\ManyToOne(targetEntity: GameProfile::class)]

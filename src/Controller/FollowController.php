@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\GameProfile;
 use App\Entity\Provider;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -83,18 +84,28 @@ class FollowController extends AbstractController
 
 
     #[Route ('myFollowByUser/{id}', name: 'get_follow_count_by_user', methods: ['GET'])]
-    public function getFollowCountByUser(int $id): JsonResponse
+    public function getFollowByUser(int $id): JsonResponse
     {
-        $followCount = $this->followRepository->count(['user' => $id]);
 
-        $followUser = $this->followRepository->findBy(['user' => $id]);
+        $user = $this->entityManager->getRepository(User::class)->find($id);
 
-        $response = [
-            'message' => 'good',
-            'total' => $followCount,
-            'result' => array_map(fn($follow) => ['id' => $follow->getUser()->getId()], $followUser)
-        ];
-        return $this->json($response);
+        if (!$user){
+
+            return $this->json(['message' => 'user not found']);
+
+        } else {
+
+            $followUser = $this->followRepository->findBy(['user' => $id]);
+
+
+            $message = [
+                'message' => "good",
+                'result' => $followUser
+            ];
+
+
+            return $this->json($message, 200, [], ['groups' => 'follow:read']);
+        }
     }
 
 

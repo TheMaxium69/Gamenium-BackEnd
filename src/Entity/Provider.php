@@ -13,15 +13,15 @@ class Provider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['provider:read','post:read','followProvider:read'])]
+    #[Groups(['provider:read','post:read','followProvider:read', 'follow:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read','post:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read'])]
     private ?string $tagName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read','post:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read'])]
     private ?string $displayName = null;
 
     #[ORM\Column]
@@ -44,15 +44,15 @@ class Provider
     private ?string $content = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['provider:read','post:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read'])]
     private ?int $banner = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['provider:read','post:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read'])]
     private ?Picture $picture = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read','post:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read'])]
     private ?string $color = null;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
