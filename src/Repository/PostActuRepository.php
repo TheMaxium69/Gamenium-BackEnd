@@ -21,6 +21,16 @@ class PostActuRepository extends ServiceEntityRepository
         parent::__construct($registry, PostActu::class);
     }
 
+    public function searchPostActuByName(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.title LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return PostActu[] Returns an array of PostActu objects
 //     */

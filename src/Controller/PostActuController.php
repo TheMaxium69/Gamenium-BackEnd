@@ -128,4 +128,16 @@ class PostActuController extends AbstractController
         
         return $this->json($response);
     }
+
+    #[Route('/postactus/search', name: 'search_postactus', methods: ['POST'])]
+    public function searchPostActu(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $searchValue = $data['searchValue'] ?? '';
+        $limit = $data['limit'];
+
+        $results = $this->postActuRepository->searchPostActuByName($searchValue, $limit);
+    
+        return $this->json($results, 200, [], ['groups' => 'post:read']);
+    }
 }
