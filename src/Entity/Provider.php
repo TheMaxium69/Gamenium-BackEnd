@@ -35,9 +35,9 @@ class Provider
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups(['provider:read','post:read'])]
-    private ?int $parentCompany = null;
+//    #[ORM\Column(nullable: true)]
+//    #[Groups(['provider:read','post:read'])]
+//    private ?int $parentCompany = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['provider:read'])]
@@ -54,6 +54,10 @@ class Provider
     #[ORM\Column(length: 255)]
     #[Groups(['provider:read','post:read'])]
     private ?string $color = null;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[Groups(['provider:read','post:read'])]
+    private ?self $parentCompany = null;
 
     public function getId(): ?int
     {
@@ -120,17 +124,17 @@ class Provider
         return $this;
     }
 
-    public function getParentCompany(): ?int
-    {
-        return $this->parentCompany;
-    }
-
-    public function setParentCompany(int $parentCompany): static
-    {
-        $this->parentCompany = $parentCompany;
-
-        return $this;
-    }
+//    public function getParentCompany(): ?int
+//    {
+//        return $this->parentCompany;
+//    }
+//
+//    public function setParentCompany(int $parentCompany): static
+//    {
+//        $this->parentCompany = $parentCompany;
+//
+//        return $this;
+//    }
 
     public function getContent(): ?string
     {
@@ -176,6 +180,18 @@ class Provider
     public function setColor(string $color): static
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    public function getParentCompany(): ?self
+    {
+        return $this->parentCompany;
+    }
+
+    public function setParentCompany(?self $parentCompany): static
+    {
+        $this->parentCompany = $parentCompany;
 
         return $this;
     }
