@@ -25,6 +25,12 @@ class PictureController extends AbstractController
     public function uploadPhoto(Request $request): Response
     {
 
+        $formData = $request->files->all();
+        $data = json_decode($request->getContent(), true);
+
+        // Afficher le contenu de FormData pour le débogage
+        var_dump($formData);
+
         $appEnv = $this->getParameter('app.app_env');
         $UPLOAD_DIR = $this->getParameter('app.upload_dir');
         $API_URL_DEV = $this->getParameter('app.api_url_dev');
