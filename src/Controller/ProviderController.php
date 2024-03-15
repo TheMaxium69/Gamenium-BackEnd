@@ -92,4 +92,17 @@ class ProviderController extends AbstractController
 
         return $this->json(['message' => 'Provide deleted successfully']);
     }
+
+    #[Route('/providers/search', name: 'providers', methods: ['POST'])]
+    public function searchUsers(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $searchValue = $data['searchValue'] ?? '';
+        $limit = $data['limit'];
+
+        $results = $this->providerRepository->searchProviderByName($searchValue, $limit);
+    
+        return $this->json($results, 200, [], ['groups' => 'provider:read']);
+    }
 }
+
