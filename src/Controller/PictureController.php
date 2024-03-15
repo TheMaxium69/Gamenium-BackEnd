@@ -82,6 +82,11 @@ class PictureController extends AbstractController
             $this->entityManager->persist($picture);
             $this->entityManager->flush();
 
+            $user->setPp($picture);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+
+
             return $this->json(['message' => 'good', 'result' => $picture], 200, [], ['groups' => 'picture:read']);
 
         }
