@@ -18,53 +18,20 @@ class SocialNetworkController extends AbstractController
         private SocialNetworkRepository $socialNetworkRepository
     ) {}
 
-    #[Route('/socialnetworks', name: 'get_all_socialnetworks', methods: ['GET'])]
-    public function getAllSocialNetworks(): JsonResponse
-    {
-        $socialNetworks = $this->socialNetworkRepository->findAll();
+        #[Route('/socialnetworks', name:'socialNetwork_all', methods:'GET')]
 
-        return $this->json($socialNetworks , 200 , [], ['groups' => 'socialnetwork:read']);
-    }
+        public function getAllSocialNetworks(): JsonResponse
+        {
+            $socialNetworks = $this->socialNetworkRepository->findAll();
 
-    #[Route('/socialnetwork/{id}', name: 'get_socialnetwork_by_id', methods: ['GET'])]
-    public function getSocialNetworkById(int $id): JsonResponse
-    {
-        $socialNetwork = $this->socialNetworkRepository->find($id);
+            if(!$socialNetworks){
+                return $this->json(['message' => 'SocialNetwork not found']);
+            }else {
+                $message = [
+                    'message' => "good",
+                    'result' => $socialNetworks
+                ];
 
-        if (!$socialNetwork) {
-            return $this->json(['message' => 'Social Network not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        return $this->json($socialNetwork);
-    }
-
-    #[Route('/socialnetwork', name: 'create_socialnetwork', methods: ['POST'])]
-    public function createSocialNetwork(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $socialNetwork = new SocialNetwork();
-        $socialNetwork->setName($data['name']);
-        $socialNetwork->setUrlApi($data['url_api']);
-
-        $this->entityManager->persist($socialNetwork);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Social Network created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/socialnetwork/{id}', name: 'delete_socialnetwork', methods: ['DELETE'])]
-    public function deleteSocialNetwork(int $id): JsonResponse
-    {
-        $socialNetwork = $this->socialNetworkRepository->find($id);
-
-        if (!$socialNetwork) {
-            return $this->json(['message' => 'Social Network not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($socialNetwork);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Social Network deleted successfully']);
-    }
+                return $this->json($message , 200 , [], ['groups' => 'socialNetwork:read']);
+        }}
 }
