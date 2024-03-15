@@ -13,7 +13,7 @@ class Provider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['provider:read','post:read'])]
+    #[Groups(['provider:read','post:read','followProvider:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

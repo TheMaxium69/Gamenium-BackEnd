@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\FollowRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FollowRepository::class)]
 class Follow
@@ -11,6 +12,7 @@ class Follow
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['followProvider:read', 'followPageGame:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -20,13 +22,16 @@ class Follow
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne(targetEntity: Provider::class)]
+    #[Groups(['followProvider:read'])]
     private ?Provider $provider = null;
 
     #[ORM\ManyToOne(targetEntity: GameProfile::class)]
+    #[Groups(['followPageGame:read'])]
     private ?GameProfile $GameProfile = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['followProvider:read', 'followPageGame:read'])]
     private ?User $user = null;
 
     public function getId(): ?int

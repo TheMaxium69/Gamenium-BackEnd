@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\GameProfile;
+use App\Entity\Provider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,23 +31,58 @@ class FollowController extends AbstractController
 
     }
 
-    #[Route ('follow/provider/{id}', name: 'get_follow_count_by_provider', methods: ['GET'])]
-    public function getFollowCountByProvider(int $id): JsonResponse
+    #[Route ('followByProvider/{id}', name: 'get_follow_by_provider', methods: ['GET'])]
+    public function getFollowByProvider(int $id): JsonResponse
     {
-        $followCount = $this->followRepository->count(['provider' => $id]);
+        $provider = $this->entityManager->getRepository(Provider::class)->find($id);
 
-        $followProvider = $this->followRepository->findBy(['provider' => $id]);
+        if (!$provider){
 
-        $response = [
-            'message' => 'good',
-            'total' => $followCount,
-            'result' => array_map(fn($follow) => ['id' => $follow->getProvider()->getId()], $followProvider)
-        ];
-        return $this->json($response);
+            return $this->json(['message' => 'provider not found']);
+
+        } else {
+
+            $followProvider = $this->followRepository->findBy(['provider' => $id]);
+
+
+            $message = [
+                'message' => "good",
+                'result' => $followProvider
+            ];
+
+
+            return $this->json($message, 200, [], ['groups' => 'followProvider:read']);
+        }
+
+    }
+
+    #[Route ('followByGameProfil/{id}', name: 'get_follow_by_game_profil', methods: ['GET'])]
+    public function getFollowByGameProfil(int $id): JsonResponse
+    {
+        $profilGame = $this->entityManager->getRepository(GameProfile::class)->find($id);
+
+        if (!$profilGame){
+
+            return $this->json(['message' => 'game profil not found']);
+
+        } else {
+
+            $followGameProfil = $this->followRepository->findBy(['game_profil' => $id]);
+
+
+            $message = [
+                'message' => "good",
+                'result' => $followGameProfil
+            ];
+
+
+            return $this->json($message, 200, [], ['groups' => 'followPageGame:read']);
+        }
+
     }
 
 
-    #[Route ('follow/user/{id}', name: 'get_follow_count_by_user', methods: ['GET'])]
+    #[Route ('myFollowByUser/{id}', name: 'get_follow_count_by_user', methods: ['GET'])]
     public function getFollowCountByUser(int $id): JsonResponse
     {
         $followCount = $this->followRepository->count(['user' => $id]);
@@ -58,27 +95,28 @@ class FollowController extends AbstractController
             'result' => array_map(fn($follow) => ['id' => $follow->getUser()->getId()], $followUser)
         ];
         return $this->json($response);
-}
-
-#[Route('/provider/{providerId}/follow', name: 'provider_follow' , methods: ['GET'])]
-public function providerLikes(int $providerId): JsonResponse
-{
-    $provider = $this->providerRepository->find($providerId);
-
-    if (!$provider) {
-        throw $this->createNotFoundException('Provider non trouvé');
     }
 
-    $follows = $this->followRepository->findBy(['provider' => $provider]);
 
-    $totalLikes = 0;
-    foreach ($follows as $follow) {
-        if ($follow->getProvider()) {
-            $totalLikes++;
+    #[Route('/provider/{providerId}/follow', name: 'provider_follow' , methods: ['GET'])]
+    public function providerLikes(int $providerId): JsonResponse
+    {
+        $provider = $this->providerRepository->find($providerId);
+
+        if (!$provider) {
+            throw $this->createNotFoundException('Provider non trouvé');
         }
+
+        $follows = $this->followRepository->findBy(['provider' => $provider]);
+
+        $totalLikes = 0;
+        foreach ($follows as $follow) {
+            if ($follow->getProvider()) {
+                $totalLikes++;
+            }
+        }
+        return $this->json('Nombre total de follow pour le provider ' . $providerId . ' : ' . $totalLikes);
     }
-    return $this->json('Nombre total de follow pour le provider ' . $providerId . ' : ' . $totalLikes);
-}
 
 
     #[Route('/follow', name: 'add_follow', methods: ['POST'])]

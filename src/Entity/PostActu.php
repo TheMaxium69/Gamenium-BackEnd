@@ -13,7 +13,7 @@ class PostActu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['post:read' ,'comment:read' , 'like:read'])]
+    #[Groups(['post:read' ,'comment:read' , 'like:read','followPageGame:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
