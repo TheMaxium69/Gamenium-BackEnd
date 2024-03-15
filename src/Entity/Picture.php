@@ -29,6 +29,7 @@ class Picture
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['picture:read'])]
     private ?user $user = null;
 
 

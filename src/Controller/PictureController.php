@@ -3,70 +3,103 @@
 namespace App\Controller;
 
 use App\Entity\Picture;
+use App\Entity\User;
 use App\Repository\PictureRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;   
 
 class PictureController extends AbstractController
 {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private PictureRepository $pictureRepository,
+        private UserRepository $userRepository
+    ) {}
 
-    private $manager;
-    private $picture;
-
-    public function __construct(EntityManagerInterface $manager, PictureRepository $picture)
+    #[Route('/upload/pp/', name: 'upload_photo', methods: ['POST'])]
+    public function uploadPhoto(Request $request): Response
     {
-        $this->manager = $manager;
-        $this->picture = $picture;
-    }
 
-    #[Route('/pictures', name: 'picture_all', methods:"GET")]
-    public function getPictureAll():JsonResponse
-    {
-        $pictures = $this->picture->findAll();
-        return $this->json($pictures, 200 , [], ['groups' => 'picture:read']);
-    }
+        $appEnv = $this->getParameter('app.app_env');
+        $UPLOAD_DIR = $this->getParameter('app.upload_dir');
+        $API_URL_DEV = $this->getParameter('app.api_url_dev');
+        $API_URL_PROD = $this->getParameter('app.api_url_prod');
 
-    #[Route('/picture/{id}', name: 'picture_by_id', methods:"GET")]
-    public function getPictureById(int $id):JsonResponse
-    {
-        $picture = $this->picture->find($id);
-        return $this->json($picture);
-    }
-
-    #[Route('/picture', name: 'create_picture', methods: ['POST'])]
-    public function createPicture(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $picture = new Picture();
-        $picture->setUrl($data['url']);
-        $picture->setIdUser($data['id_user']);
-        $picture->setPostedAt(new \DateTime());
-        $picture->setIp($data['ip']);
-
-        $this->manager->persist($picture);
-        $this->manager->flush();
-
-        return $this->json(['message' => 'Picture created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/picture/{id}', name: 'picture_delete', methods:"DELETE")]
-    public function deletePicture(int $id):JsonResponse
-    {
-        $picture=$this->picture->find($id);
-
-        if(!$picture) {
-            return $this->json(['message' => 'Picture not found'], Response::HTTP_NOT_FOUND);
+        $target_dir = $UPLOAD_DIR;
+        if ($appEnv == "dev"){
+            $url_dir = $API_URL_DEV;
+        } else {
+            $url_dir = $API_URL_PROD;
         }
 
-        $this->manager->remove($picture);
-        $this->manager->flush();
+        $photoFile = $request->files->get('photo');
 
-        return $this->json(['message' => 'Picture deleted successfully']);
+        if (!$photoFile) {
+            return $this->json(['message' => 'No photo uploaded']);
+        }
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($photoFile->getMimeType(), $allowedTypes)) {
+            return $this->json(['message' => 'Only JPEG, PNG, and GIF images are allowed']);
+        }
+
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $fileName  = 'userPP_' . $this->randomName() . '.' . $photoFile->guessExtension();
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user) {
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            try {
+                $photoFile->move($target_dir, $fileName);
+            } catch (\Exception $e) {
+                return $this->json(['message' => 'Failed to move the photo']);
+            }
+
+            $picture = new Picture();
+            $picture->setUrl($url_dir . "/" . $target_dir . $fileName);
+            $picture->setUser($user);
+            $picture->setPostedAt(new \DateTime());
+            $picture->setIp($newIp);
+
+            $this->entityManager->persist($picture);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $picture], 200, [], ['groups' => 'picture:read']);
+
+        }
+
+        return $this->json(['message' => 'no token']);
     }
+
+
+
+    function randomName($length=20){
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $string = '';
+        for($i=0; $i<$length; $i++){
+            $string .= $chars[rand(0, strlen($chars)-1)];
+        }
+        return $string;
+    }
+
 }
 

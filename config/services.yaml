@@ -5,6 +5,10 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     uploads_directory: '%kernel.project_dir%/public/uploads'
+    app.app_env: '%env(APP_ENV)%'
+    app.upload_dir: '%env(UPLOAD_DIR)%'
+    app.api_url_dev: '%env(API_URL_DEV)%'
+    app.api_url_prod: '%env(API_URL_PROD)%'
 
 
 services:
