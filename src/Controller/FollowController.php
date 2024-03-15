@@ -109,46 +109,137 @@ class FollowController extends AbstractController
     }
 
 
-    #[Route('/provider/{providerId}/follow', name: 'provider_follow' , methods: ['GET'])]
-    public function providerLikes(int $providerId): JsonResponse
+    #[Route('/followProvider', name: 'add_follow_provider', methods: ['POST'])]
+    public function addFollowProvider(Request $request): JsonResponse
     {
-        $provider = $this->providerRepository->find($providerId);
 
-        if (!$provider) {
-            throw $this->createNotFoundException('Provider non trouvé');
-        }
-
-        $follows = $this->followRepository->findBy(['provider' => $provider]);
-
-        $totalLikes = 0;
-        foreach ($follows as $follow) {
-            if ($follow->getProvider()) {
-                $totalLikes++;
-            }
-        }
-        return $this->json('Nombre total de follow pour le provider ' . $providerId . ' : ' . $totalLikes);
-    }
-
-
-    #[Route('/follow', name: 'add_follow', methods: ['POST'])]
-    public function addFollow(Request $request): JsonResponse
-    {
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['provider_id'], $data['user_id'])) {
-            return new JsonResponse(['error' => 'Les données fournies sont incomplètes'], Response::HTTP_BAD_REQUEST);
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
         }
 
-        $follow = new Follow();
-        $follow->setProvider($this->providerRepository->find($data['provider_id']));
-        $follow->setUser($this->userRepository->find($data['user_id']));
-        $follow->setIp($data['ip']);
-        $follow->setCreatedAt(new \DateTimeImmutable());
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_provider'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $idProvider = $data['id_provider'];
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            /*SI L'ACTU EXISTE*/
+            $provider = $this->entityManager->getRepository(Provider::class)->findOneBy(['id' => $idProvider]);
+            if (!$provider){
+                return $this->json(['message' => 'provider is failed']);
+            }
+
+            /*SI IL EST DJA FOLLOW*/
+            $isFollow = $this->followRepository->findOneBy(['provider' => $provider, 'user'=>$user]);
+            if($isFollow){
+                return $this->json(['message' => 'user is follow']);
+            }
+
+            $follow = new Follow();
+            $follow->setProvider($provider);
+            $follow->setUser($user);
+            $follow->setIp($newIp);
+            $follow->setCreatedAt(new \DateTimeImmutable());
 
 
-        $this->entityManager->persist($follow);
-        $this->entityManager->flush();
+            $this->entityManager->persist($follow);
+            $this->entityManager->flush();
 
-        return new JsonResponse(['message' => 'Le suivi a été ajouté avec succès'], Response::HTTP_CREATED);
+            return $this->json(['message' => 'good', 'result' => $follow], 200, [], ['groups' => 'followProvider:read']);
+
+        }
+
+        return $this->json(['message' => 'no token']);
+
+    }
+
+    #[Route('/followGameProfil', name: 'add_follow_game_profil', methods: ['POST'])]
+    public function addFollowGameProfil(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_gameprofil'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $idGameProfil = $data['id_gameprofil'];
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            /*SI L'ACTU EXISTE*/
+            $gameprofil = $this->entityManager->getRepository(GameProfile::class)->findOneBy(['id' => $idGameProfil]);
+            if (!$gameprofil){
+                return $this->json(['message' => 'GameProfil is failed']);
+            }
+
+            /*SI IL EST DJA FOLLOW*/
+            $isFollow = $this->followRepository->findOneBy(['game_profil' => $gameprofil, 'user'=>$user]);
+            if($isFollow){
+                return $this->json(['message' => 'user is follow']);
+            }
+
+            $follow = new Follow();
+            $follow->setGameProfile($gameprofil);
+            $follow->setUser($user);
+            $follow->setIp($newIp);
+            $follow->setCreatedAt(new \DateTimeImmutable());
+
+
+            $this->entityManager->persist($follow);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $follow], 200, [], ['groups' => 'followPageGame:read']);
+
+        }
+
+        return $this->json(['message' => 'no token']);
+
     }
 }
