@@ -109,26 +109,6 @@ class PostActuController extends AbstractController
 
 
 
-    #[Route('/latestactubyprovider/{id}', name: 'get_latest_actu_by_provider', methods: ['GET'])]
-    public function getLatestActuByProvider(int $id): JsonResponse
-    {
-
-        $provider = $this->postActuRepository->findOneBy(['Provider' => $id]);
-
-        if (!$provider) {
-            return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
-        }
-
-        $latestActu = $this->postActuRepository->findOneBy(['Provider' => $id], ['id' => 'DESC']);
-
-        $response = [
-            'message' => 'good',
-            'result' => $latestActu,
-        ];
-        
-        return $this->json($response);
-    }
-
     #[Route('/postactus/search', name: 'search_postactus', methods: ['POST'])]
     public function searchPostActu(Request $request): JsonResponse
     {
@@ -139,5 +119,35 @@ class PostActuController extends AbstractController
         $results = $this->postActuRepository->searchPostActuByName($searchValue, $limit);
     
         return $this->json($results, 200, [], ['groups' => 'post:read']);
+    }
+
+
+
+    #[Route('/latestactubyprovider/{id}', name: 'get_latest_actu_by_provider', methods: ['GET'])]
+    public function getLatestActuByProvider(int $id): JsonResponse
+    {
+    $provider = $this->postActuRepository->findOneBy(['Provider' => $id]);
+
+    if (!$provider) {
+        return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
+    }
+
+    $latestActus = $this->postActuRepository->findBy(
+        ['Provider' => $id],
+        ['id' => 'DESC'],
+        5
+    );
+
+    if (empty($latestActus)) {
+        return $this->json(['message' => 'Le fournisseur n\'a pas d\'actualités'], Response::HTTP_NOT_FOUND);
+    }
+
+    
+    $response = [
+        'message' => 'good',
+        'result' => $latestActus,
+    ];
+    
+    return $this->json($response);
     }
 }
