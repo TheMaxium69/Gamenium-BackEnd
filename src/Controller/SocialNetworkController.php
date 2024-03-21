@@ -113,4 +113,55 @@ class SocialNetworkController extends AbstractController
 
 
         }
+
+    #[Route('/socialnetworkbyuser/{id}', name: 'get_social-networks-user')]
+    public function getSocialNetworksByUser(int $id): JsonResponse
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+        
+        if (!$user){
+
+            return $this->json(['message' => 'user not found']);
+
+        } else {
+
+            $profilSocialNetworks = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findBy(['user' => $user]);
+            
+            if(!$profilSocialNetworks){
+                $message = [
+                    'message' => "err no-url"
+                ];
+
+                return $this->json($message);
+            } else {
+                $message = [
+                    'message' => "good",
+                    'result' => $profilSocialNetworks
+                ];
+                
+                return $this->json($message, 200, [], ['groups' => 'profilSocialNetwork:read']);
+            }
+        
+        }  
+    }
+
+    #[Route('/social-networks', name: 'get_social-networks')]
+    public function getSocialNetworks(): JsonResponse
+    {
+        
+        $SocialNetworks = $this->socialNetworkRepository->findAll();
+
+        if(!$SocialNetworks){
+            return $this->json(['message' => 'SocialNetwork not found']);
+        } else {
+            $message = [
+                'message' => "good",
+                'result' => $SocialNetworks
+            ];
+
+            return $this->json($message , 200 , [], ['groups' => 'socialnetwork:read']);
+        }
+    }
+
+    
 }
