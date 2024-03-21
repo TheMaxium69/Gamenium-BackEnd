@@ -148,6 +148,6 @@ class PostActuController extends AbstractController
         'result' => $latestActus,
     ];
     
-    return $this->json($response);
+    return $this->json($response, 200, [], ['groups' => 'post:read']);
     }
 }

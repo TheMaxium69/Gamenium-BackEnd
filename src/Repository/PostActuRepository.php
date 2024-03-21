@@ -31,6 +31,14 @@ class PostActuRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getLatestPostActu(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('p')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return PostActu[] Returns an array of PostActu objects
 //     */
