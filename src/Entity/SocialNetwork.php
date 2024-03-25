@@ -23,13 +23,15 @@ class SocialNetwork
     private ?string $url_api = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['profilSocialNetwork:read'])]
+    #[Groups(['socialnetwork:read', 'profilSocialNetwork:read'])]
     private ?string $icon_class = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['socialnetwork:read'])]
     private ?bool $is_connexion = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['socialnetwork:read'])]
     private ?bool $is_profil = null;
 
     public function getId(): ?int
