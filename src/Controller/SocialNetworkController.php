@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\ProfilSocialNetwork;
 use App\Entity\SocialNetwork;
 use App\Repository\SocialNetworkRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\User;
 
 class SocialNetworkController extends AbstractController
 {
@@ -18,53 +20,148 @@ class SocialNetworkController extends AbstractController
         private SocialNetworkRepository $socialNetworkRepository
     ) {}
 
-    #[Route('/socialnetworks', name: 'get_all_socialnetworks', methods: ['GET'])]
-    public function getAllSocialNetworks(): JsonResponse
-    {
-        $socialNetworks = $this->socialNetworkRepository->findAll();
+        #[Route('/social-networks', name:'social_networks_submit', methods:['POST'])]
 
-        return $this->json($socialNetworks , 200 , [], ['groups' => 'socialnetwork:read']);
-    }
+        public function submitForm(Request $request): Response
+        {
+            $data = json_decode($request->getContent(), true);
+            // var_dump($data);
 
-    #[Route('/socialnetwork/{id}', name: 'get_socialnetwork_by_id', methods: ['GET'])]
-    public function getSocialNetworkById(int $id): JsonResponse
-    {
-        $socialNetwork = $this->socialNetworkRepository->find($id);
+            /*SI LE JSON A PAS DE SOUCI */ 
+            if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+                return $this->json(['message' => 'Invalid JSON format']);
+            }
 
-        if (!$socialNetwork) {
-            return $this->json(['message' => 'Social Network not found'], Response::HTTP_NOT_FOUND);
+            $authorizationHeader = $request->headers->get('Authorization');
+            // var_dump($authorizationHeader);   
+            
+            if (strpos($authorizationHeader, 'Bearer ') === 0) {
+                $token = substr($authorizationHeader, 7);
+
+                /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+                $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+                if (!$user){
+                    return $this->json(['message' => 'token is failed']);
+                }
+
+                // var_dump($user);
+
+                $isCreated = false;
+                $isUpdate = false;
+
+                foreach($data as $value){
+
+                    
+                    /*SI LES CHAMP SON REMPLIE */
+                    if (!empty($value['url']) && !empty($value['id_socialnetwork'])){
+
+
+                        $socialNetwork = null;
+                        $profilSocialNetwork = null;
+                        $url = $value['url'];
+                        // var_dump($value);
+
+                        /*SI LE NEWORK EXISTE*/
+                        $socialNetwork = $this->entityManager->getRepository(SocialNetwork::class)->findOneBy(['id' => $value['id_socialnetwork']]);
+                        if ($socialNetwork){
+
+                            /* si l'url existe déjà */
+                            $profilSocialNetwork = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findOneBy(['socialnetwork' => $socialNetwork, 'user'=>$user]);
+                            if(!$profilSocialNetwork){
+                            
+                                // var_dump($socialNetwork);
+
+                                $profilSocialNetwork = new ProfilSocialNetwork();
+                                $profilSocialNetwork->setSocialnetwork($socialNetwork);
+                                $profilSocialNetwork->setUser($user);
+                                $profilSocialNetwork->setUrl($url);
+                    
+                                $this->entityManager->persist($profilSocialNetwork);
+                                $this->entityManager->flush();
+                                $isCreated = true;
+                            
+                            } else {
+                                
+
+                                $profilSocialNetwork->setUrl($url);
+                                $this->entityManager->persist($profilSocialNetwork);
+                                $this->entityManager->flush();
+                                
+                                $isUpdate = true;
+
+                            }
+
+                        }
+                    
+                    }
+
+                }
+
+                if($isUpdate && $isCreated){
+                    return  $this->json(['message' => 'succefuly created and updated']);
+                } else if($isUpdate){
+                    return  $this->json(['message' => 'succefuly updated']);
+                } else if($isCreated){
+                    return  $this->json(['message' => 'succefuly created']);
+                } else {
+                    return  $this->json(['message' => 'err information']);
+                }
+            }
+
+            
+            return $this->json(['message' => 'no token']);
+
+
         }
 
-        return $this->json($socialNetwork);
+    #[Route('/socialnetworkbyuser/{id}', name: 'get_social-networks-user')]
+    public function getSocialNetworksByUser(int $id): JsonResponse
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+        
+        if (!$user){
+
+            return $this->json(['message' => 'user not found']);
+
+        } else {
+
+            $profilSocialNetworks = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findBy(['user' => $user]);
+            
+            if(!$profilSocialNetworks){
+                $message = [
+                    'message' => "err no-url"
+                ];
+
+                return $this->json($message);
+            } else {
+                $message = [
+                    'message' => "good",
+                    'result' => $profilSocialNetworks
+                ];
+                
+                return $this->json($message, 200, [], ['groups' => 'profilSocialNetwork:read']);
+            }
+        
+        }  
     }
 
-    #[Route('/socialnetwork', name: 'create_socialnetwork', methods: ['POST'])]
-    public function createSocialNetwork(Request $request): JsonResponse
+    #[Route('/social-networks', name: 'get_social-networks')]
+    public function getSocialNetworks(): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        
+        $SocialNetworks = $this->socialNetworkRepository->findAll();
 
-        $socialNetwork = new SocialNetwork();
-        $socialNetwork->setName($data['name']);
-        $socialNetwork->setUrlApi($data['url_api']);
+        if(!$SocialNetworks){
+            return $this->json(['message' => 'SocialNetwork not found']);
+        } else {
+            $message = [
+                'message' => "good",
+                'result' => $SocialNetworks
+            ];
 
-        $this->entityManager->persist($socialNetwork);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Social Network created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/socialnetwork/{id}', name: 'delete_socialnetwork', methods: ['DELETE'])]
-    public function deleteSocialNetwork(int $id): JsonResponse
-    {
-        $socialNetwork = $this->socialNetworkRepository->find($id);
-
-        if (!$socialNetwork) {
-            return $this->json(['message' => 'Social Network not found'], Response::HTTP_NOT_FOUND);
+            return $this->json($message , 200 , [], ['groups' => 'socialnetwork:read']);
         }
-
-        $this->entityManager->remove($socialNetwork);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Social Network deleted successfully']);
     }
+
+    
 }
