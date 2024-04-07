@@ -139,7 +139,24 @@ class LikeController extends AbstractController
             /*SI IL EST DJA FOLLOW*/
             $isLike = $this->likeRepository->findOneBy(['post' => $postActu, 'user'=>$user]);
             if($isLike){
-                return $this->json(['message' => 'user as liked']);
+
+                if (isset($data['del'])){
+
+                    if ($data['del'] == true){
+
+                        $this->entityManager->remove($isLike);
+                        $this->entityManager->flush();
+
+                        return $this->json(['message' => 'good', 'result' => 'like is delete']);
+                    } else {
+
+                        return $this->json(['message' => 'user as liked']);
+
+                    }
+
+                } else {
+                    return $this->json(['message' => 'user as liked']);
+                }
             }
 
             $like = new Like();
@@ -197,7 +214,7 @@ class LikeController extends AbstractController
                 return $this->json(['message' => 'token is failed']);
             }
 
-            /*SI L'ACTU EXISTE*/
+            /*SI LE COMMENT EXISTE*/
             $comment = $this->entityManager->getRepository(Comment::class)->findOneBy(['id' => $idComment]);
             if (!$comment){
                 return $this->json(['message' => 'comment is failed']);
@@ -206,7 +223,24 @@ class LikeController extends AbstractController
             /*SI IL EST DJA FOLLOW*/
             $isLike = $this->likeRepository->findOneBy(['comment' => $comment, 'user'=>$user]);
             if($isLike){
-                return $this->json(['message' => 'user as liked']);
+
+                if (isset($data['del'])){
+
+                    if ($data['del'] == true){
+
+                        $this->entityManager->remove($isLike);
+                        $this->entityManager->flush();
+
+                        return $this->json(['message' => 'good', 'result' => 'like is delete']);
+                    } else {
+
+                        return $this->json(['message' => 'user as liked']);
+
+                    }
+
+                } else {
+                    return $this->json(['message' => 'user as liked']);
+                }
             }
 
             $like = new Like();
