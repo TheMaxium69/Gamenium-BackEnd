@@ -146,7 +146,7 @@ class FollowController extends AbstractController
                 return $this->json(['message' => 'token is failed']);
             }
 
-            /*SI L'ACTU EXISTE*/
+            /*SI LE PROVIDER EXISTE*/
             $provider = $this->entityManager->getRepository(Provider::class)->findOneBy(['id' => $idProvider]);
             if (!$provider){
                 return $this->json(['message' => 'provider is failed']);

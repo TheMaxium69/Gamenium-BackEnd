@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Like;
+use App\Entity\PostActu;
+use App\Entity\User;
 use App\Repository\LikeRepository;
 use App\Repository\UserRepository;
 use App\Repository\PostActuRepository;
@@ -25,18 +28,7 @@ class LikeController extends AbstractController
         private PostActuRepository $postActuRepository
     ) {}
 
-
-
-
-
-//    #[Route('/likes', name: 'get_all_likes', methods: ['GET'])]
-//    public function getAlllikes(): JsonResponse
-//    {
-//        $likes = $this->likeRepository->findAll();
-//
-//        return $this->json($likes , 200 , [], ['groups' => 'like:read']);
-//    }
-//
+    // VIEW LIKE IN POSTE
     #[Route('/like/post-actu/{idPost}', name: 'get_post_actu_likes', methods: ['GET'])]
     public function getPostActuLikes(int $idPost): JsonResponse
     {
@@ -69,6 +61,7 @@ class LikeController extends AbstractController
     }
 
 
+    // VIEW LIKE IN COMMENT
     #[Route('/like/comment/{idComment}', name: 'get_comment_likes', methods: ['GET'])]
     public function getCommentLikes(int $idComment): JsonResponse
     {
@@ -97,141 +90,140 @@ class LikeController extends AbstractController
 
         return $this->json($message, 200, [], ['groups' => 'like:read'] );
     }
-//
-//    #[Route('/like/{id}', name: 'get_like_by_id', methods: ['GET'])]
-//    public function getlikeById(int $id): JsonResponse
-//    {
-//        $like = $this->likeRepository->find($id);
-//
-//        if (!$like) {
-//            return $this->json(['message' => 'like not found']);
-//        }
-//
-//        return $this->json($like);
-//    }
-//
-//        #[Route('/like', name: 'create_like', methods: ['POST'])]
-//        public function createLike2(Request $request): JsonResponse
-//        {
-//            $data = json_decode($request->getContent(), true);
-//
-//
-//            if (!isset($data['user_id']) || !isset($data['ip']) || (!isset($data['post_id']) && !isset($data['comment_id']))) {
-//                return $this->json(['error' => 'Les données fournies sont incomplètes'], Response::HTTP_BAD_REQUEST);
-//            }
-//
-//
-//            $like = new Like();
-//
-//
-//            $user = $this->userRepository->find($data['user_id']);
-//            if (!$user) {
-//                return $this->json(['error' => 'Utilisateur non trouvé']);
-//            }
-//
-//
-//            $like->setUser($user);
-//            $like->setIp($data['ip']);
-//            $like->setCreatedAt(new \DateTimeImmutable());
-//
-//
-//            if (isset($data['post_id'])) {
-//
-//                $post = $this->postActuRepository->find($data['post_id']);
-//                if (!$post) {
-//                    return $this->json(['error' => 'Post non trouvé']);
-//                }
-//
-//                $like->setPost($post);
-//            } elseif (isset($data['comment_id'])) {
-//
-//                $comment = $this->commentRepository->find($data['comment_id']);
-//                if (!$comment) {
-//                    return $this->json(['error' => 'Commentaire non trouvé']);
-//                }
-//
-//
-//                $like->setComment($comment);
-//            }
-//
-//
-//            $this->entityManager->persist($like);
-//            $this->entityManager->flush();
-//
-//        return $this->json(['message' => 'Like créé avec succès'], Response::HTTP_CREATED);
-//    }
-//
-//    #[Route('/like/post-actu/{postId}', name: 'delete_post_actu_like', methods: ['DELETE'])]
-//    public function deletePostActuLike(int $postId, Request $request): JsonResponse
-//    {
-//
-//        $data = json_decode($request->getContent(), true);
-//
-//
-//        $user = $this->userRepository->find($data['user_id']);
-//
-//
-//        if (!$user) {
-//            return $this->json(['error' => 'Utilisateur non authentifié'], Response::HTTP_UNAUTHORIZED);
-//        }
-//
-//
-//        $postActu = $this->postActuRepository->find($postId);
-//
-//
-//        if (!$postActu) {
-//            return $this->json(['error' => 'Post actualité non trouvé']);
-//        }
-//
-//
-//        $like = $this->likeRepository->findOneBy(['post' => $postActu, 'user' => $user]);
-//
-//
-//        if (!$like) {
-//            return $this->json(['error' => 'Like non trouvé pour ce post actualité']);
-//        }
-//
-//
-//        $this->entityManager->remove($like);
-//        $this->entityManager->flush();
-//
-//        return $this->json(['message' => 'Like sur le post actualité supprimé avec succès']);
-//    }
-//
-//    #[Route('/like/comment/{commentId}', name: 'delete_comment_like', methods: ['DELETE'])]
-//    public function deleteCommentLike(int $commentId, Request $request): JsonResponse
-//    {
-//
-//        $data = json_decode($request->getContent(), true);
-//
-//
-//        $user = $this->userRepository->find($data['user_id']);
-//
-//
-//        if (!$user) {
-//            return $this->json(['error' => 'Utilisateur non authentifié'], Response::HTTP_UNAUTHORIZED);
-//        }
-//
-//        $comment = $this->commentRepository->find($commentId);
-//
-//
-//        if (!$comment) {
-//            return $this->json(['error' => 'Commentaire non trouvé']);
-//        }
-//
-//
-//        $like = $this->likeRepository->findOneBy(['comment' => $comment, 'user' => $user]);
-//
-//
-//        if (!$like) {
-//            return $this->json(['error' => 'Like non trouvé pour ce commentaire']);
-//        }
-//
-//        $this->entityManager->remove($like);
-//        $this->entityManager->flush();
-//
-//        return $this->json(['message' => 'Like sur le commentaire supprimé avec succès']);
-//    }
 
+
+    // ADD LIKE IN POSTE
+    #[Route('/like/post-actu/', name: 'add_like_post_actu', methods: ['POST'])]
+    public function addLikePostActu(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_postactu'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $idPostActu = $data['id_postactu'];
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            /*SI L'ACTU EXISTE*/
+            $postActu = $this->entityManager->getRepository(PostActu::class)->findOneBy(['id' => $idPostActu]);
+            if (!$postActu){
+                return $this->json(['message' => 'actu is failed']);
+            }
+
+            /*SI IL EST DJA FOLLOW*/
+            $isLike = $this->likeRepository->findOneBy(['post' => $postActu, 'user'=>$user]);
+            if($isLike){
+                return $this->json(['message' => 'user as liked']);
+            }
+
+            $like = new Like();
+            $like->setPost($postActu);
+            $like->setUser($user);
+            $like->setIp($newIp);
+            $like->setCreatedAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($like);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $like], 200, [], ['groups' => 'like:read']);
+
+        }
+
+        return $this->json(['message' => 'no token']);
+
+    }
+
+    // ADD LIKE IN COMMENT
+    #[Route('/like/comment/', name: 'add_like_comment', methods: ['POST'])]
+    public function addLikeComment(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_comment'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $idComment = $data['id_comment'];
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            /*SI L'ACTU EXISTE*/
+            $comment = $this->entityManager->getRepository(Comment::class)->findOneBy(['id' => $idComment]);
+            if (!$comment){
+                return $this->json(['message' => 'comment is failed']);
+            }
+
+            /*SI IL EST DJA FOLLOW*/
+            $isLike = $this->likeRepository->findOneBy(['comment' => $comment, 'user'=>$user]);
+            if($isLike){
+                return $this->json(['message' => 'user as liked']);
+            }
+
+            $like = new Like();
+            $like->setComment($comment);
+            $like->setUser($user);
+            $like->setIp($newIp);
+            $like->setCreatedAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($like);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $like], 200, [], ['groups' => 'like:read']);
+
+        }
+
+        return $this->json(['message' => 'no token']);
+
+    }
 
 }
