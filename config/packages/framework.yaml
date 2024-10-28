@@ -16,6 +16,7 @@ framework:
     #fragments: true
     php_errors:
         log: true
+    trusted_proxies: '%env(TRUSTED_PROXIES)%'
 
 when@test:
     framework:
