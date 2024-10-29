@@ -21,7 +21,3 @@
 ###< symfony/phpunit-bridge ###
 
 migrations/
-compose.yaml
-Dockerfile
-docker/*
-.env
