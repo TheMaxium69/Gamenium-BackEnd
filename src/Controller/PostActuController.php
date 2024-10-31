@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\PostActu;
 use App\Repository\PostActuRepository;
+use App\Repository\ProviderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,7 +16,8 @@ class PostActuController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private PostActuRepository $postActuRepository
+        private PostActuRepository $postActuRepository,
+        private ProviderRepository  $providerRepository
     ) {}
 
     #[Route('/postactus', name: 'get_all_postactus', methods: ['GET'])]
@@ -102,6 +104,25 @@ class PostActuController extends AbstractController
         $response = [
             'message' => 'good',
             'result' => $postCount,
+        ];
+
+        return $this->json($response);
+    }
+
+    #[Route('/postByProvider/{id}', name: 'get_postactus_by_provider', methods: ['GET'])]
+    public function getPostByProvider(int $id): JsonResponse
+    {
+        $provider = $this->providerRepository->findOneBy(['id' => $id]);
+
+        if (!$provider) {
+            return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
+        }
+
+        $postByProvider = $this->postActuRepository->findBy(['Provider' => $provider]);
+
+        $response = [
+            'message' => 'good',
+            'result' => $postByProvider,
         ];
 
         return $this->json($response);
