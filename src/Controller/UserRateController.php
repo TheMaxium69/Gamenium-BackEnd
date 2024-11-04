@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
 use App\Entity\User;
 use App\Entity\UserRate;
 use App\Repository\UserRateRepository;
@@ -56,6 +57,15 @@ class UserRateController extends AbstractController
         }
     }
 
+    // #[Route('/RatingByGame/{id}', name: 'get_rates_by_user', methods: ['GET'])]
+    // public function getRatesByGames(int $id): JsonResponse
+    // {
+    //     $game = $this->entityManager->getRepository(Game::class)->find($id);
+
+    //     if(!$game){
+    //         return $this->json(['message' => 'game not found']);
+    //     } 
+    // }
 
     #[Route('/userRate/{id}', name: 'get_userRate_by_id', methods: ['GET'])]
     public function getuserRateById(int $id): JsonResponse
