@@ -125,7 +125,7 @@ class PostActuController extends AbstractController
             'result' => $postByProvider,
         ];
 
-        return $this->json($response);
+        return $this->json($response, 200, [], ['groups' => 'post:read']);
     }
 
 
