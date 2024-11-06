@@ -25,7 +25,7 @@ class BadgeController extends AbstractController
     {
         $badges = $this->badgeRepository->findAll();
 
-        return $this->json($badges, 200, [], ['groups' => 'badge:read']);
+        return $this->json(['result' => $badges, 'message' => 'good'], 200, [], ['groups' => 'badge:read']);
     }
 
     #[Route('/badge/{id}', name: 'get_badge_by_id', methods: ['GET'])]
