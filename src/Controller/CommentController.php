@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\PostActu;
 use App\Entity\User;
 use App\Repository\CommentRepository;
+use App\Repository\LikeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -20,7 +21,8 @@ class CommentController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private CommentRepository $commentRepository
+        private CommentRepository $commentRepository,
+        private LikeRepository $likeRepository
     ) {}
 
     #[Route('/getCommentByActu/{id}', name: 'comment_by_actu', methods:"GET")]
@@ -128,16 +130,23 @@ class CommentController extends AbstractController
     #[Route('/comment/{id}', name: 'comment_delete', methods:"DELETE")]
     public function deleteComment(int $id):JsonResponse{
 
-        $comment = $this->comment->find($id);
+        $comment = $this->commentRepository->find($id);
 
         if (!$comment) {
             
-            return $this->json(['message' => 'Comment not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'Comment not found'], 200);
         }
 
-        $this->manager->remove($comment);
-        $this->manager->flush();
+        $allLikes = $this->likeRepository->findBy(['comment' => $comment]);
 
-        return $this->json('Comment deleted successfully');
+        foreach ($allLikes as $like) {
+            $like->setComment(null);
+        }
+        
+
+        $this->entityManager->remove($comment);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'Comment deleted successfully'], 204);
     }
 }
