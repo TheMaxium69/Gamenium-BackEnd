@@ -147,6 +147,6 @@ class CommentController extends AbstractController
         $this->entityManager->remove($comment);
         $this->entityManager->flush();
 
-        return $this->json(['message' => 'Comment deleted successfully'], 204);
+        return $this->json(['message' => 'Comment deleted successfully']);
     }
 }
