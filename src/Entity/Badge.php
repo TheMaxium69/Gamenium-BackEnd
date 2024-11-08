@@ -28,8 +28,9 @@ class Badge
     #[ORM\JoinColumn(nullable: false)]
     #[Groups('badge:read')]
     private ?Picture $picture = null;
-
+    
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('badge:read')]
     private ?string $unlockDescription = null;
 
     public function getId(): ?int
