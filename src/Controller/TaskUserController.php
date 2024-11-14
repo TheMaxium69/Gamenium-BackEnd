@@ -6,13 +6,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/task-user')]
 class TaskUserController extends AbstractController
 {
-    #[Route('/task/user', name: 'app_task_user')]
-    public function index(): Response
+    #[Route('/view', name: 'app_task_user_view')]
+    public function viewTaskUser(): Response
     {
-        return $this->render('task_user/index.html.twig', [
-            'controller_name' => 'TaskUserController',
-        ]);
+
+
+
+
+        return $this->json("");
+
     }
 }
