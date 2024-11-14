@@ -204,8 +204,8 @@ class FollowController extends AbstractController
     
             // Récupère le follow en db
             $follow = $this->followRepository->findOneBy([
-                'provider_id' => $provider->getId(), 
-                'user_id' => $user->getId()
+                'provider' => $provider,
+                'user' => $user
             ]);
     
             // Si le follow existe on le supprime de la db
