@@ -176,6 +176,51 @@ class FollowController extends AbstractController
 
     }
 
+    // Unfollow provider
+    #[Route('/unfollowProvider/{id}', name: 'delete_follow_provider', methods: ['DELETE'])]
+    public function deleteFollowProvider(int $id, Request $request): JsonResponse
+    {   
+        // Récupère l'user
+        $authorizationHeader = $request->headers->get('Authorization');
+        
+        // Récupère le provider
+        $provider = $this->providerRepository->find($id);
+
+        if (!$provider) {
+            return $this->json(['message' => 'provider doesn\'t exists']);
+        }
+        
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+    
+            // Récupère le follow en db
+            $follow = $this->followRepository->findOneBy([
+                'provider_id' => $provider->getId(), 
+                'user_id' => $user->getId()
+            ]);
+    
+            // Si le follow existe on le supprime de la db
+            if ($follow) {
+                $this->entityManager->remove($follow);
+                $this->entityManager->flush();
+                return $this->json(['message' => 'follow deleted successfully']);
+            } else {
+                return $this->json(['message' => 'follow does not exist']);
+            }
+        }
+        
+        return $this->json(['message' => 'no token']);
+    }
+
     #[Route('/followGameProfil', name: 'add_follow_game_profil', methods: ['POST'])]
     public function addFollowGameProfil(Request $request): JsonResponse
     {
