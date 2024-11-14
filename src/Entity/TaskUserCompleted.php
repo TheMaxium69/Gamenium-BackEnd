@@ -24,6 +24,9 @@ class TaskUserCompleted
     #[ORM\Column]
     private ?\DateTimeImmutable $completed_at = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $ip = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,18 @@ class TaskUserCompleted
     public function setCompletedAt(\DateTimeImmutable $completed_at): static
     {
         $this->completed_at = $completed_at;
+
+        return $this;
+    }
+
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(?string $ip): static
+    {
+        $this->ip = $ip;
 
         return $this;
     }
