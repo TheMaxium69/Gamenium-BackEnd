@@ -39,6 +39,36 @@ class PostActuRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findAllOrderedByDate():array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByProviderOrderedByDate($provider): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.Provider = :provider')
+            ->setParameter('provider', $provider)
+            ->orderBy('p.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findLatestByProvider($provider, $limit = 5): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.Provider = :provider')
+            ->setParameter('provider', $provider)
+            ->orderBy('p.created_at', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+
 //    /**
 //     * @return PostActu[] Returns an array of PostActu objects
 //     */

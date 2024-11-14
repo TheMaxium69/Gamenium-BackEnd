@@ -23,7 +23,7 @@ class PostActuController extends AbstractController
     #[Route('/postactus', name: 'get_all_postactus', methods: ['GET'])]
     public function getAllPostActus(): JsonResponse
     {
-        $postActus = $this->postActuRepository->findAll();
+        $postActus = $this->postActuRepository->findAllOrderedByDate();
 
         if(!$postActus){
             return $this->json(['message' => 'PostActu not found']);
@@ -93,7 +93,7 @@ class PostActuController extends AbstractController
     public function getPostActuByProvider(int $id): JsonResponse
     {
 
-        $provider = $this->postActuRepository->findOneBy(['Provider' => $id]);
+        $provider = $this->providerRepository->find($id);
 
         $postCount = $this->postActuRepository->count(['Provider' => $id]);
     
@@ -112,13 +112,13 @@ class PostActuController extends AbstractController
     #[Route('/postByProvider/{id}', name: 'get_postactus_by_provider', methods: ['GET'])]
     public function getPostByProvider(int $id): JsonResponse
     {
-        $provider = $this->providerRepository->findOneBy(['id' => $id]);
+        $provider = $this->providerRepository->find($id);
 
         if (!$provider) {
             return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
         }
 
-        $postByProvider = $this->postActuRepository->findBy(['Provider' => $provider]);
+        $postByProvider = $this->postActuRepository->findByProviderOrderedByDate($provider);
 
         $response = [
             'message' => 'good',
@@ -147,17 +147,13 @@ class PostActuController extends AbstractController
     #[Route('/latestactubyprovider/{id}', name: 'get_latest_actu_by_provider', methods: ['GET'])]
     public function getLatestActuByProvider(int $id): JsonResponse
     {
-    $provider = $this->postActuRepository->findOneBy(['Provider' => $id]);
+    $provider = $this->providerRepository->find($id);
 
     if (!$provider) {
         return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
     }
 
-    $latestActus = $this->postActuRepository->findBy(
-        ['Provider' => $id],
-        ['id' => 'DESC'],
-        5
-    );
+    $latestActus = $this->postActuRepository->findLatestByProvider($provider);
 
     if (empty($latestActus)) {
         return $this->json(['message' => 'Le fournisseur n\'a pas d\'actualités'], Response::HTTP_NOT_FOUND);
