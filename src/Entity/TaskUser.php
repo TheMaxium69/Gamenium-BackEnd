@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TaskUserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\UX\Turbo\Attribute\Broadcast;
 
 #[ORM\Entity(repositoryClass: TaskUserRepository::class)]
@@ -14,15 +15,19 @@ class TaskUser
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['taskuser:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['taskuser:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['taskuser:read'])]
     private ?string $content = null;
 
     #[ORM\Column]
+    #[Groups(['taskuser:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     public function getId(): ?int
