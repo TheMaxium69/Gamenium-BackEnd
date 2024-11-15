@@ -22,14 +22,6 @@ class HistoryMyGame
     #[Groups(['historygame:read'])]
     private ?bool $is_pinned = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['historygame:read'])]
-    private ?string $content = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Groups(['historygame:read'])]
-    private ?\DateTimeImmutable $buy_at = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['historygame:read'])]
     private ?\DateTimeInterface $added_at = null;
@@ -39,15 +31,19 @@ class HistoryMyGame
     #[Groups(['historygame:read'])]
     private ?user $user = null;
 
-
-    #[ORM\ManyToOne(targetEntity: BuyWhere::class)]
-    #[Groups(['historygame:read'])]
-    private ?buywhere $buywhere = null;
-
     #[ORM\ManyToOne(targetEntity: Game::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['historygame:read'])]
     private ?game $game = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $difficulty_rating = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $lifetime_rating = null;
+
+    #[ORM\Column]
+    private ?bool $wish_list = null;
 
 
 //    public function __construct()
@@ -68,42 +64,6 @@ class HistoryMyGame
     public function setIsPinned(bool $is_pinned): static
     {
         $this->is_pinned = $is_pinned;
-
-        return $this;
-    }
-
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): static
-    {
-        $this->content = $content;
-
-        return $this;
-    }
-
-    public function getBuyAt(): ?\DateTimeImmutable
-    {
-        return $this->buy_at;
-    }
-
-    public function setBuyAt(\DateTimeImmutable $buy_at): static
-    {
-        $this->buy_at = $buy_at;
-
-        return $this;
-    }
-
-    public function getBuywhere(): ?buywhere
-    {
-        return $this->buywhere;
-    }
-
-    public function setBuywhere(?buywhere $buywhere): static
-    {
-        $this->buywhere = $buywhere;
 
         return $this;
     }
@@ -140,6 +100,42 @@ class HistoryMyGame
     public function setAddedAt(\DateTimeInterface $added_at): static
     {
         $this->added_at = $added_at;
+
+        return $this;
+    }
+
+    public function getDifficultyRating(): ?int
+    {
+        return $this->difficulty_rating;
+    }
+
+    public function setDifficultyRating(?int $difficulty_rating): static
+    {
+        $this->difficulty_rating = $difficulty_rating;
+
+        return $this;
+    }
+
+    public function getLifetimeRating(): ?int
+    {
+        return $this->lifetime_rating;
+    }
+
+    public function setLifetimeRating(?int $lifetime_rating): static
+    {
+        $this->lifetime_rating = $lifetime_rating;
+
+        return $this;
+    }
+
+    public function isWishList(): ?bool
+    {
+        return $this->wish_list;
+    }
+
+    public function setWishList(bool $wish_list): static
+    {
+        $this->wish_list = $wish_list;
 
         return $this;
     }
