@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\HmgCopyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HmgCopyRepository::class)]
 class HmgCopy
@@ -11,27 +12,35 @@ class HmgCopy
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['historygame:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?string $edition = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?string $barcode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'hmgCopies')]
+    #[Groups(['historygame:read'])]
     private ?HmgCopyEtat $etat = null;
 
     #[ORM\ManyToOne(inversedBy: 'hmgCopies')]
+    #[Groups(['historygame:read'])]
     private ?HmgCopyFormat $format = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['historygame:read'])]
     private ?hmgCopyPurchase $purchase = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['historygame:read'])]
     private ?HmgCopyRegion $region = null;
 
     #[ORM\ManyToOne]

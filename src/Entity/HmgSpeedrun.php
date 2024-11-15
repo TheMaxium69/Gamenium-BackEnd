@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\HmgSpeedrunRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HmgSpeedrunRepository::class)]
 class HmgSpeedrun
@@ -12,16 +13,24 @@ class HmgSpeedrun
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['historygame:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['historygame:read'])]
     private ?\DateTimeInterface $chrono = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['historygame:read'])]
     private ?string $category = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?string $link = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?HistoryMyGame $MyGame = null;
 
     public function getId(): ?int
     {
@@ -60,6 +69,18 @@ class HmgSpeedrun
     public function setLink(?string $link): static
     {
         $this->link = $link;
+
+        return $this;
+    }
+
+    public function getMyGame(): ?HistoryMyGame
+    {
+        return $this->MyGame;
+    }
+
+    public function setMyGame(?HistoryMyGame $MyGame): static
+    {
+        $this->MyGame = $MyGame;
 
         return $this;
     }

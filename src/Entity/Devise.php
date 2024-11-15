@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\DeviseRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DeviseRepository::class)]
 class Devise
@@ -11,12 +12,15 @@ class Devise
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['historygame:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['historygame:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['historygame:read'])]
     private ?string $symbole = null;
 
     public function getId(): ?int

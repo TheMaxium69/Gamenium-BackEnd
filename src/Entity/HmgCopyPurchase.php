@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\HmgCopyPurchaseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HmgCopyPurchaseRepository::class)]
 class HmgCopyPurchase
@@ -12,21 +13,27 @@ class HmgCopyPurchase
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['historygame:read'])]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?\DateTimeInterface $buy_date = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['historygame:read'])]
     private ?BuyWhere $buy_where = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['historygame:read'])]
     private ?devise $devise = null;
 
     public function getId(): ?int

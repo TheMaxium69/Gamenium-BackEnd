@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: HistoryMyGameRepository::class)]
 class HistoryMyGame
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,12 +38,15 @@ class HistoryMyGame
     private ?game $game = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?int $difficulty_rating = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['historygame:read'])]
     private ?int $lifetime_rating = null;
 
     #[ORM\Column]
+    #[Groups(['historygame:read'])]
     private ?bool $wish_list = null;
 
 

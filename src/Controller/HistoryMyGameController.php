@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Game;
 use App\Entity\HistoryMyGame;
+use App\Entity\HmgCopy;
+use App\Entity\HmgScreenshot;
+use App\Entity\HmgSpeedrun;
 use App\Entity\User;
 use App\Entity\UserRate;
 use App\Repository\HistoryMyGameRepository;
@@ -57,6 +60,37 @@ class HistoryMyGameController extends AbstractController
 
             return $this->json($message, 200, [], ['groups' => 'historygame:read']);
         }
+    }
+
+    #[Route('/OneMyGame/{id}', name: 'get_one_mygame', methods: ['GET'])]
+    public function getOneMyGame(int $id): JsonResponse
+    {
+        $MyGame = $this->historyMyGameRepository->find($id);
+
+        if (!$MyGame){
+
+            return $this->json(['message' => 'my game not found']);
+
+        } else {
+
+            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
+            $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
+//            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['HistoryMyGame' => $MyGame]);
+
+            $message = [
+                'message' => "good",
+                'result' => [
+                    "myGame" => $MyGame,
+                    "copyGame" => $copyGame,
+                    "speedrun" => $speedrun,
+//                    "screenshot" => $screenshot
+                ]
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'historygame:read']);
+
+        }
+
     }
 
     #[Route('/addMyGame/', name: 'addMyGame', methods: ['POST'])]

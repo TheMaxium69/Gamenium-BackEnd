@@ -42,7 +42,7 @@ class User
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'comment:read'])]
+    #[Groups(['user:read', 'comment:read', 'historygame:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
