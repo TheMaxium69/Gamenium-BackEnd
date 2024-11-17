@@ -41,6 +41,7 @@ class HistoryMyGameController extends AbstractController
             $mygame = [];
             foreach ($MyUserToUserEntries as $entry) {
                 $mygame[] = [
+                    "id" => $entry->getId(),
                     "myGame" => $entry,
                     "copyGame" => $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $entry]),
                     "speedrun" => $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $entry]),
@@ -85,6 +86,7 @@ class HistoryMyGameController extends AbstractController
             $message = [
                 'message' => "good",
                 'result' => [
+                    "id" => $MyGame->getId(),
                     "myGame" => $MyGame,
                     "copyGame" => $copyGame,
                     "speedrun" => $speedrun,
