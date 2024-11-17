@@ -45,7 +45,8 @@ class HistoryMyGameController extends AbstractController
                     "myGame" => $entry,
                     "copyGame" => $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $entry]),
                     "speedrun" => $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $entry]),
-                    "screenshot" => $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $entry])
+                    "screenshot" => $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $entry]),
+                    "rate" => $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $entry->getUser(), 'game' => $entry->getGame()]),
                 ];
             }
 
@@ -82,6 +83,7 @@ class HistoryMyGameController extends AbstractController
             $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
             $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
             $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $MyGame]);
+            $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $MyGame->getUser(), 'game' => $MyGame->getGame()]);
 
             $message = [
                 'message' => "good",
@@ -90,7 +92,8 @@ class HistoryMyGameController extends AbstractController
                     "myGame" => $MyGame,
                     "copyGame" => $copyGame,
                     "speedrun" => $speedrun,
-                    "screenshot" => $screenshot
+                    "screenshot" => $screenshot,
+                    "rate" => $rate,
                 ]
             ];
 

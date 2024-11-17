@@ -16,7 +16,7 @@ class UserRate
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['userRate:read'])]
+    #[Groups(['userRate:read','historygame:read'])]
     private ?int $rating = null;
 
     #[ORM\Column]
