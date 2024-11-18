@@ -72,36 +72,38 @@ class HistoryMyGameController extends AbstractController
     #[Route('/OneMyGame/{id}', name: 'get_one_mygame', methods: ['GET'])]
     public function getOneMyGame(int $id): JsonResponse
     {
-        $MyGame = $this->historyMyGameRepository->find($id);
 
-        if (!$MyGame){
-
-            return $this->json(['message' => 'my game not found']);
-
-        } else {
-
-//            var_dump($MyGame);
-
-//            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
-            $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
-            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $MyGame]);
-            $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $MyGame->getUser(), 'game' => $MyGame->getGame()]);
-
-            $message = [
-                'message' => "good",
-                'result' => [
-                    "id" => $MyGame->getId(),
-                    "myGame" => $MyGame,
-//                    "copyGame" => $copyGame,
-                    "speedrun" => $speedrun,
-                    "screenshot" => $screenshot,
-                    "rate" => $rate,
-                ]
-            ];
-
-            return $this->json($message, 200, [], ['groups' => 'historygame:read']);
-
-        }
+        return $this->json("test", 200, []);
+//        $MyGame = $this->historyMyGameRepository->find($id);
+//
+//        if (!$MyGame){
+//
+//            return $this->json(['message' => 'my game not found']);
+//
+//        } else {
+//
+////            var_dump($MyGame);
+//
+////            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
+//            $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
+//            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $MyGame]);
+//            $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $MyGame->getUser(), 'game' => $MyGame->getGame()]);
+//
+//            $message = [
+//                'message' => "good",
+//                'result' => [
+//                    "id" => $MyGame->getId(),
+//                    "myGame" => $MyGame,
+////                    "copyGame" => $copyGame,
+//                    "speedrun" => $speedrun,
+//                    "screenshot" => $screenshot,
+//                    "rate" => $rate,
+//                ]
+//            ];
+//
+//            return $this->json($message, 200, [], ['groups' => 'historygame:read']);
+//
+//        }
 
     }
 
