@@ -83,24 +83,24 @@ class HistoryMyGameController extends AbstractController
 
 //            var_dump($MyGame);
 
-////            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
-//            $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
-//            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $MyGame]);
-//            $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $MyGame->getUser(), 'game' => $MyGame->getGame()]);
-//
-//            $message = [
-//                'message' => "good",
-//                'result' => [
-//                    "id" => $MyGame->getId(),
-//                    "myGame" => $MyGame,
-////                    "copyGame" => $copyGame,
-//                    "speedrun" => $speedrun,
-//                    "screenshot" => $screenshot,
-//                    "rate" => $rate,
-//                ]
-//            ];
+//            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
+            $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
+            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $MyGame]);
+            $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $MyGame->getUser(), 'game' => $MyGame->getGame()]);
 
-            return $this->json($MyGame, 200, [], ['groups' => 'historygame:read']);
+            $message = [
+                'message' => "good",
+                'result' => [
+                    "id" => $MyGame->getId(),
+                    "myGame" => $MyGame,
+//                    "copyGame" => $copyGame,
+                    "speedrun" => $speedrun,
+                    "screenshot" => $screenshot,
+                    "rate" => $rate,
+                ]
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'historygame:read']);
 
         }
 
