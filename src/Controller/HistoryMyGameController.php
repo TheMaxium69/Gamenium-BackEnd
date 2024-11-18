@@ -83,7 +83,7 @@ class HistoryMyGameController extends AbstractController
 
 //            var_dump($MyGame);
 
-            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
+//            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
             $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
 //            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $MyGame]);
             $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $MyGame->getUser(), 'game' => $MyGame->getGame()]);
@@ -93,7 +93,7 @@ class HistoryMyGameController extends AbstractController
                 'result' => [
                     "id" => $MyGame->getId(),
                     "myGame" => $MyGame,
-                    "copyGame" => $copyGame,
+//                    "copyGame" => $copyGame,
                     "speedrun" => $speedrun,
 //                    "screenshot" => $screenshot,
                     "rate" => $rate,
