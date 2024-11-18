@@ -73,17 +73,16 @@ class HistoryMyGameController extends AbstractController
     public function getOneMyGame(int $id): JsonResponse
     {
 
-        return $this->json("test", 200, []);
-//        $MyGame = $this->historyMyGameRepository->find($id);
-//
-//        if (!$MyGame){
-//
-//            return $this->json(['message' => 'my game not found']);
-//
-//        } else {
-//
-////            var_dump($MyGame);
-//
+        $MyGame = $this->historyMyGameRepository->find($id);
+
+        if (!$MyGame){
+
+            return $this->json(['message' => 'my game not found']);
+
+        } else {
+
+//            var_dump($MyGame);
+
 ////            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $MyGame]);
 //            $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $MyGame]);
 //            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $MyGame]);
@@ -100,10 +99,10 @@ class HistoryMyGameController extends AbstractController
 //                    "rate" => $rate,
 //                ]
 //            ];
-//
-//            return $this->json($message, 200, [], ['groups' => 'historygame:read']);
-//
-//        }
+
+            return $this->json($MyGame, 200, [], ['groups' => 'historygame:read']);
+
+        }
 
     }
 
