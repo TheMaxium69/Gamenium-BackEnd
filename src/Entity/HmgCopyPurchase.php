@@ -32,7 +32,7 @@ class HmgCopyPurchase
     #[Groups(['historygame:read'])]
     private ?string $content = null;
 
-    #[ORM\ManyToOne(targetEntity: 'App\Entity\Devise',)]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Devise')]
     #[Groups(['historygame:read'])]
     private ?devise $devise = null;
 
