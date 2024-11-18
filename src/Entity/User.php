@@ -13,8 +13,9 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['buywhere:read' ,'comment:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', ,'taskusercompleted:read'])]
+    #[Groups(['buywhere:read' ,'comment:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read'])]
     private ?int $id = null;
+
     #[ORM\Column]
     #[Groups(['user:read', 'comment:read'])]
     private ?int $id_useritium = null;
@@ -29,8 +30,7 @@ class User
     #[ORM\Column]
     #[Groups(['user:read'])]
     private ?\DateTimeImmutable $lastConnection = null;
-
-
+    
     #[ORM\Column]
     private array $ip = [];
 
