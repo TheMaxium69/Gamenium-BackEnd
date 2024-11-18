@@ -36,7 +36,7 @@ class HmgCopy
     private ?HmgCopyFormat $format = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['historygame:read'])]
+//    #[Groups(['historygame:read'])]
     private ?hmgCopyPurchase $purchase = null;
 
     #[ORM\ManyToOne]
