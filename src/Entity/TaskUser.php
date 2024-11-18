@@ -15,11 +15,11 @@ class TaskUser
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['taskuser:read'])]
+    #[Groups(['taskuser:read', 'taskusercompleted:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['taskuser:read'])]
+    #[Groups(['taskuser:read', 'taskusercompleted:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

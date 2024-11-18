@@ -11,17 +11,21 @@ class TaskUserCompleted
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['taskusercompleted:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['taskusercompleted:read'])]
     private ?TaskUser $taskuser = null;
 
     #[ORM\ManyToOne(inversedBy: 'completed_at')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['taskusercompleted:read'])]
     private ?User $user = null;
 
     #[ORM\Column]
+    #[Groups(['taskusercompleted:read'])]
     private ?\DateTimeImmutable $completed_at = null;
 
     #[ORM\Column(length: 255, nullable: true)]

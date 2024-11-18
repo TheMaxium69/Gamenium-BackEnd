@@ -33,6 +33,52 @@ class TaskUserCompletedController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
+    #[Route('/view', name: 'view_completed_tasks', methods: ['GET'])]
+    public function viewCompletedTasks(Request $request): JsonResponse
+    {
+        // extraction du bearer dans les entete d'authorization
+        $authorizationHeader = $request->headers->get('Authorization');
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'Aucun token fourni']);
+        }
+
+        // extraction du token
+        $token = substr($authorizationHeader, 7);
+
+        // Trouve l'user via le token
+        $user = $this->userRepository->findOneBy(['token' => $token]);
+        if (!$user) {
+            return $this->json(['message' => 'Token invalide ou utilisateur introuvable']);
+        }
+
+        // Récupère les taches complete par user
+        $completedTasks = $this->taskUserCompletedRepository->createQueryBuilder('tuc')
+        ->select('
+            tuc.id AS completed_id,
+            tuc.completed_at AS completed_at,
+            tu.id AS task_id,
+            tu.name AS task_name,
+            u.id AS user_id,
+            u.username AS username
+        ')
+        ->join('tuc.taskuser', 'tu') // Join TaskUser
+        ->join('tuc.user', 'u') // Join User
+        ->where('tuc.user = :user')
+        ->setParameter('user', $user)
+        ->getQuery()
+        ->getArrayResult();
+
+
+
+        if (!$completedTasks) {
+            return $this->json(['message' => 'Aucune tâche complétée trouvée', 'result' => []]); 
+        }
+
+
+        return $this->json(['message' => 'good', 'result' => $completedTasks], 200, [], ['groups' => 'taskusercompleted:read']);
+    }
+
+
     #[Route('/complete-task', name: 'complete_task', methods: ['POST'])]
     public function completeTask(Request $request): JsonResponse
     {
