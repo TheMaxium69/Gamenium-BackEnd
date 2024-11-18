@@ -30,7 +30,7 @@ class User
     #[ORM\Column]
     #[Groups(['user:read'])]
     private ?\DateTimeImmutable $lastConnection = null;
-    
+
     #[ORM\Column]
     private array $ip = [];
 
