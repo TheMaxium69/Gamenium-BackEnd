@@ -260,4 +260,36 @@ class LikeController extends AbstractController
 
     }
 
+    #[Route('/likes/user/{userId}', name: 'get_user_likes', methods: ['GET'])]
+    public function getLikeByUser(int $userId) : JsonResponse {
+        
+
+        // récup l'utilisateur
+        $user = $this->userRepository->find($userId);
+
+        if (!$user) {
+
+            return $this->json(['message' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND );
+
+        } 
+
+        // Récup tout les like du user 
+
+        $userLikes = $this->likeRepository->findBy(['user' => $user]);
+
+        // préparer la reponse 
+
+        $message = [
+            'message' => 'good',
+            'result' => $userLikes,
+        ];
+
+        return $this->json($message, 200, [], ['groups' => 'like:read']);
+        
+        
+    }
+
 }
+
+
+
