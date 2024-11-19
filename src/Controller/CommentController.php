@@ -7,6 +7,7 @@ use App\Entity\PostActu;
 use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -22,6 +23,7 @@ class CommentController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private CommentRepository $commentRepository,
+        private UserRepository $userRepository,
         private LikeRepository $likeRepository
     ) {}
 
@@ -62,6 +64,31 @@ class CommentController extends AbstractController
             return $this->json($message, 200, [], ['groups' => 'comment:read']);
         }
 
+    }
+
+    #[Route('comments/user/{userId}', name: 'get_user_comments', methods: "GET" )]
+    public function getCommentByUser (int $userId) : JsonResponse {
+
+        // on récupère l'utilisateur 
+        $user = $this->userRepository->find($userId);
+
+        if (!$user) {
+
+            return $this->json(['message' => 'Aucun user trouvé'], Response::HTTP_NOT_FOUND);
+
+        }
+
+        // Récupérer tout les commentaires par user 
+        $userComments = $this->commentRepository->findBy(['user' => $user]);
+
+        //preparer la requete
+        $message = [
+            'message' => 'good',
+            'result' => $userComments,
+        ];
+
+        return $this->json($message, 200, [], ['groups' => 'comment:read']);
+        
     }
 
     #[Route('/commentInActu/', name: 'comment_create', methods:"POST")]
