@@ -238,6 +238,57 @@ class HistoryMyGameController extends AbstractController
         }
 
         /*SI LES CHAMP SON REMPLIE */
+//        if (!isset($data['id_game']) || !isset($data['is_pinned'])) {
+//            return $this->json(['message' => 'Champs requis manquants']);
+//        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /* SI L'UTILISATEUR CORRESPOND AU TOKEN  */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user) {
+                return $this->json(['message' => 'Token invalide']);
+            }
+
+            /*SI LE JEU CORRESPOND */
+//            $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $data['id_game']]);
+//            if (!$game) {
+//                return $this->json(['message' => 'Jeu introuvable']);
+//            }
+
+            /*SI LE JEU EST DANS LA COLLECTION */
+//            $historyMyGame = $this->historyMyGameRepository->findOneBy(['user' => $user, 'game' => $game]);
+//            if (!$historyMyGame) {
+//                return $this->json(['message' => 'Le jeu n\'est pas dans votre collection']);
+//            }
+//
+//            /* METTRE A JOUR LE STATUT PINNED */
+//            $historyMyGame->setIsPinned($data['is_pinned']);
+//
+//            $this->entityManager->persist($historyMyGame);
+//            $this->entityManager->flush();
+
+            return $this->json(['message' => 'Jeu mis à jour', 'result' => $data], 200, [], ['groups' => 'historygame:read']);
+        }
+
+        return $this->json(['message' => 'Token manquant']);
+    }
+
+    #[Route('/updatePinMyGame/', name: 'updatePinMyGame', methods: ['PUT'])]
+    public function updatePinHistoryMyGame(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Format JSON invalide']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
         if (!isset($data['id_game']) || !isset($data['is_pinned'])) {
             return $this->json(['message' => 'Champs requis manquants']);
         }
@@ -272,7 +323,7 @@ class HistoryMyGameController extends AbstractController
             $this->entityManager->persist($historyMyGame);
             $this->entityManager->flush();
 
-            return $this->json(['message' => 'Jeu mis à jour', 'result' => $historyMyGame], 200, [], ['groups' => 'historygame:read']);
+            return $this->json(['message' => 'Jeu mis à jour', 'result' => $data], 200, [], ['groups' => 'historygame:read']);
         }
 
         return $this->json(['message' => 'Token manquant']);
