@@ -66,28 +66,41 @@ class CommentController extends AbstractController
 
     }
 
-    #[Route('comments/user/{userId}', name: 'get_user_comments', methods: "GET" )]
-    public function getCommentByUser (int $userId) : JsonResponse {
+    #[Route('comments/me', name: 'get_user_comments', methods: "GET" )]
+    public function getCommentByUser (Request $request) : JsonResponse {
 
-        // on récupère l'utilisateur 
-        $user = $this->userRepository->find($userId);
+        // récup l'utilisateur via token
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        if (!$user) {
+        if (strpos($authorizationHeader, 'Bearer') === 0) {
+            $token = substr($authorizationHeader, 7);
+        
 
-            return $this->json(['message' => 'Aucun user trouvé'], Response::HTTP_NOT_FOUND);
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+
+                return $this->json(['message' => 'Token non trouvé']);
+
+            } 
+
+
+            // Récup tout les like du user 
+
+            $userComments = $this->commentRepository->findBy(['user' => $user]);
+
+            // préparer la reponse 
+
+            $message = [
+                'message' => 'good',
+                'result' => $userComments,
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'comment:read']);
 
         }
 
-        // Récupérer tout les commentaires par user 
-        $userComments = $this->commentRepository->findBy(['user' => $user]);
-
-        //preparer la requete
-        $message = [
-            'message' => 'good',
-            'result' => $userComments,
-        ];
-
-        return $this->json($message, 200, [], ['groups' => 'comment:read']);
+        return $this->json(['message' => 'No token']);
         
     }
 
