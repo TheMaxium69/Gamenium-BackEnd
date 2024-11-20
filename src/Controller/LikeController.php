@@ -260,31 +260,42 @@ class LikeController extends AbstractController
 
     }
 
-    #[Route('/likes/user/{userId}', name: 'get_user_likes', methods: ['GET'])]
-    public function getLikeByUser(int $userId) : JsonResponse {
+    #[Route('/likes/me', name: 'get_user_likes', methods: ['GET'])]
+    public function getLikeByUser(Request $request) : JsonResponse {
         
 
-        // récup l'utilisateur
-        $user = $this->userRepository->find($userId);
+        // récup l'utilisateur via token
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        if (!$user) {
+        if (strpos($authorizationHeader, 'Bearer') === 0) {
+            $token = substr($authorizationHeader, 7);
+        
 
-            return $this->json(['message' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND );
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-        } 
+            if (!$user) {
 
-        // Récup tout les like du user 
+                return $this->json(['message' => 'Token non trouvé']);
 
-        $userLikes = $this->likeRepository->findBy(['user' => $user]);
+            } 
 
-        // préparer la reponse 
 
-        $message = [
-            'message' => 'good',
-            'result' => $userLikes,
-        ];
+            // Récup tout les like du user 
 
-        return $this->json($message, 200, [], ['groups' => 'like:read']);
+            $userLikes = $this->likeRepository->findBy(['user' => $user]);
+
+            // préparer la reponse 
+
+            $message = [
+                'message' => 'good',
+                'result' => $userLikes,
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'like:read']);
+
+        }
+
+        return $this->json(['message' => 'No token']);
         
         
     }
