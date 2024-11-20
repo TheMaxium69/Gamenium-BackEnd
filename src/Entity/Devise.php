@@ -12,15 +12,15 @@ class Devise
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'devise:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'devise:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'devise:read'])]
     private ?string $symbole = null;
 
     public function getId(): ?int

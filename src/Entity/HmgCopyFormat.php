@@ -14,11 +14,11 @@ class HmgCopyFormat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'copyFormat:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'copyFormat:read'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(targetEntity: HmgCopy::class, mappedBy: 'format')]
