@@ -272,7 +272,7 @@ class HistoryMyGameController extends AbstractController
 //            $this->entityManager->persist($historyMyGame);
 //            $this->entityManager->flush();
 
-            return $this->json(['message' => 'Jeu mis à jour', 'result' => $data], 200, [], ['groups' => 'historygame:read']);
+            return $this->json(['message' => 'updated game', 'result' => $data], 200, [], ['groups' => 'historygame:read']);
         }
 
         return $this->json(['message' => 'Token manquant']);
