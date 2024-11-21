@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\HistoryMyGame;
 use App\Entity\HmgCopy;
+use App\Entity\HmgCopyEtat;
+use App\Entity\HmgCopyFormat;
+use App\Entity\HmgCopyRegion;
 use App\Entity\HmgScreenshot;
 use App\Entity\HmgSpeedrun;
 use App\Entity\User;
@@ -258,7 +261,10 @@ class HistoryMyGameController extends AbstractController
             $historyMyGame = $this->entityManager->getRepository(HistoryMyGame::class)->findOneBy(['id' => $data['myGame']['id']]);
             if (!$historyMyGame) {
                 return $this->json(['message' => 'Jeu introuvable']);
-            } else if ($historyMyGame->getUser() == $user) {
+            }
+
+            /* VERIFIER QUE LUSER EST BIEN LE PROPRIO */
+            if ($historyMyGame->getUser() == $user) {
 
                 /* FAIRE LA MODIF*/
                 if (isset($data['myGame']['is_pinned']) && $data['myGame']['is_pinned'] != $historyMyGame->isIsPinned() && $data['myGame']['is_pinned'] || !$data['myGame']['is_pinned']){
@@ -278,15 +284,120 @@ class HistoryMyGameController extends AbstractController
                 $this->entityManager->flush();
 
 
-            }
+                /*RECUPERE LES COPY DE JEUX */
+                $copyGameAll = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $historyMyGame]);
+                if ($copyGameAll) {
 
-            /*SI LE JEU EST DANS LA COLLECTION */
-//            $historyMyGame = $this->historyMyGameRepository->findOneBy(['user' => $user, 'game' => $game]);
-//            if (!$historyMyGame) {
-//                return $this->json(['message' => 'Le jeu n\'est pas dans votre collection']);
-//            }
-//
-//            /* METTRE A JOUR LE STATUT PINNED */
+
+                    $copyGameCount = count($copyGameAll);
+                    $updatedCopyGameAll = $data['copyGame'];
+
+                    $tempAddCopy = [];
+
+                    $finalCopyGame = [];
+
+                    /* UPDATE LES COPY EXISTANT */
+                    foreach ($updatedCopyGameAll as $updatedCopyGameOne) {
+
+                        $found = false;
+
+                        foreach ($copyGameAll as $copyGameOne) {
+
+                            if ($copyGameOne->getId() === $updatedCopyGameOne['id']) {
+                                /* EDIT SA */
+
+                                if ($copyGameOne->getEdition() != $updatedCopyGameOne['edition']){
+                                    $copyGameOne->setEdition($updatedCopyGameOne['edition']);
+                                }
+                                if ($copyGameOne->getBarcode() != $updatedCopyGameOne['barcode']){
+                                    $copyGameOne->setBarcode($updatedCopyGameOne['barcode']);
+                                }
+                                if ($copyGameOne->getContent() != $updatedCopyGameOne['content']){
+                                    $copyGameOne->setContent($updatedCopyGameOne['content']);
+                                }
+                                if ($copyGameOne->getEtat()->getId() != $updatedCopyGameOne['etat_id']){
+                                    $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $updatedCopyGameOne['etat_id']]);
+                                    if ($newEtat){
+                                        $copyGameOne->setEtat($newEtat);
+                                    }
+                                }
+                                if ($copyGameOne->getFormat()->getId() != $updatedCopyGameOne['format_id']){
+                                    $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $updatedCopyGameOne['format_id']]);
+                                    if ($newFormat){
+                                        $copyGameOne->setFormat($newFormat);
+                                    }
+                                }
+                                if ($copyGameOne->getRegion()->getId() != $updatedCopyGameOne['region_id']){
+                                    $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $updatedCopyGameOne['region_id']]);
+                                    if ($newRegion){
+                                        $copyGameOne->setRegion($newRegion);
+                                    }
+                                }
+
+                                /* GERE LE PURCHASE*/
+                                // if ($copyGameOne->getPurchase() != $updatedCopyGameOne['purchase']){}
+
+                                $this->entityManager->persist($copyGameOne);
+                                $this->entityManager->flush();
+
+
+                                $finalCopyGame[] = $copyGameOne;
+
+                                $found = true;
+                                break;
+                            }
+
+                        }
+                        if (!$found) {
+                            $tempAddCopy[] = $updatedCopyGameOne;
+                        }
+                    }
+
+                    /* AJOUTER LES NOUVELLE COPY*/
+                    foreach ($tempAddCopy as $addCopy) {
+
+
+                        $NEWcopyGame = new HmgCopy();
+
+                        $NEWcopyGame->setHistoryMyGame($historyMyGame);
+
+                        $NEWcopyGame->setEdition($addCopy['edition']);
+                        $NEWcopyGame->setBarcode($addCopy['barcode']);
+                        $NEWcopyGame->setContent($addCopy['content']);
+                        $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $addCopy['etat_id']]);
+                        if ($newEtat){
+                            $NEWcopyGame->setEtat($newEtat);
+                        }
+                        $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $addCopy['format_id']]);
+                        if ($newFormat){
+                            $NEWcopyGame->setFormat($newFormat);
+                        }
+                        $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $addCopy['region_id']]);
+                        if ($newRegion){
+                            $NEWcopyGame->setRegion($newRegion);
+                        }
+
+                        /* GEREZ LE PURCHASE */
+
+//                        $this->entityManager->persist($NEWcopyGame);
+//                        $this->entityManager->flush();
+
+
+                        $finalCopyGame[] = $NEWcopyGame;
+
+
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                }
+
+            }
+            /* METTRE A JOUR LA NOTE */
 
 
             /* FORMER LE RETOUR*/
@@ -295,7 +406,7 @@ class HistoryMyGameController extends AbstractController
                 'result' => [
                     "id" => $historyMyGame->getId(),
                     "myGame" => $historyMyGame,
-                    "copyGame" => $data['copyGame'],
+                    "copyGame" => $finalCopyGame,
                     "speedrun" => $data['speedrun'],
                     "screenshot" => $data['screenshot'],
                     "rate" => $data['rate'],
