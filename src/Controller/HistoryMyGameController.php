@@ -254,11 +254,31 @@ class HistoryMyGameController extends AbstractController
                 return $this->json(['message' => 'Token invalide']);
             }
 
-            /*SI LE JEU CORRESPOND */
-//            $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $data['id_game']]);
-//            if (!$game) {
-//                return $this->json(['message' => 'Jeu introuvable']);
-//            }
+            /*SI LE HISTOIRE MY GAME CORRESPOND */
+            $historyMyGame = $this->entityManager->getRepository(HistoryMyGame::class)->findOneBy(['id' => $data['myGame']['id']]);
+            if (!$historyMyGame) {
+                return $this->json(['message' => 'Jeu introuvable']);
+            } else if ($historyMyGame->getUser() == $user) {
+
+                /* FAIRE LA MODIF*/
+                if (isset($data['myGame']['is_pinned']) && $data['myGame']['is_pinned'] != $historyMyGame->isIsPinned() && $data['myGame']['is_pinned'] || !$data['myGame']['is_pinned']){
+                    $historyMyGame->setIsPinned($data['myGame']['is_pinned']);
+                }
+                if (isset($data['myGame']['difficulty_rating']) && $data['myGame']['difficulty_rating'] != $historyMyGame->getDifficultyRating() && $data['myGame']['difficulty_rating'] >= 1 && $data['myGame']['difficulty_rating'] <= 5) {
+                    $historyMyGame->setDifficultyRating($data['myGame']['difficulty_rating']);
+                }
+                if (isset($data['myGame']['lifetime_rating']) && $data['myGame']['lifetime_rating'] != $historyMyGame->getLifetimeRating() && $data['myGame']['lifetime_rating'] >= 1 && $data['myGame']['lifetime_rating'] <= 5) {
+                    $historyMyGame->setLifetimeRating($data['myGame']['lifetime_rating']);
+                }
+                if (isset($data['myGame']['wish_list']) && $data['myGame']['wish_list'] != $historyMyGame->isWishList() && $data['myGame']['wish_list'] || !$data['myGame']['wish_list']){
+                    $historyMyGame->setWishList($data['myGame']['wish_list']);
+                }
+
+                $this->entityManager->persist($historyMyGame);
+                $this->entityManager->flush();
+
+
+            }
 
             /*SI LE JEU EST DANS LA COLLECTION */
 //            $historyMyGame = $this->historyMyGameRepository->findOneBy(['user' => $user, 'game' => $game]);
@@ -267,12 +287,23 @@ class HistoryMyGameController extends AbstractController
 //            }
 //
 //            /* METTRE A JOUR LE STATUT PINNED */
-//            $historyMyGame->setIsPinned($data['is_pinned']);
-//
-//            $this->entityManager->persist($historyMyGame);
-//            $this->entityManager->flush();
 
-            return $this->json(['message' => 'updated game', 'result' => $data], 200, [], ['groups' => 'historygame:read']);
+
+            /* FORMER LE RETOUR*/
+            $message = [
+                'message' => "updated game",
+                'result' => [
+                    "id" => $historyMyGame->getId(),
+                    "myGame" => $historyMyGame,
+                    "copyGame" => $data['copyGame'],
+                    "speedrun" => $data['speedrun'],
+                    "screenshot" => $data['screenshot'],
+                    "rate" => $data['rate'],
+                ]
+            ];
+
+
+            return $this->json($message, 200, [], ['groups' => 'historygame:read']);
         }
 
         return $this->json(['message' => 'Token manquant']);
