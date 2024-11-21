@@ -494,12 +494,7 @@ class HistoryMyGameController extends AbstractController
                     }
                 }
 
-
-
-
             }
-
-
 
             /* FORMER LE RETOUR*/
             $message = [
@@ -507,7 +502,7 @@ class HistoryMyGameController extends AbstractController
                 'result' => [
                     "id" => $historyMyGame->getId(),
                     "myGame" => $historyMyGame,
-                    "copyGame" => $finalCopyGame,
+                    "copyGame" => $finalCopyGame ?? [],
                     "speedrun" => $data['speedrun'],
                     "screenshot" => $data['screenshot'],
                     "rate" => $rate,
