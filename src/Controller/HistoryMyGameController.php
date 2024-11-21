@@ -350,20 +350,38 @@ class HistoryMyGameController extends AbstractController
                                         if ($purchase->getContent() != $newPurchase['content'] && $newPurchase['content'] != ""){
                                             $purchase->setContent($newPurchase['content']);
                                         }
-                                        if ($purchase->getBuyDate() != new \DateTime($newPurchase['buy_date'])) {
+                                        if ($purchase->getBuyDate() != new \DateTime($newPurchase['buy_date']) && $newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null) {
                                             $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
                                         }
 
-                                        if ($purchase->getBuyWhere()->getId() != $newPurchase['buy_where_id']){
+                                        if ($purchase->getBuyWhere()){
+                                            if ($newPurchase['buy_where_id'] == "" || $newPurchase['buy_where_id'] == null || $newPurchase['buy_where_id'] == "null"){
+                                                $purchase->setBuyWhere(null);
+                                            } else if ($purchase->getBuyWhere()->getId() != $newPurchase['buy_where_id']){
+                                                $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
+                                                if ($newBuyWhere){
+                                                    $purchase->setBuyWhere($newBuyWhere);
+                                                }
+                                            }
+                                        } else if ($newPurchase['buy_where_id']) {
                                             $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
-                                            if ($newBuyWhere){
+                                            if ($newBuyWhere) {
                                                 $purchase->setBuyWhere($newBuyWhere);
                                             }
                                         }
 
-                                        if ($purchase->getDevise()->getId() != $newPurchase['devise_id']){
+                                        if ($purchase->getDevise()) {
+                                            if ($newPurchase['devise_id'] == "" || $newPurchase['devise_id'] == null || $newPurchase['devise_id'] == "null") {
+                                                $purchase->setDevise(null);
+                                            } else if ($purchase->getDevise()->getId() != $newPurchase['devise_id']) {
+                                                $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
+                                                if ($newDevise) {
+                                                    $purchase->setDevise($newDevise);
+                                                }
+                                            }
+                                        } else if ($newPurchase['devise_id']) {
                                             $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
-                                            if ($newDevise){
+                                            if ($newDevise) {
                                                 $purchase->setDevise($newDevise);
                                             }
                                         }
@@ -385,7 +403,9 @@ class HistoryMyGameController extends AbstractController
                                     if ($newPurchase['content'] != ""){
                                         $purchase->setContent($newPurchase['content']);
                                     }
-                                    $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                                    if ($newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null){
+                                        $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                                    }
                                     $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
                                     if ($newBuyWhere){
                                         $purchase->setBuyWhere($newBuyWhere);

@@ -26,14 +26,12 @@ class BuyWhere
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['buywhere:read'])]
     private ?\DateTimeInterface $created_at = null;
 
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['buywhere:read'])]
     private ?User $user = null;
 
     public function getId(): ?int

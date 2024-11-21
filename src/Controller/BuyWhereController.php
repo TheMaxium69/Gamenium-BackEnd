@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BuyWhere;
+use App\Entity\User;
 use App\Repository\BuyWhereRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,64 +14,45 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BuyWhereController extends AbstractController
 {
-    private $manager;
-    private $buywhere;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private BuyWhereRepository $buywhere
+    ) {}
 
-    public function __construct(EntityManagerInterface $manager, BuyWhereRepository $buywhere)
+    #[Route('/buywheres', name: 'all_buywhere', methods:"GET")]
+    public function getAllBuyWheres():JSONResponse
     {
-        $this->manager = $manager;
-        $this->buywhere = $buywhere;
+        $buywherePublic = $this->buywhere->findBy(['is_public' => true]);
+        return $this->json(['message' => 'good', 'result' => $buywherePublic], 200, [], ['groups' => 'buywhere:read']);
     }
 
-    #[Route('/buywheres', name: 'all_places', methods:"GET")]
-
-    public function getAllPlaces():JSONResponse
+    #[Route('/buywherebyuser', name: 'all_buywhere_by_user', methods:"GET")]
+    public function getAllBuyWheresByUser(Request $request):JSONResponse
     {
-        $buywhere = $this->buywhere->findAll();
-        return $this->json($buywhere, 200, [], ['groups' => 'buywhere:read' ]);
-    }
+        $authorizationHeader = $request->headers->get('Authorization');
 
-    #[Route('/buywhere/{id}', name: 'place_by_id', methods:"GET")]
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
 
-    public function getPlaceById(int $id): JSONResponse
-    {
-        $buywhere = $this->buywhere->find($id);
-        return $this->json($buywhere);
-    }
+            /* SI L'UTILISATEUR CORRESPOND AU TOKEN  */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user) {
+                return $this->json(['message' => 'Token invalide']);
+            }
 
-    #[Route('/buywhere', name: 'create_place', methods: ['POST'])]
-
-    public function createPlace(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $buywhere = new Buywhere();
-        $buywhere->setIsPublic($data['is_public']);
-        $buywhere->setIdUser($data['id_user']);
-        $buywhere->setName($data['name']);
-        $buywhere->setCreatedAt(new \DateTime());
-        $buywhere->setIp($data['ip']);
-
-        $this->manager->persist($buywhere);
-        $this->manager->flush();
-
-        return $this->json(['message' => 'Buy Where created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/buywhere/{id}', name: 'place_delete', methods: ['DELETE'])]
-
-    public function deleteBuyWhere(int $id):JsonResponse
-    {
-        $buywhere=$this->buywhere->find($id);
-
-        if(!$buywhere) {
-            return $this->json(['message' => 'Buys Where not found'], Response::HTTP_NOT_FOUND );
+            $buywhereUser = $this->buywhere->findBy(['user' => $user]);
         }
-
-        $this->manager->remove($buywhere);
-        $this->manager->flush();
-
-        return $this->json(['message' => 'Buy Where deleted successfully']);
+        return $this->json(['message' => 'good', 'result' => $buywhereUser], 200, [], ['groups' => 'buywhere:read']);
     }
+
+    #[Route('/buywhere/{id}', name: 'buywere_by_id', methods:"GET")]
+    public function getOneBuyWhere(int $id): JSONResponse
+    {
+        $buywhereOne = $this->buywhere->find($id);
+        return $this->json(['message' => 'good', 'result' => $buywhereOne], 200, [], ['groups' => 'buywhere:read']);
+    }
+
+
 }
 
