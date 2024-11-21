@@ -480,9 +480,10 @@ class HistoryMyGameController extends AbstractController
                 /* METTRE A JOUR LA NOTE */
                 $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['game' => $historyMyGame->getGame(), 'user' => $user]);
                 if ($rate){
-                    if ($rate->getRating() != $data['note']['rating']){
-                        if ($data['note']['rating'] >= 0 && $data['note']['rating'] <= 20) {
-                            $newNote = $data['note']['rating'];
+                    $newNote = $data['rate']['rating'];
+
+                    if ($rate->getRating() != $newNote){
+                        if ($newNote >= 0 && $newNote <= 20) {
 
                             $rate->setRating($newNote);
 
