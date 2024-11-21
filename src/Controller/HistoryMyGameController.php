@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\BuyWhere;
+use App\Entity\Devise;
 use App\Entity\Game;
 use App\Entity\HistoryMyGame;
 use App\Entity\HmgCopy;
 use App\Entity\HmgCopyEtat;
 use App\Entity\HmgCopyFormat;
+use App\Entity\HmgCopyPurchase;
 use App\Entity\HmgCopyRegion;
 use App\Entity\HmgScreenshot;
 use App\Entity\HmgSpeedrun;
@@ -335,7 +338,69 @@ class HistoryMyGameController extends AbstractController
                                 }
 
                                 /* GERE LE PURCHASE*/
-                                // if ($copyGameOne->getPurchase() != $updatedCopyGameOne['purchase']){}
+                                if ($copyGameOne->getPurchase()){
+                                    if ($copyGameOne->getPurchase()->getId() == $updatedCopyGameOne['purchase']['id']){
+
+                                        $purchase = $copyGameOne->getPurchase();
+                                        $newPurchase = $updatedCopyGameOne['purchase'];
+
+                                        if ($purchase->getPrice() != (int)$newPurchase['price'] && $newPurchase['price'] != ""){
+                                            $purchase->setPrice((int)$newPurchase['price']);
+                                        }
+                                        if ($purchase->getContent() != $newPurchase['content'] && $newPurchase['content'] != ""){
+                                            $purchase->setContent($newPurchase['content']);
+                                        }
+                                        if ($purchase->getBuyDate() != new \DateTime($newPurchase['buy_date'])) {
+                                            $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                                        }
+
+                                        if ($purchase->getBuyWhere()->getId() != $newPurchase['buy_where_id']){
+                                            $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
+                                            if ($newBuyWhere){
+                                                $purchase->setBuyWhere($newBuyWhere);
+                                            }
+                                        }
+
+                                        if ($purchase->getDevise()->getId() != $newPurchase['devise_id']){
+                                            $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
+                                            if ($newDevise){
+                                                $purchase->setDevise($newDevise);
+                                            }
+                                        }
+
+                                        $this->entityManager->persist($purchase);
+                                        $this->entityManager->flush();
+
+                                    }
+                                } else if ($updatedCopyGameOne['purchase']) {
+
+                                    /* IL FAUT CREER LE PURCHASE */
+
+                                    $purchase = new HmgCopyPurchase();
+                                    $newPurchase = $updatedCopyGameOne['purchase'];
+
+                                    if ($newPurchase['price'] != ""){
+                                        $purchase->setPrice((int)$newPurchase['price']);
+                                    }
+                                    if ($newPurchase['content'] != ""){
+                                        $purchase->setContent($newPurchase['content']);
+                                    }
+                                    $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                                    $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
+                                    if ($newBuyWhere){
+                                        $purchase->setBuyWhere($newBuyWhere);
+                                    }
+                                    $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
+                                    if ($newDevise){
+                                        $purchase->setDevise($newDevise);
+                                    }
+
+                                    $this->entityManager->persist($purchase);
+                                    $this->entityManager->flush();
+
+                                    $copyGameOne->setPurchase($purchase);
+
+                                }
 
                                 $this->entityManager->persist($copyGameOne);
                                 $this->entityManager->flush();
