@@ -472,17 +472,32 @@ class HistoryMyGameController extends AbstractController
 
 
                     }
-                    
-                    
-                    
-                    
-                    
-                    
+
                     
                 }
 
+
+                /* METTRE A JOUR LA NOTE */
+                $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['game' => $historyMyGame->getGame(), 'user' => $user]);
+                if ($rate){
+                    if ($rate->getRating() != $data['note']['rating']){
+                        if ($data['note']['rating'] >= 0 && $data['note']['rating'] <= 20) {
+                            $newNote = $data['note']['rating'];
+
+                            $rate->setRating($newNote);
+
+                            $this->entityManager->persist($rate);
+                            $this->entityManager->flush();
+
+                        }
+                    }
+                }
+
+
+
+
             }
-            /* METTRE A JOUR LA NOTE */
+
 
 
             /* FORMER LE RETOUR*/
@@ -494,7 +509,7 @@ class HistoryMyGameController extends AbstractController
                     "copyGame" => $finalCopyGame,
                     "speedrun" => $data['speedrun'],
                     "screenshot" => $data['screenshot'],
-                    "rate" => $data['rate'],
+                    "rate" => $rate,
                 ]
             ];
 
