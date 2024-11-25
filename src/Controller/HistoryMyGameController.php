@@ -157,7 +157,7 @@ class HistoryMyGameController extends AbstractController
             $historyMyGame->setGame($game);
             $historyMyGame->setIsPinned($data['is_pinned']);
             $historyMyGame->setAddedAt(New \DateTimeImmutable());
-            $historyMyGame->setWishList($data['is_whishlist']);
+            $historyMyGame->setWishList($data['is_wishlist']);
 
             $this->entityManager->persist($historyMyGame);
             $this->entityManager->flush();
