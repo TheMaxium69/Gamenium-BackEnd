@@ -15,7 +15,7 @@ class HmgScreenshot
     #[Groups(['historygame:read'])]
     private ?int $id = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: 'App\Entity\picture', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['historygame:read'])]
     private ?picture $picture = null;
