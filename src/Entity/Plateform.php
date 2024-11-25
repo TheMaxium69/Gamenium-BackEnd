@@ -13,11 +13,11 @@ class Plateform
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historygame:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historygame:read'])]
     private ?int $id_giant_bomb = null;
 
     #[ORM\Column(length: 255)]
@@ -25,7 +25,7 @@ class Plateform
     private ?string $guid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historygame:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]

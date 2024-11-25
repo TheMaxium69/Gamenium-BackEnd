@@ -13,7 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlateformController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
         private PlateformRepository $plateformRepository
     ) {}
 
@@ -32,5 +31,29 @@ class PlateformController extends AbstractController
         }
 
         return $this->json($message, 200 , [], ['groups' => 'plateform:read']);
+    }
+
+    #[Route('/plateform/{id}', name: 'get_one_plateform')]
+    public function getPlateformOne(int $id): Response
+    {
+        $plateform = $this->plateformRepository->find($id);
+
+        if (!$plateform) {
+            return $this->json(['message' => 'Plateform not found']);
+        }
+
+        return $this->json(['message' => 'good', 'result' => $plateform], 200, [], ['groups' => 'plateform:read']);
+    }
+
+    #[Route('/plateformByIGB/{id}', name: 'get_one_plateform_igb')]
+    public function getPlateformOneByIGB(int $id): Response
+    {
+        $plateform = $this->plateformRepository->findBy(['id_giant_bomb' => $id]);
+
+        if (!$plateform) {
+            return $this->json(['message' => 'Plateform not found']);
+        }
+
+        return $this->json(['message' => 'good', 'result' => $plateform], 200, [], ['groups' => 'plateform:read']);
     }
 }

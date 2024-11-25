@@ -49,6 +49,11 @@ class HistoryMyGame
     #[Groups(['historygame:read'])]
     private ?bool $wish_list = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['historygame:read'])]
+    private ?plateform $plateform = null;
+
 
 //    public function __construct()
 //    {
@@ -140,6 +145,18 @@ class HistoryMyGame
     public function setWishList(bool $wish_list): static
     {
         $this->wish_list = $wish_list;
+
+        return $this;
+    }
+
+    public function getPlateform(): ?plateform
+    {
+        return $this->plateform;
+    }
+
+    public function setPlateform(?plateform $plateform): static
+    {
+        $this->plateform = $plateform;
 
         return $this;
     }

@@ -13,6 +13,7 @@ use App\Entity\HmgCopyPurchase;
 use App\Entity\HmgCopyRegion;
 use App\Entity\HmgScreenshot;
 use App\Entity\HmgSpeedrun;
+use App\Entity\Plateform;
 use App\Entity\User;
 use App\Entity\UserRate;
 use App\Repository\HistoryMyGameRepository;
@@ -146,8 +147,13 @@ class HistoryMyGameController extends AbstractController
                 return $this->json(['message' => 'game is failed']);
             }
 
+            $plateform = $this->entityManager->getRepository(Plateform::class)->findOneBy(['id_giant_bomb' => $data['id_plateform']]);
+            if (!$plateform){
+                return $this->json(['message' => 'plateform is failed']);
+            }
+
             /*SI LE JEUX A DEJA ETE AJOUTER*/
-            $MyGameSelectedToUser = $this->historyMyGameRepository->findOneBy(['user' => $user, 'game' => $game]);
+            $MyGameSelectedToUser = $this->historyMyGameRepository->findOneBy(['user' => $user, 'game' => $game, 'plateform' => $plateform]);
             if ($MyGameSelectedToUser){
                 return $this->json(['message' => 'has already been added']);
             }
@@ -158,6 +164,7 @@ class HistoryMyGameController extends AbstractController
             $historyMyGame->setIsPinned($data['is_pinned']);
             $historyMyGame->setAddedAt(New \DateTimeImmutable());
             $historyMyGame->setWishList($data['is_wishlist']);
+            $historyMyGame->setPlateform($plateform);
 
             $this->entityManager->persist($historyMyGame);
             $this->entityManager->flush();
