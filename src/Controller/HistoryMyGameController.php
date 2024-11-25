@@ -76,6 +76,54 @@ class HistoryMyGameController extends AbstractController
         }
     }
 
+    #[Route('/MyGameByUserWithPlateforme/{id_user}/{id_plateforme_gb}', name: 'get_mygame_by_user_with_plateform', methods: ['GET'])]
+    public function getMyGameByUserWithPlateforme(int $id_user, int $id_plateforme_gb): JsonResponse
+    {
+
+        $user = $this->entityManager->getRepository(User::class)->find($id_user);
+        if (!$user){
+            return $this->json(['message' => 'user not found']);
+        }
+
+        $plateform = $this->entityManager->getRepository(Plateform::class)->find($id_plateforme_gb);
+        if (!$plateform){
+            return $this->json(['message' => 'plateform not found']);
+        }
+
+
+        $MyUserToUserEntries = $this->historyMyGameRepository->findBy(['user' => $user, 'plateform' => $plateform]);
+
+        $mygame = [];
+        foreach ($MyUserToUserEntries as $entry) {
+            $mygame[] = [
+                "id" => $entry->getId(),
+                "myGame" => $entry,
+                "copyGame" => $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $entry]),
+                "speedrun" => $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $entry]),
+                "screenshot" => $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $entry]),
+                "rate" => $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $entry->getUser(), 'game' => $entry->getGame()]),
+            ];
+        }
+
+        if ($mygame == []){
+
+            $message = [
+                'message' => "aucun jeux"
+            ];
+
+        } else {
+
+            $message = [
+                'message' => "good",
+                'result' => $mygame
+            ];
+
+        }
+
+        return $this->json($message, 200, [], ['groups' => 'historygame:read']);
+
+    }
+
     #[Route('/OneMyGame/{id}', name: 'get_one_mygame', methods: ['GET'])]
     public function getOneMyGame(int $id): JsonResponse
     {
