@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\HistoryMyGame;
+use App\Entity\User;
 use App\Repository\PlateformRepository;
-use App\Repository\PlatformRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlateformController extends AbstractController
 {
     public function __construct(
+        private EntityManagerInterface $entityManager,
         private PlateformRepository $plateformRepository
     ) {}
 
@@ -55,5 +57,27 @@ class PlateformController extends AbstractController
         }
 
         return $this->json(['message' => 'good', 'result' => $plateform], 200, [], ['groups' => 'plateform:read']);
+    }
+
+    #[Route('/plateformWithUser/{id}', name: 'get_plateform_user')]
+    public function getPlateformWithUser(int $id): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+
+        $myGameAll = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $user]);
+
+        if (!$myGameAll) {
+            return $this->json(['message' => 'no game']);
+        }
+
+        $allPlateformes = [];
+        foreach ($myGameAll as $game) {
+            $plateforme = $game->getPlateform();
+            $allPlateformes[$game->getPlateform()->getId()] = $plateforme;
+        }
+
+        $plateformesUniques = array_values($allPlateformes);
+
+        return $this->json(['message' => 'good', 'result' => $plateformesUniques], 200, [], ['groups' => 'plateform:read']);
     }
 }
