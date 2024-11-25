@@ -49,7 +49,7 @@ class HistoryMyGame
     #[Groups(['historygame:read'])]
     private ?bool $wish_list = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Plateform::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['historygame:read'])]
     private ?plateform $plateform = null;
