@@ -602,6 +602,15 @@ class HistoryMyGameController extends AbstractController
 
                 }
 
+                if (count($finalCopyGame) == 0){
+
+                    foreach ($copyGameAll as $oneOldCopy) {
+                        $this->entityManager->remove($oneOldCopy);
+                        $this->entityManager->flush();
+                    }
+                    
+                }
+
 
                 /* METTRE A JOUR LA NOTE */
                 $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['game' => $historyMyGame->getGame(), 'user' => $user]);
