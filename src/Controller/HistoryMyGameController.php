@@ -247,6 +247,62 @@ class HistoryMyGameController extends AbstractController
         return $this->json(['message' => 'no token']);
     }
 
+    #[Route('/deleteMyGame/{id}', name:'deleteMyGame', methods:['DELETE'])]
+    public function deleteMyGame(Request $request, int $id) : JsonResponse 
+    {   
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            // Trouve l'entrée dans la table hystory_my_game
+            $myGame = $this->entityManager->getRepository(HistoryMyGame::class)->findOneBy(
+                [
+                    'id' => $id,
+                    'user' => $user
+                ]
+            );
+
+            if (!$myGame) {
+                return $this->json(['message' => 'Jeu introuvable']);
+            }
+            
+            // Trouve l'entrée dans hmg_copy correspondante
+            $myGameCopy = $this->entityManager->getRepository(HmgCopy::class)->findOneBy(
+                [
+                    'HistoryMyGame' => $myGame
+                ]
+            );
+            
+            if (!$myGameCopy) {
+                return $this->json(['message' => 'Copy du jeu introuvable']);
+            }
+
+            // Suppresion des jeux dans history_my_game et hmg_copy
+            $this->entityManager->remove($myGameCopy);
+            $this->entityManager->remove($myGame);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'delete success']);    
+            
+        }
+
+        return $this->json(['message' => 'Token manquant']);
+    }
+
 
     #[Route('/addNoteMyGame/', name: 'addNoteMyGame', methods: ['POST'])]
     public function addNoteMyGame(Request $request): JsonResponse
