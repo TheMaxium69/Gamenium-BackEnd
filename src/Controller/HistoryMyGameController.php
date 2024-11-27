@@ -299,11 +299,6 @@ class HistoryMyGameController extends AbstractController
             return $this->json(['message' => 'Format JSON invalide']);
         }
 
-        /*SI LES CHAMP SON REMPLIE */
-//        if (!isset($data['id_game']) || !isset($data['is_pinned'])) {
-//            return $this->json(['message' => 'Champs requis manquants']);
-//        }
-
         $authorizationHeader = $request->headers->get('Authorization');
 
         /*SI LE TOKEN EST REMPLIE */
@@ -345,191 +340,242 @@ class HistoryMyGameController extends AbstractController
 
                 /*RECUPERE LES COPY DE JEUX */
                 $copyGameAll = $this->entityManager->getRepository(HmgCopy::class)->findBy(['HistoryMyGame' => $historyMyGame]);
-                if ($copyGameAll) {
 
+                $updatedCopyGameAll = $data['copyGame'];
 
-                    $copyGameCount = count($copyGameAll);
-                    $updatedCopyGameAll = $data['copyGame'];
+                $tempAddCopy = [];
+                $finalCopyGame = [];
 
-                    $tempAddCopy = [];
+                /* UPDATE LES COPY EXISTANT */
+                foreach ($updatedCopyGameAll as $updatedCopyGameOne) {
 
-                    $finalCopyGame = [];
+                    $found = false;
 
-                    /* UPDATE LES COPY EXISTANT */
-                    foreach ($updatedCopyGameAll as $updatedCopyGameOne) {
+                    foreach ($copyGameAll as $copyGameOne) {
 
-                        $found = false;
+                        if ($copyGameOne->getId() === $updatedCopyGameOne['id']) {
+                            /* EDIT SA */
 
-                        foreach ($copyGameAll as $copyGameOne) {
-
-                            if ($copyGameOne->getId() === $updatedCopyGameOne['id']) {
-                                /* EDIT SA */
-
-                                if ($copyGameOne->getEdition() != $updatedCopyGameOne['edition']){
-                                    $copyGameOne->setEdition($updatedCopyGameOne['edition']);
+                            if ($copyGameOne->getEdition() != $updatedCopyGameOne['edition']){
+                                $copyGameOne->setEdition($updatedCopyGameOne['edition']);
+                            }
+                            if ($copyGameOne->getBarcode() != $updatedCopyGameOne['barcode']){
+                                $copyGameOne->setBarcode($updatedCopyGameOne['barcode']);
+                            }
+                            if ($copyGameOne->getContent() != $updatedCopyGameOne['content']){
+                                $copyGameOne->setContent($updatedCopyGameOne['content']);
+                            }
+                            if ($copyGameOne->getEtat()->getId() != $updatedCopyGameOne['etat_id']){
+                                $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $updatedCopyGameOne['etat_id']]);
+                                if ($newEtat){
+                                    $copyGameOne->setEtat($newEtat);
                                 }
-                                if ($copyGameOne->getBarcode() != $updatedCopyGameOne['barcode']){
-                                    $copyGameOne->setBarcode($updatedCopyGameOne['barcode']);
+                            }
+                            if ($copyGameOne->getFormat()->getId() != $updatedCopyGameOne['format_id']){
+                                $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $updatedCopyGameOne['format_id']]);
+                                if ($newFormat){
+                                    $copyGameOne->setFormat($newFormat);
                                 }
-                                if ($copyGameOne->getContent() != $updatedCopyGameOne['content']){
-                                    $copyGameOne->setContent($updatedCopyGameOne['content']);
+                            }
+                            if ($copyGameOne->getRegion()->getId() != $updatedCopyGameOne['region_id']){
+                                $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $updatedCopyGameOne['region_id']]);
+                                if ($newRegion){
+                                    $copyGameOne->setRegion($newRegion);
                                 }
-                                if ($copyGameOne->getEtat()->getId() != $updatedCopyGameOne['etat_id']){
-                                    $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $updatedCopyGameOne['etat_id']]);
-                                    if ($newEtat){
-                                        $copyGameOne->setEtat($newEtat);
+                            }
+
+                            /* GERE LE PURCHASE*/
+                            if ($copyGameOne->getPurchase()){
+                                if ($copyGameOne->getPurchase()->getId() == $updatedCopyGameOne['purchase']['id']){
+
+                                    $purchase = $copyGameOne->getPurchase();
+                                    $newPurchase = $updatedCopyGameOne['purchase'];
+
+                                    if ($purchase->getPrice() != (int)$newPurchase['price'] && $newPurchase['price'] != ""){
+                                        $purchase->setPrice((int)$newPurchase['price']);
                                     }
-                                }
-                                if ($copyGameOne->getFormat()->getId() != $updatedCopyGameOne['format_id']){
-                                    $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $updatedCopyGameOne['format_id']]);
-                                    if ($newFormat){
-                                        $copyGameOne->setFormat($newFormat);
+                                    if ($purchase->getContent() != $newPurchase['content'] && $newPurchase['content'] != ""){
+                                        $purchase->setContent($newPurchase['content']);
                                     }
-                                }
-                                if ($copyGameOne->getRegion()->getId() != $updatedCopyGameOne['region_id']){
-                                    $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $updatedCopyGameOne['region_id']]);
-                                    if ($newRegion){
-                                        $copyGameOne->setRegion($newRegion);
+                                    if ($purchase->getBuyDate() != new \DateTime($newPurchase['buy_date']) && $newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null) {
+                                        $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
                                     }
-                                }
 
-                                /* GERE LE PURCHASE*/
-                                if ($copyGameOne->getPurchase()){
-                                    if ($copyGameOne->getPurchase()->getId() == $updatedCopyGameOne['purchase']['id']){
-
-                                        $purchase = $copyGameOne->getPurchase();
-                                        $newPurchase = $updatedCopyGameOne['purchase'];
-
-                                        if ($purchase->getPrice() != (int)$newPurchase['price'] && $newPurchase['price'] != ""){
-                                            $purchase->setPrice((int)$newPurchase['price']);
-                                        }
-                                        if ($purchase->getContent() != $newPurchase['content'] && $newPurchase['content'] != ""){
-                                            $purchase->setContent($newPurchase['content']);
-                                        }
-                                        if ($purchase->getBuyDate() != new \DateTime($newPurchase['buy_date']) && $newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null) {
-                                            $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
-                                        }
-
-                                        if ($purchase->getBuyWhere()){
-                                            if ($newPurchase['buy_where_id'] == "" || $newPurchase['buy_where_id'] == null || $newPurchase['buy_where_id'] == "null"){
-                                                $purchase->setBuyWhere(null);
-                                            } else if ($purchase->getBuyWhere()->getId() != $newPurchase['buy_where_id']){
-                                                $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
-                                                if ($newBuyWhere){
-                                                    $purchase->setBuyWhere($newBuyWhere);
-                                                }
-                                            }
-                                        } else if ($newPurchase['buy_where_id']) {
+                                    if ($purchase->getBuyWhere()){
+                                        if ($newPurchase['buy_where_id'] == "" || $newPurchase['buy_where_id'] == null || $newPurchase['buy_where_id'] == "null"){
+                                            $purchase->setBuyWhere(null);
+                                        } else if ($purchase->getBuyWhere()->getId() != $newPurchase['buy_where_id']){
                                             $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
-                                            if ($newBuyWhere) {
+                                            if ($newBuyWhere){
                                                 $purchase->setBuyWhere($newBuyWhere);
                                             }
                                         }
+                                    } else if ($newPurchase['buy_where_id']) {
+                                        $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
+                                        if ($newBuyWhere) {
+                                            $purchase->setBuyWhere($newBuyWhere);
+                                        }
+                                    }
 
-                                        if ($purchase->getDevise()) {
-                                            if ($newPurchase['devise_id'] == "" || $newPurchase['devise_id'] == null || $newPurchase['devise_id'] == "null") {
-                                                $purchase->setDevise(null);
-                                            } else if ($purchase->getDevise()->getId() != $newPurchase['devise_id']) {
-                                                $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
-                                                if ($newDevise) {
-                                                    $purchase->setDevise($newDevise);
-                                                }
-                                            }
-                                        } else if ($newPurchase['devise_id']) {
+                                    if ($purchase->getDevise()) {
+                                        if ($newPurchase['devise_id'] == "" || $newPurchase['devise_id'] == null || $newPurchase['devise_id'] == "null") {
+                                            $purchase->setDevise(null);
+                                        } else if ($purchase->getDevise()->getId() != $newPurchase['devise_id']) {
                                             $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
                                             if ($newDevise) {
                                                 $purchase->setDevise($newDevise);
                                             }
                                         }
-
-                                        $this->entityManager->persist($purchase);
-                                        $this->entityManager->flush();
-
-                                    }
-                                } else if ($updatedCopyGameOne['purchase']) {
-
-                                    /* IL FAUT CREER LE PURCHASE */
-
-                                    $purchase = new HmgCopyPurchase();
-                                    $newPurchase = $updatedCopyGameOne['purchase'];
-
-                                    if ($newPurchase['price'] != ""){
-                                        $purchase->setPrice((int)$newPurchase['price']);
-                                    }
-                                    if ($newPurchase['content'] != ""){
-                                        $purchase->setContent($newPurchase['content']);
-                                    }
-                                    if ($newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null){
-                                        $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
-                                    }
-                                    $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
-                                    if ($newBuyWhere){
-                                        $purchase->setBuyWhere($newBuyWhere);
-                                    }
-                                    $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
-                                    if ($newDevise){
-                                        $purchase->setDevise($newDevise);
+                                    } else if ($newPurchase['devise_id']) {
+                                        $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
+                                        if ($newDevise) {
+                                            $purchase->setDevise($newDevise);
+                                        }
                                     }
 
                                     $this->entityManager->persist($purchase);
                                     $this->entityManager->flush();
 
-                                    $copyGameOne->setPurchase($purchase);
+                                }
+                            } else if ($updatedCopyGameOne['purchase']) {
 
+                                /* IL FAUT CREER LE PURCHASE */
+
+                                $purchase = new HmgCopyPurchase();
+                                $newPurchase = $updatedCopyGameOne['purchase'];
+
+                                if ($newPurchase['price'] != ""){
+                                    $purchase->setPrice((int)$newPurchase['price']);
+                                }
+                                if ($newPurchase['content'] != ""){
+                                    $purchase->setContent($newPurchase['content']);
+                                }
+                                if ($newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null){
+                                    $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                                }
+                                $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
+                                if ($newBuyWhere){
+                                    $purchase->setBuyWhere($newBuyWhere);
+                                }
+                                $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
+                                if ($newDevise){
+                                    $purchase->setDevise($newDevise);
                                 }
 
-                                $this->entityManager->persist($copyGameOne);
+                                $this->entityManager->persist($purchase);
                                 $this->entityManager->flush();
 
+                                $copyGameOne->setPurchase($purchase);
 
-                                $finalCopyGame[] = $copyGameOne;
+                            }
 
-                                $found = true;
-                                break;
+                            $this->entityManager->persist($copyGameOne);
+                            $this->entityManager->flush();
+
+
+                            $finalCopyGame[] = $copyGameOne;
+
+                            $found = true;
+                            break;
+                        }
+
+                    }
+                    if (!$found) {
+                        $tempAddCopy[] = $updatedCopyGameOne;
+                    }
+                }
+
+                /* AJOUTER LES NOUVELLE COPY*/
+                foreach ($tempAddCopy as $addCopy) {
+
+
+                    $NEWcopyGame = new HmgCopy();
+
+                    $NEWcopyGame->setHistoryMyGame($historyMyGame);
+
+                    if ($addCopy['edition'] != ""){
+                        $NEWcopyGame->setEdition($addCopy['edition']);
+                    }
+                    if ($addCopy['barcode'] != ""){
+                        $NEWcopyGame->setBarcode($addCopy['barcode']);
+                    }
+                    if ($addCopy['content'] != ""){
+                        $NEWcopyGame->setContent($addCopy['content']);
+                    }
+
+                    $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $addCopy['etat_id']]);
+                    if ($newEtat){
+                        $NEWcopyGame->setEtat($newEtat);
+                    }
+                    $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $addCopy['format_id']]);
+                    if ($newFormat){
+                        $NEWcopyGame->setFormat($newFormat);
+                    }
+                    $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $addCopy['region_id']]);
+                    if ($newRegion){
+                        $NEWcopyGame->setRegion($newRegion);
+                    }
+
+                    /* GEREZ LE PURCHASE */
+                    if ($addCopy['purchase']) {
+
+                        /* IL FAUT CREER LE PURCHASE */
+
+                        $purchase = new HmgCopyPurchase();
+                        $newPurchase = $addCopy['purchase'];
+
+                        if ($newPurchase['price'] != ""){
+                            $purchase->setPrice((int)$newPurchase['price']);
+                        }
+                        if ($newPurchase['content'] != ""){
+                            $purchase->setContent($newPurchase['content']);
+                        }
+                        if ($newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null){
+                            $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                        }
+                        $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
+                        if ($newBuyWhere){
+                            $purchase->setBuyWhere($newBuyWhere);
+                        }
+                        $newDevise = $this->entityManager->getRepository(Devise::class)->findOneBy(['id' => $newPurchase['devise_id']]);
+                        if ($newDevise){
+                            $purchase->setDevise($newDevise);
+                        }
+
+                        $this->entityManager->persist($purchase);
+                        $this->entityManager->flush();
+
+                        $NEWcopyGame->setPurchase($purchase);
+
+                    }
+
+
+                    $this->entityManager->persist($NEWcopyGame);
+                    $this->entityManager->flush();
+
+
+                    $finalCopyGame[] = $NEWcopyGame;
+
+
+                }
+
+                if ($copyGameAll){
+
+                    /* VIDER CEUX QUI NON PAS ETE RENVOYER */
+                    foreach ($finalCopyGame as $oneFinalCopy) {
+
+                        foreach ($copyGameAll as $oneOldCopy) {
+
+                            if (!in_array($oneOldCopy->getId(), array_map(function ($copy) {
+                                return $copy->getId();
+                            }, $finalCopyGame))) {
+                                $this->entityManager->remove($oneOldCopy);
                             }
 
                         }
-                        if (!$found) {
-                            $tempAddCopy[] = $updatedCopyGameOne;
-                        }
+                        $this->entityManager->flush();
                     }
 
-                    /* AJOUTER LES NOUVELLE COPY*/
-                    foreach ($tempAddCopy as $addCopy) {
-
-
-                        $NEWcopyGame = new HmgCopy();
-
-                        $NEWcopyGame->setHistoryMyGame($historyMyGame);
-
-                        $NEWcopyGame->setEdition($addCopy['edition']);
-                        $NEWcopyGame->setBarcode($addCopy['barcode']);
-                        $NEWcopyGame->setContent($addCopy['content']);
-                        $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $addCopy['etat_id']]);
-                        if ($newEtat){
-                            $NEWcopyGame->setEtat($newEtat);
-                        }
-                        $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $addCopy['format_id']]);
-                        if ($newFormat){
-                            $NEWcopyGame->setFormat($newFormat);
-                        }
-                        $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $addCopy['region_id']]);
-                        if ($newRegion){
-                            $NEWcopyGame->setRegion($newRegion);
-                        }
-
-                        /* GEREZ LE PURCHASE */
-
-//                        $this->entityManager->persist($NEWcopyGame);
-//                        $this->entityManager->flush();
-
-
-                        $finalCopyGame[] = $NEWcopyGame;
-
-
-                    }
-
-                    
                 }
 
 
