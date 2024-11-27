@@ -172,7 +172,7 @@ class HistoryMyGameController extends AbstractController
         }
 
         /*SI LES CHAMP SON REMPLIE */
-        if (!isset($data['id_game']) || !isset($data['is_pinned'])){
+        if (!isset($data['id_game']) || !isset($data['is_pinned']) || !isset($data['is_wishlist']) || !isset($data['id_plateform'])){
             return $this->json(['message' => 'undefine of field']);
         }
 
@@ -213,9 +213,30 @@ class HistoryMyGameController extends AbstractController
             $historyMyGame->setAddedAt(New \DateTimeImmutable());
             $historyMyGame->setWishList($data['is_wishlist']);
             $historyMyGame->setPlateform($plateform);
-
             $this->entityManager->persist($historyMyGame);
             $this->entityManager->flush();
+
+            /* GERE LE PURCHASE */
+            $newPurchase = new HmgCopyPurchase();
+            if ($data['buy_at'] && $data['buy_at'] != "" && $data['buy_at'] != null) {
+                $newPurchase->setBuyDate(new \DateTime($data['buy_at']));
+            }
+            if ($data['buy_where_id'] && $data['buy_where_id'] != "" && $data['buy_where_id'] != null) {
+                $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $data['buy_where_id']]);
+                if ($newBuyWhere) {
+                    $newPurchase->setBuyWhere($newBuyWhere);
+                }
+            }
+            $this->entityManager->persist($historyMyGame);
+            $this->entityManager->flush();
+
+            /* GERE LA COPY */
+            $newCopy = new HmgCopy();
+            $newCopy->setHistoryMyGame($historyMyGame);
+            $newCopy->setPurchase($newPurchase);
+            $this->entityManager->persist($historyMyGame);
+            $this->entityManager->flush();
+
 
             return $this->json(['message' => 'add game is collection', 'result' => $historyMyGame], 200, [], ['groups' => 'historygame:read']);
         }
@@ -608,7 +629,7 @@ class HistoryMyGameController extends AbstractController
                         $this->entityManager->remove($oneOldCopy);
                         $this->entityManager->flush();
                     }
-                    
+
                 }
 
 
