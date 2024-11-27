@@ -210,11 +210,10 @@ class HistoryMyGameController extends AbstractController
             $historyMyGame->setUser($user);
             $historyMyGame->setGame($game);
             $historyMyGame->setIsPinned($data['is_pinned']);
-            $historyMyGame->setAddedAt(New \DateTimeImmutable());
+            $historyMyGame->setAddedAt(new \DateTimeImmutable());
             $historyMyGame->setWishList($data['is_wishlist']);
             $historyMyGame->setPlateform($plateform);
             $this->entityManager->persist($historyMyGame);
-            $this->entityManager->flush();
 
             /* GERE LE PURCHASE */
             $newPurchase = new HmgCopyPurchase();
@@ -227,14 +226,14 @@ class HistoryMyGameController extends AbstractController
                     $newPurchase->setBuyWhere($newBuyWhere);
                 }
             }
-            $this->entityManager->persist($historyMyGame);
-            $this->entityManager->flush();
+            $this->entityManager->persist($newPurchase);
 
             /* GERE LA COPY */
             $newCopy = new HmgCopy();
             $newCopy->setHistoryMyGame($historyMyGame);
             $newCopy->setPurchase($newPurchase);
-            $this->entityManager->persist($historyMyGame);
+            $this->entityManager->persist($newCopy);
+
             $this->entityManager->flush();
 
 
