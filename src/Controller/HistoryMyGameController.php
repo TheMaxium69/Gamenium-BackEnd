@@ -365,24 +365,48 @@ class HistoryMyGameController extends AbstractController
                             if ($copyGameOne->getContent() != $updatedCopyGameOne['content']){
                                 $copyGameOne->setContent($updatedCopyGameOne['content']);
                             }
-                            if ($copyGameOne->getEtat()->getId() != $updatedCopyGameOne['etat_id']){
+
+                            if ($copyGameOne->getEtat()){
+                                if ($copyGameOne->getEtat()->getId() != $updatedCopyGameOne['etat_id']){
+                                    $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $updatedCopyGameOne['etat_id']]);
+                                    if ($newEtat){
+                                        $copyGameOne->setEtat($newEtat);
+                                    }
+                                }
+                            } else if ($updatedCopyGameOne['etat_id']){
                                 $newEtat = $this->entityManager->getRepository(HmgCopyEtat::class)->findOneBy(['id' => $updatedCopyGameOne['etat_id']]);
                                 if ($newEtat){
                                     $copyGameOne->setEtat($newEtat);
                                 }
                             }
-                            if ($copyGameOne->getFormat()->getId() != $updatedCopyGameOne['format_id']){
+                            if ($copyGameOne->getFormat()){
+                                if ($copyGameOne->getFormat()->getId() != $updatedCopyGameOne['format_id']){
+                                    $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $updatedCopyGameOne['format_id']]);
+                                    if ($newFormat){
+                                        $copyGameOne->setFormat($newFormat);
+                                    }
+                                }
+                            } else if ($updatedCopyGameOne['format_id']){
                                 $newFormat = $this->entityManager->getRepository(HmgCopyFormat::class)->findOneBy(['id' => $updatedCopyGameOne['format_id']]);
                                 if ($newFormat){
                                     $copyGameOne->setFormat($newFormat);
                                 }
                             }
-                            if ($copyGameOne->getRegion()->getId() != $updatedCopyGameOne['region_id']){
+
+                            if ($copyGameOne->getRegion()){
+                                if ($copyGameOne->getRegion()->getId() != $updatedCopyGameOne['region_id']){
+                                    $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $updatedCopyGameOne['region_id']]);
+                                    if ($newRegion){
+                                        $copyGameOne->setRegion($newRegion);
+                                    }
+                                }
+                            } else if ($updatedCopyGameOne['region_id']){
                                 $newRegion = $this->entityManager->getRepository(HmgCopyRegion::class)->findOneBy(['id' => $updatedCopyGameOne['region_id']]);
                                 if ($newRegion){
                                     $copyGameOne->setRegion($newRegion);
                                 }
                             }
+
 
                             /* GERE LE PURCHASE*/
                             if ($copyGameOne->getPurchase()){
