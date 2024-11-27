@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;   
@@ -94,7 +95,38 @@ class PictureController extends AbstractController
         return $this->json(['message' => 'no token']);
     }
 
+    #[Route('/delete/pp/', name: 'delete_photo', methods: ['DELETE'])]
+    public function deletePhoto(Request $request) : JsonResponse 
+    {   
 
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+            
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            // On stock l'id de la photo a supprimer
+            $pictureId = $user->getPp()->getId();
+
+            // On set null la pp de l'user
+            $user->setPp(null);
+            
+            // On trouve la photo grace a son id et on la supprime de la bdd
+            $profilePicture = $this->entityManager->getRepository(Picture::class)->find($pictureId);
+            $this->entityManager->remove($profilePicture);
+        
+            $this->entityManager->flush();
+            
+            return $this->json(['message' => 'photo supprimée']);
+        }
+
+        return $this->json(['message' => 'Erreur dans la suppression de la photo']);
+    }
 
     function randomName($length=20){
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
