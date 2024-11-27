@@ -217,13 +217,17 @@ class HistoryMyGameController extends AbstractController
 
             /* GERE LE PURCHASE */
             $newPurchase = new HmgCopyPurchase();
-            if ($data['buy_at'] && $data['buy_at'] != "" && $data['buy_at'] != null) {
-                $newPurchase->setBuyDate(new \DateTime($data['buy_at']));
+            if (!empty($data['buy_at'])) {
+                if ($data['buy_at'] && $data['buy_at'] != "" && $data['buy_at'] != null) {
+                    $newPurchase->setBuyDate(new \DateTime($data['buy_at']));
+                }
             }
-            if ($data['buywhere_id'] && $data['buywhere_id'] != "" && $data['buywhere_id'] != null) {
-                $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $data['buywhere_id']]);
-                if ($newBuyWhere) {
-                    $newPurchase->setBuyWhere($newBuyWhere);
+            if (!empty($data['buywhere_id'])) {
+                if ($data['buywhere_id'] && $data['buywhere_id'] != "" && $data['buywhere_id'] != null) {
+                    $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $data['buywhere_id']]);
+                    if ($newBuyWhere) {
+                        $newPurchase->setBuyWhere($newBuyWhere);
+                    }
                 }
             }
             $this->entityManager->persist($newPurchase);
