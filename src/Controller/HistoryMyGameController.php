@@ -221,8 +221,8 @@ class HistoryMyGameController extends AbstractController
             if ($data['buy_at'] && $data['buy_at'] != "" && $data['buy_at'] != null) {
                 $newPurchase->setBuyDate(new \DateTime($data['buy_at']));
             }
-            if ($data['buy_where_id'] && $data['buy_where_id'] != "" && $data['buy_where_id'] != null) {
-                $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $data['buy_where_id']]);
+            if ($data['buywhere_id'] && $data['buywhere_id'] != "" && $data['buywhere_id'] != null) {
+                $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $data['buywhere_id']]);
                 if ($newBuyWhere) {
                     $newPurchase->setBuyWhere($newBuyWhere);
                 }
