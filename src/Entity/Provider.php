@@ -24,20 +24,12 @@ class Provider
     #[Groups(['provider:read','post:read', 'follow:read'])]
     private ?string $displayName = null;
 
-    #[ORM\Column]
-    #[Groups(['provider:read'])]
-    private ?int $country = null;
-
     #[ORM\Column(nullable: true)]
     #[Groups(['provider:read'])]
     private ?\DateTimeImmutable $joindeAt = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
-
-//    #[ORM\Column(nullable: true)]
-//    #[Groups(['provider:read','post:read'])]
-//    private ?int $parentCompany = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['provider:read'])]
@@ -58,6 +50,14 @@ class Provider
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[Groups(['provider:read','post:read'])]
     private ?self $parentCompany = null;
+
+    #[ORM\ManyToOne]
+    #[Groups(['provider:read'])]
+    private ?Country $country = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['provider:read'])]
+    private ?string $founded_at = null;
 
     public function getId(): ?int
     {
@@ -88,18 +88,6 @@ class Provider
         return $this;
     }
 
-    public function getCountry(): ?int
-    {
-        return $this->country;
-    }
-
-    public function setCountry(int $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
     public function getJoindeAt(): ?\DateTimeImmutable
     {
         return $this->joindeAt;
@@ -123,18 +111,6 @@ class Provider
 
         return $this;
     }
-
-//    public function getParentCompany(): ?int
-//    {
-//        return $this->parentCompany;
-//    }
-//
-//    public function setParentCompany(int $parentCompany): static
-//    {
-//        $this->parentCompany = $parentCompany;
-//
-//        return $this;
-//    }
 
     public function getContent(): ?string
     {
@@ -192,6 +168,30 @@ class Provider
     public function setParentCompany(?self $parentCompany): static
     {
         $this->parentCompany = $parentCompany;
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getFoundedAt(): ?string
+    {
+        return $this->founded_at;
+    }
+
+    public function setFoundedAt(?string $founded_at): static
+    {
+        $this->founded_at = $founded_at;
 
         return $this;
     }
