@@ -34,6 +34,10 @@ class SocialNetwork
     #[Groups(['socialnetwork:read'])]
     private ?bool $is_profil = null;
 
+    #[ORM\Column(length: 255)]
+    #[Groups(['socialnetwork:read', 'profilSocialNetwork:read'])]
+    private ?string $url_user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,6 +99,18 @@ class SocialNetwork
     public function setIsProfil(?bool $is_profil): static
     {
         $this->is_profil = $is_profil;
+
+        return $this;
+    }
+
+    public function getUrlUser(): ?string
+    {
+        return $this->url_user;
+    }
+
+    public function setUrlUser(string $url_user): static
+    {
+        $this->url_user = $url_user;
 
         return $this;
     }
