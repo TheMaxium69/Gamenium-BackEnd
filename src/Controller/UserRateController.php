@@ -88,6 +88,11 @@ class UserRateController extends AbstractController
         $userRate->setIdUser($data['idUser']);
         $userRate->setIdGame($data['idGame']);
         $userRate->setRating($data['rating']);
+        if (!empty($data['content'])){
+            if ($data['content'] != null && $data['content'] != ""){
+                $userRate->setContent($data['content']);
+            }
+        }
         $userRate->setCreatedAt(new \DateTimeImmutable);
         $userRate->setIp($data['ip']);
 

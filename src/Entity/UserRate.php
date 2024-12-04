@@ -36,6 +36,10 @@ class UserRate
     #[Groups(['userRate:read'])]
     private ?game $game = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['userRate:read'])]
+    private ?string $content = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -97,6 +101,18 @@ class UserRate
     public function setGame(?game $game): static
     {
         $this->game = $game;
+
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(?string $content): static
+    {
+        $this->content = $content;
 
         return $this;
     }
