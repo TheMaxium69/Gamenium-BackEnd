@@ -6,10 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('view')]
 class ViewController extends AbstractController
 {
-    #[Route('/view', name: 'app_view')]
-    public function index(): Response
+    #[Route('-actu-add', name: 'app_view_actu_add', methods: ['POST'])]
+    public function addActuView(): Response
     {
         return $this->json('');
     }
