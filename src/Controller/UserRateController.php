@@ -79,41 +79,41 @@ class UserRateController extends AbstractController
         return $this->json($userRate);
     }
 
-    #[Route('/userRate', name: 'create_userRate', methods: ['POST'])]
-    public function createuserRate(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
+//    #[Route('/userRate', name: 'create_userRate', methods: ['POST'])]
+//    public function createuserRate(Request $request): JsonResponse
+//    {
+//        $data = json_decode($request->getContent(), true);
+//
+//        $userRate = new UserRate();
+//        $userRate->setIdUser($data['idUser']);
+//        $userRate->setIdGame($data['idGame']);
+//        $userRate->setRating($data['rating']);
+//        if (!empty($data['content'])){
+//            if ($data['content'] != null && $data['content'] != ""){
+//                $userRate->setContent($data['content']);
+//            }
+//        }
+//        $userRate->setCreatedAt(new \DateTimeImmutable);
+//        $userRate->setIp($data['ip']);
+//
+//        $this->entityManager->persist($userRate);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'userRate created successfully'], Response::HTTP_CREATED);
+//    }
 
-        $userRate = new UserRate();
-        $userRate->setIdUser($data['idUser']);
-        $userRate->setIdGame($data['idGame']);
-        $userRate->setRating($data['rating']);
-        if (!empty($data['content'])){
-            if ($data['content'] != null && $data['content'] != ""){
-                $userRate->setContent($data['content']);
-            }
-        }
-        $userRate->setCreatedAt(new \DateTimeImmutable);
-        $userRate->setIp($data['ip']);
-
-        $this->entityManager->persist($userRate);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'userRate created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/userRate/{id}', name: 'delete_userRate', methods: ['DELETE'])]
-    public function deleteuserRate(int $id): JsonResponse
-    {
-        $userRate = $this->userRateRepository->find($id);
-
-        if (!$userRate) {
-            return $this->json(['message' => 'userRate not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($userRate);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'userRate deleted successfully']);
-    }
+//    #[Route('/userRate/{id}', name: 'delete_userRate', methods: ['DELETE'])]
+//    public function deleteuserRate(int $id): JsonResponse
+//    {
+//        $userRate = $this->userRateRepository->find($id);
+//
+//        if (!$userRate) {
+//            return $this->json(['message' => 'userRate not found'], Response::HTTP_NOT_FOUND);
+//        }
+//
+//        $this->entityManager->remove($userRate);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'userRate deleted successfully']);
+//    }
 }

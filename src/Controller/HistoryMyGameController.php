@@ -217,9 +217,17 @@ class HistoryMyGameController extends AbstractController
 
             /* GERE LE PURCHASE */
             $newPurchase = new HmgCopyPurchase();
-            if (!empty($data['buy_at'])) {
-                if ($data['buy_at'] && $data['buy_at'] != "" && $data['buy_at'] != null) {
-                    $newPurchase->setBuyDate(new \DateTime($data['buy_at']));
+            if (!empty($data['year_buy_at'])) {
+                if ($data['year_buy_at'] && $data['year_buy_at'] != null) {
+                    $newPurchase->setYearBuyAt($data['year_buy_at']);
+                }
+            }if (!empty($data['month_buy_at'])) {
+                if ($data['month_buy_at'] && $data['month_buy_at'] != null) {
+                    $newPurchase->setMonthBuyAt($data['month_buy_at']);
+                }
+            }if (!empty($data['day_buy_at'])) {
+                if ($data['day_buy_at'] && $data['day_buy_at'] != null) {
+                    $newPurchase->setDayBuyAt($data['day_buy_at']);
                 }
             }
             if (!empty($data['buywhere_id'])) {
@@ -351,6 +359,11 @@ class HistoryMyGameController extends AbstractController
             $userNote->setUser($user);
             $userNote->setGame($game);
             $userNote->setRating($data['note']);
+            if (!empty($data['content'])){
+                if ($data['content'] != null && $data['content'] != ""){
+                    $userNote->setContent($data['content']);
+                }
+            }
             $userNote->setCreatedAt(New \DateTimeImmutable());
             $userNote->setIp("10.10.10.10");
 
@@ -495,8 +508,14 @@ class HistoryMyGameController extends AbstractController
                                     if ($purchase->getContent() != $newPurchase['content'] && $newPurchase['content'] != ""){
                                         $purchase->setContent($newPurchase['content']);
                                     }
-                                    if ($purchase->getBuyDate() != new \DateTime($newPurchase['buy_date']) && $newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null) {
-                                        $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                                    if ($purchase->getDayBuyAt() != $newPurchase['day_buy_date'] && $newPurchase['day_buy_date'] != "" && $newPurchase['day_buy_date'] != null) {
+                                        $purchase->setDayBuyAt($newPurchase['day_buy_date']);
+                                    }
+                                    if ($purchase->getMonthBuyAt() != $newPurchase['month_buy_date'] && $newPurchase['month_buy_date'] != "" && $newPurchase['month_buy_date'] != null) {
+                                        $purchase->setMonthBuyAt($newPurchase['month_buy_date']);
+
+                                    }if ($purchase->getYearBuyAt() != $newPurchase['year_buy_date'] && $newPurchase['year_buy_date'] != "" && $newPurchase['year_buy_date'] != null) {
+                                        $purchase->setYearBuyAt($newPurchase['year_buy_date']);
                                     }
 
                                     if ($purchase->getBuyWhere()){
@@ -548,8 +567,14 @@ class HistoryMyGameController extends AbstractController
                                 if ($newPurchase['content'] != ""){
                                     $purchase->setContent($newPurchase['content']);
                                 }
-                                if ($newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null){
-                                    $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                                if ($newPurchase['day_buy_date'] != "" && $newPurchase['day_buy_date'] != null){
+                                    $purchase->setDayBuyAt($newPurchase['day_buy_date']);
+                                }
+                                if ($newPurchase['month_buy_date'] != "" && $newPurchase['month_buy_date'] != null){
+                                    $purchase->setMonthBuyAt($newPurchase['month_buy_date']);
+                                }
+                                if ($newPurchase['year_buy_date'] != "" && $newPurchase['year_buy_date'] != null){
+                                    $purchase->setYearBuyAt($newPurchase['year_buy_date']);
                                 }
                                 $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
                                 if ($newBuyWhere){
@@ -628,8 +653,14 @@ class HistoryMyGameController extends AbstractController
                         if ($newPurchase['content'] != ""){
                             $purchase->setContent($newPurchase['content']);
                         }
-                        if ($newPurchase['buy_date'] != "" && $newPurchase['buy_date'] != null){
-                            $purchase->setBuyDate(new \DateTime($newPurchase['buy_date']));
+                        if ($newPurchase['day_buy_date'] != "" && $newPurchase['day_buy_date'] != null){
+                            $purchase->setDayBuyAt($newPurchase['day_buy_date']);
+                        }
+                        if ($newPurchase['month_buy_date'] != "" && $newPurchase['month_buy_date'] != null){
+                            $purchase->setMonthBuyAt($newPurchase['month_buy_date']);
+                        }
+                        if ($newPurchase['year_buy_date'] != "" && $newPurchase['year_buy_date'] != null){
+                            $purchase->setYearBuyAt($newPurchase['year_buy_date']);
                         }
                         $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $newPurchase['buy_where_id']]);
                         if ($newBuyWhere){
