@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
 use App\Entity\PostActu;
 use App\Entity\Provider;
 use App\Entity\User;
@@ -121,6 +122,120 @@ class ViewController extends AbstractController
 
         $view = new View();
         $view->setProvider($provider);
+        if ($user) {
+            $view->setWho($user);
+        }
+        $view->setIp($newIp);
+        $view->setViewAt(new \DateTimeImmutable());
+
+        $this->entityManager->persist($view);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
+
+
+    }
+
+    #[Route('-game-add', name: 'app_view_game_add', methods: ['POST'])]
+    public function addGameView(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $idgame = $data['id'];
+
+        /*SI LE JEU EXISTE*/
+        $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $idgame]);
+        if (!$game){
+            return $this->json(['message' => 'game is failed']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+        }
+
+        $view = new View();
+        $view->setGame($game);
+        if ($user) {
+            $view->setWho($user);
+        }
+        $view->setIp($newIp);
+        $view->setViewAt(new \DateTimeImmutable());
+
+        $this->entityManager->persist($view);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
+
+
+    }
+
+    #[Route('-profile-add', name: 'app_view_profile_add', methods: ['POST'])]
+    public function addProfileView(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $idprofile = $data['id'];
+
+        /*SI L'USER EXISTE*/
+        $profile = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $idprofile]);
+        if (!$profile){
+            return $this->json(['message' => 'profile is failed']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+        }
+
+        $view = new View();
+        $view->setProfile($profile);
         if ($user) {
             $view->setWho($user);
         }
