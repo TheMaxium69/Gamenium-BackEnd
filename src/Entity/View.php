@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ViewRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ViewRepository::class)]
 class View
@@ -11,27 +12,35 @@ class View
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['view:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['view:read'])]
     private ?PostActu $PostActu = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['view:read'])]
     private ?Provider $Provider = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['view:read'])]
     private ?User $profile = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['view:read'])]
     private ?Game $Game = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['view:read'])]
     private ?user $who = null;
 
     #[ORM\Column]
+    #[Groups(['view:read'])]
     private ?\DateTimeImmutable $view_at = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['view:read'])]
     private ?string $ip = null;
 
     public function getId(): ?int
