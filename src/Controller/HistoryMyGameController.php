@@ -221,11 +221,13 @@ class HistoryMyGameController extends AbstractController
                 if ($data['year_buy_at'] && $data['year_buy_at'] != null) {
                     $newPurchase->setYearBuyAt($data['year_buy_at']);
                 }
-            }if (!empty($data['month_buy_at'])) {
+            }
+            if (!empty($data['month_buy_at'])) {
                 if ($data['month_buy_at'] && $data['month_buy_at'] != null) {
                     $newPurchase->setMonthBuyAt($data['month_buy_at']);
                 }
-            }if (!empty($data['day_buy_at'])) {
+            }
+            if (!empty($data['day_buy_at'])) {
                 if ($data['day_buy_at'] && $data['day_buy_at'] != null) {
                     $newPurchase->setDayBuyAt($data['day_buy_at']);
                 }
@@ -508,15 +510,23 @@ class HistoryMyGameController extends AbstractController
                                     if ($purchase->getContent() != $newPurchase['content'] && $newPurchase['content'] != ""){
                                         $purchase->setContent($newPurchase['content']);
                                     }
-                                    if ($purchase->getDayBuyAt() != $newPurchase['day_buy_date'] && $newPurchase['day_buy_date'] != "" && $newPurchase['day_buy_date'] != null) {
-                                        $purchase->setDayBuyAt($newPurchase['day_buy_date']);
+                                    if (!empty($newPurchase['day_buy_date'])){
+                                        if ($purchase->getDayBuyAt() != (int)$newPurchase['day_buy_date'] && $newPurchase['day_buy_date'] != "") {
+                                            $purchase->setDayBuyAt((int)$newPurchase['day_buy_date']);
+                                        }
                                     }
-                                    if ($purchase->getMonthBuyAt() != $newPurchase['month_buy_date'] && $newPurchase['month_buy_date'] != "" && $newPurchase['month_buy_date'] != null) {
-                                        $purchase->setMonthBuyAt($newPurchase['month_buy_date']);
+                                    if (!empty($newPurchase['month_buy_date'])){
+                                        if ($purchase->getMonthBuyAt() != (int)$newPurchase['month_buy_date'] && $newPurchase['month_buy_date'] != "") {
+                                            $purchase->setMonthBuyAt((int)$newPurchase['month_buy_date']);
+                                        }
+                                    }
+                                    if (!empty($newPurchase['year_buy_date'])){
+                                        if ($purchase->getYearBuyAt() != (int)$newPurchase['year_buy_date'] && $newPurchase['year_buy_date'] != "") {
+                                            $purchase->setYearBuyAt((int)$newPurchase['year_buy_date']);
+                                        }
+                                    }
 
-                                    }if ($purchase->getYearBuyAt() != $newPurchase['year_buy_date'] && $newPurchase['year_buy_date'] != "" && $newPurchase['year_buy_date'] != null) {
-                                        $purchase->setYearBuyAt($newPurchase['year_buy_date']);
-                                    }
+
 
                                     if ($purchase->getBuyWhere()){
                                         if ($newPurchase['buy_where_id'] == "" || $newPurchase['buy_where_id'] == null || $newPurchase['buy_where_id'] == "null"){
