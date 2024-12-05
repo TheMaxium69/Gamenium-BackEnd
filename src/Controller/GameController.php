@@ -83,6 +83,19 @@ class GameController extends AbstractController
         return $this->json($message, 200 , [], ['groups' => 'game:read']);
     }
 
+
+    #[Route('/latest-games', name:'latest_games', methods: ['GET'])]
+    public function getLatestGames(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $limit = $data['limit'];
+
+        $results = $this->gameRepository->latestGames($limit);
+
+        return $this->json($results, 200, [], ['groups' => 'game:read']);
+        
+    }
+
 //    #[Route('/game', name: 'create_game', methods: ['POST'])]
 //    public function createGame(Request $request): JsonResponse
 //    {
