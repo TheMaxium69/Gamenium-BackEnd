@@ -258,7 +258,7 @@ class ViewController extends AbstractController
 
     }
 
-    #[Route('-actu-show/{$idPostActu}', name: 'app_view_actu_show', methods: ['GET'])]
+    #[Route('-actu-show/{idPostActu}', name: 'app_view_actu_show', methods: ['GET'])]
     public function showActuViews(int $idPostActu): JsonResponse
     {
         $postActu =$this->postActuRepository->find($idPostActu);
