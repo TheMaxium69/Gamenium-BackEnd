@@ -7,6 +7,10 @@ use App\Entity\PostActu;
 use App\Entity\Provider;
 use App\Entity\User;
 use App\Entity\View;
+use App\Repository\CommentRepository;
+use App\Repository\PostActuRepository;
+use App\Repository\UserRepository;
+use App\Repository\ViewRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +24,10 @@ class ViewController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ViewRepository $viewRepository,
+        private CommentRepository $commentRepository,
+        private UserRepository $userRepository,
+        private PostActuRepository $postActuRepository
     ) {}
 
     #[Route('-actu-add', name: 'app_view_actu_add', methods: ['POST'])]
@@ -249,4 +257,32 @@ class ViewController extends AbstractController
 
 
     }
+
+    #[Route('-actu-show/{}', name: 'app_view_actu_show', methods: ['GET'])]
+    public function showActuViews(int $idPostActu): JsonResponse
+    {
+        $postActu =$this->postActuRepository->find($idPostActu);
+
+        if(!$postActu) {
+            return $this->json(['message' => 'post-actu undefine']);
+        }
+
+        $postActuViews = $this->viewRepository->findBy(['post' => $postActu]);
+
+        if (empty($postActuViews)) {
+            $message = [
+                "message" => "good",
+                "result" => []
+            ];
+            return $this->json($message);
+        }
+
+        $message = [
+            "message" => "good",
+            "reslut" => $postActuViews,
+        ];
+
+        return $this->json($message, 200, [], ['groups' => 'view:read']);
+    }
+
 }
