@@ -24,8 +24,11 @@ class GameRepository extends ServiceEntityRepository
     public function searchByName(string $searchValue, int $limit = 10): array
     {
         return $this->createQueryBuilder('g')
+            ->leftJoin('g.views', 'v')
             ->andWhere('g.name LIKE :searchValue')
             ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->groupBy('g.id')
+            ->orderBy('COUNT(v.id)', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();

@@ -27,9 +27,11 @@ class View
     #[Groups(['view:read'])]
     private ?User $profile = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Game::class, inversedBy: 'views')]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups(['view:read'])]
-    private ?Game $Game = null;
+    private Game $Game;
+
 
     #[ORM\ManyToOne]
     private ?user $who = null;
