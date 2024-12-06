@@ -118,6 +118,11 @@ class CommentController extends AbstractController
             return $this->json(['message' => 'undefine of field']);
         }
 
+        /* MET UNE LIMITE DE TAILLE DU COMMENTAIRE */
+        if (strlen(($data['content'])) > 300) {
+            return $this->json(['message' => 'to long content']);
+        }
+
         /* SET UNE IP */
         if (!isset($data['ip'])) {
             $newIp = "0.0.0.0";
