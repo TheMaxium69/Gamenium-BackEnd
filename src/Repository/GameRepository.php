@@ -23,15 +23,24 @@ class GameRepository extends ServiceEntityRepository
 
     public function searchByName(string $searchValue, int $limit = 10): array
     {
-        return $this->createQueryBuilder('g')
-            ->leftJoin('g.views', 'v')
-            ->andWhere('g.name LIKE :searchValue')
-            ->setParameter('searchValue', '%' . $searchValue . '%')
-            ->groupBy('g.id')
-            ->orderBy('COUNT(v.id)', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+                SELECT g.*, COUNT(v.id) AS views_count
+                FROM game g
+                LEFT JOIN view v ON v.game_id = g.id
+                WHERE g.name LIKE "%'. $searchValue .'%"
+                GROUP BY g.id
+                ORDER BY views_count DESC
+                LIMIT '. $limit .';
+            ';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+
+        return $result->fetchAll();
+
     }
 
     public function latestGames(int $limit): array
