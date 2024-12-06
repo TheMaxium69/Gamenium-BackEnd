@@ -7,9 +7,7 @@ use App\Entity\PostActu;
 use App\Entity\Provider;
 use App\Entity\User;
 use App\Entity\View;
-use App\Repository\CommentRepository;
 use App\Repository\PostActuRepository;
-use App\Repository\UserRepository;
 use App\Repository\ViewRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,8 +23,6 @@ class ViewController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ViewRepository $viewRepository,
-        private CommentRepository $commentRepository,
-        private UserRepository $userRepository,
         private PostActuRepository $postActuRepository
     ) {}
 
