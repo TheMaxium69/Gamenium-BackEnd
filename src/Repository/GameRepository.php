@@ -39,7 +39,7 @@ class GameRepository extends ServiceEntityRepository
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery();
 
-        return $result->fetchAll();
+        return $result->fetchAllAssociative();
 
     }
 

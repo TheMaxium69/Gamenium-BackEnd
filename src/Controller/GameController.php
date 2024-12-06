@@ -144,8 +144,17 @@ class GameController extends AbstractController
         $limit = $data['limit'];
 
         $results = $this->gameRepository->searchByName($searchValue, $limit);
+
+        $finalResults = [];
+        foreach($results as $oneGame){
+            $oneGame['image'] = json_decode($oneGame['image']);
+            $oneGame['image_tags'] = json_decode($oneGame['image_tags']);
+            $oneGame['original_game_rating'] = json_decode($oneGame['original_game_rating']);
+            $oneGame['platforms'] = json_decode($oneGame['platforms']);
+            $finalResults[] = $oneGame;
+        }
     
-        return $this->json($results, 200, [], ['groups' => 'game:read']);
+        return $this->json($finalResults, 200, []);
     }
 
 
