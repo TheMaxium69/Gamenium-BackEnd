@@ -102,9 +102,13 @@ class Game
     #[Groups(['game:read', 'historygame:read'])]
     private ?string $expected_release_quarter = null;
 
+    #[ORM\OneToMany(targetEntity: View::class, mappedBy: 'game')]
+    private Collection $views;
+
     public function __construct()
     {
         $this->postActus = new ArrayCollection();
+        $this->views = new ArrayCollection();
     }
 
 
@@ -353,4 +357,34 @@ class Game
         return $this;
     }
 
+
+    public function getViews(): Collection
+    {
+        return $this->views;
+    }
+
+
+    public function addViews(View $views): static
+    {
+        if (!$this->views->contains($views)) {
+            $this->views->add($views);
+            $views->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeViews(View $views): static
+    {
+        if ($this->views->removeElement($views)) {
+            // set the owning side to null (unless already changed)
+            if ($views->getGame() === $this) {
+                $views->setGame(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 }
