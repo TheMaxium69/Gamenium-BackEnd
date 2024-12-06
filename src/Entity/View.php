@@ -32,15 +32,12 @@ class View
     private ?Game $Game = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['view:read'])]
     private ?user $who = null;
 
     #[ORM\Column]
-    #[Groups(['view:read'])]
     private ?\DateTimeImmutable $view_at = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['view:read'])]
     private ?string $ip = null;
 
     public function getId(): ?int

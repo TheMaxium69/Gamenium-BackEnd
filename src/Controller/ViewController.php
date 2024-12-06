@@ -267,19 +267,19 @@ class ViewController extends AbstractController
             return $this->json(['message' => 'post-actu undefine']);
         }
 
-        $postActuViews = $this->viewRepository->findBy(['post' => $postActu]);
+        $postActuViews = $this->viewRepository->findBy(['PostActu' => $postActu]);
 
         if (empty($postActuViews)) {
             $message = [
                 "message" => "good",
-                "result" => []
+                "result" => 0
             ];
             return $this->json($message);
         }
 
         $message = [
             "message" => "good",
-            "reslut" => $postActuViews,
+            "result" => count($postActuViews),
         ];
 
         return $this->json($message, 200, [], ['groups' => 'view:read']);
