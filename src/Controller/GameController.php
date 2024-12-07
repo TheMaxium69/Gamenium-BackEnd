@@ -147,10 +147,28 @@ class GameController extends AbstractController
 
         $finalResults = [];
         foreach($results as $oneGame){
+
+            /* JSON */
             $oneGame['image'] = json_decode($oneGame['image']);
-            $oneGame['image_tags'] = json_decode($oneGame['image_tags']);
-            $oneGame['original_game_rating'] = json_decode($oneGame['original_game_rating']);
+            $oneGame['imageTags'] = json_decode($oneGame['image_tags']);
+            $oneGame['originalGameRating'] = json_decode($oneGame['original_game_rating']);
             $oneGame['platforms'] = json_decode($oneGame['platforms']);
+
+            /* nameVariable */
+            $oneGame = array_merge($oneGame, [
+                'dateLastUpdated' => $oneGame['date_last_updated'],
+                'expectedReleaseDay' => $oneGame['expected_release_day'],
+                'expectedReleaseMonth' => $oneGame['expected_release_month'],
+                'expectedReleaseYear' => $oneGame['expected_release_year'],
+                'id_GiantBomb' => $oneGame['id_giant_bomb'],
+                'siteDetailUrl' => $oneGame['site_detail_url'],
+                'originalReleaseDate' => $oneGame['original_release_date'],
+                'numberOfUserReviews' => $oneGame['number_of_user_reviews'],
+            ]);
+
+
+
+
             $finalResults[] = $oneGame;
         }
     
