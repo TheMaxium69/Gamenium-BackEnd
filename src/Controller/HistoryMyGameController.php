@@ -172,7 +172,7 @@ class HistoryMyGameController extends AbstractController
         }
 
         /*SI LES CHAMP SON REMPLIE */
-        if (!isset($data['id_game']) || !isset($data['is_pinned']) || !isset($data['is_wishlist']) || !isset($data['id_plateform'])){
+        if (!isset($data['id_game']) || !isset($data['id_plateform'])){
             return $this->json(['message' => 'undefine of field']);
         }
 
@@ -209,29 +209,17 @@ class HistoryMyGameController extends AbstractController
             $historyMyGame = new HistoryMyGame();
             $historyMyGame->setUser($user);
             $historyMyGame->setGame($game);
-            $historyMyGame->setIsPinned($data['is_pinned']);
-            $historyMyGame->setAddedAt(new \DateTimeImmutable());
-            $historyMyGame->setWishList($data['is_wishlist']);
             $historyMyGame->setPlateform($plateform);
+            $historyMyGame->setAddedAt(new \DateTimeImmutable());
+            $historyMyGame->setIsPinned(isset($data['is_pinned']) ? $data['is_pinned'] : false);
+            $historyMyGame->setWishList(isset($data['is_wishlist']) ? $data['is_wishlist'] : false);
             $this->entityManager->persist($historyMyGame);
 
             /* GERE LE PURCHASE */
             $newPurchase = new HmgCopyPurchase();
-            if (!empty($data['year_buy_at'])) {
-                if ($data['year_buy_at'] && $data['year_buy_at'] != null) {
-                    $newPurchase->setYearBuyAt($data['year_buy_at']);
-                }
-            }
-            if (!empty($data['month_buy_at'])) {
-                if ($data['month_buy_at'] && $data['month_buy_at'] != null) {
-                    $newPurchase->setMonthBuyAt($data['month_buy_at']);
-                }
-            }
-            if (!empty($data['day_buy_at'])) {
-                if ($data['day_buy_at'] && $data['day_buy_at'] != null) {
-                    $newPurchase->setDayBuyAt($data['day_buy_at']);
-                }
-            }
+            $newPurchase->setYearBuyAt(isset($data['year_buy_at']) ? $data['year_buy_at'] : null);
+            $newPurchase->setMonthBuyAt(isset($data['month_buy_at']) ? $data['month_buy_at'] : null);
+            $newPurchase->setDayBuyAt(isset($data['day_buy_at']) ? $data['day_buy_at'] : null);
             if (!empty($data['buywhere_id'])) {
                 if ($data['buywhere_id'] && $data['buywhere_id'] != "" && $data['buywhere_id'] != null) {
                     $newBuyWhere = $this->entityManager->getRepository(BuyWhere::class)->findOneBy(['id' => $data['buywhere_id']]);
