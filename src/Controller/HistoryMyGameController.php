@@ -776,7 +776,7 @@ class HistoryMyGameController extends AbstractController
                     "copyGame" => $finalCopyGame ?? [],
                     "speedrun" => $data['speedrun'],
                     "screenshot" => $data['screenshot'],
-                    "rate" => $rate,
+                    "rate" => $rate ?? $newRate ?? null,
                 ]
             ];
 
