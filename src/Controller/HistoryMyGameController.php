@@ -759,6 +759,10 @@ class HistoryMyGameController extends AbstractController
                     }
 
 
+                    $newRate->setGame($historyMyGame->getGame());
+                    $newRate->setUser($user);
+
+
                     $this->entityManager->persist($newRate);
                     $this->entityManager->flush();
 
