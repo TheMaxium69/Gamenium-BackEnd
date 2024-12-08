@@ -778,6 +778,59 @@ class HistoryMyGameController extends AbstractController
 
             }
 
+
+            /* SPEEDRUN */
+            if ($data['speedrun']){
+                $allSpeedrunUpload = $data['speedrun'];
+
+                $onlyCreate = false;
+                $speedRunDB = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $historyMyGame]);
+                if (!$speedRunDB){
+                    $onlyCreate = true;
+                }
+
+                foreach ($allSpeedrunUpload as $oneSpeedrunUpload) {
+
+                    $isDB = false;
+                    if (!$onlyCreate){
+                        foreach ($speedRunDB as $oneSpeedrunDB) {
+                            if ($oneSpeedrunDB->getId() == $oneSpeedrunUpload['id']){
+                                $isDB = true;
+                            }
+                        }
+                    }
+
+
+                    if ($isDB){
+                        /* UPDATE  */
+                        $newSpeedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findOneBy(['id' => $oneSpeedrunUpload['id']]);
+
+
+
+                    } else {
+                        /* CREER */
+                        $newSpeedrun = new HmgSpeedrun();
+                        $newSpeedrun->setMyGame($historyMyGame);
+
+                    }
+
+
+
+                }
+
+                /* VERIFIER CEUX QUI ON ETE SUPPRIMER*/
+
+
+
+
+            }
+
+
+
+
+
+            $speedRun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $historyMyGame]);
+
             /* FORMER LE RETOUR*/
             $message = [
                 'message' => "updated game",
@@ -785,7 +838,7 @@ class HistoryMyGameController extends AbstractController
                     "id" => $historyMyGame->getId(),
                     "myGame" => $historyMyGame,
                     "copyGame" => $finalCopyGame ?? [],
-                    "speedrun" => $data['speedrun'],
+                    "speedrun" => $speedRun ?? [],
                     "screenshot" => $data['screenshot'],
                     "rate" => $rate ?? $newRate ?? null,
                 ]
