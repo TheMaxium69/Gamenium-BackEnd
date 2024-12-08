@@ -805,25 +805,52 @@ class HistoryMyGameController extends AbstractController
                         /* UPDATE  */
                         $newSpeedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findOneBy(['id' => $oneSpeedrunUpload['id']]);
 
+                        if ($newSpeedrun->getChrono() != $oneSpeedrunUpload['chrono'] && $oneSpeedrunUpload['chrono'] != ""){
+                            $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
+                        }
+
+                        if ($newSpeedrun->getCategory() != $oneSpeedrunUpload['category'] && $oneSpeedrunUpload['category'] != ""){
+                            $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+                        }
+
+                        if ($newSpeedrun->getLink() != $oneSpeedrunUpload['link'] && $oneSpeedrunUpload['link'] != ""){
+                            $newSpeedrun->setLink($oneSpeedrunUpload['link']);
+                        }
 
 
-                    } else {
+                    } else if (!empty($oneSpeedrunUpload['chrono']) && !empty($oneSpeedrunUpload['category'])) {
                         /* CREER */
                         $newSpeedrun = new HmgSpeedrun();
                         $newSpeedrun->setMyGame($historyMyGame);
+                        $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
+                        $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+
+                        if ($oneSpeedrunUpload['link'] != ""){
+                            $newSpeedrun->setLink($oneSpeedrunUpload['link']);
+                        }
 
                     }
 
-
+                    $this->entityManager->persist($newSpeedrun);
+                    $this->entityManager->flush();
 
                 }
 
                 /* VERIFIER CEUX QUI ON ETE SUPPRIMER*/
-
-
-
-
-
+                foreach ($speedRunDB as $oneSpeedrunDB) {
+                    $foundInUpload = false;
+                    foreach ($allSpeedrunUpload as $oneSpeedrunUpload) {
+                        if ($oneSpeedrunDB->getId() == $oneSpeedrunUpload['id']) {
+                            $foundInUpload = true;
+                            break;
+                        }
+                    }
+                    if (!$foundInUpload) {
+                        $this->entityManager->remove($oneSpeedrunDB);
+                        $this->entityManager->flush();
+                    }
+                }
+                
             }
 
 
