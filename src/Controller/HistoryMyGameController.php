@@ -329,7 +329,11 @@ class HistoryMyGameController extends AbstractController
             }
 
             /*SI LA NOTE EST AU DESSUS DE 20*/
-            if ($data['note'] > 20){
+            if (filter_var($data['note'], FILTER_VALIDATE_INT) !== false && $data['note'] >= 0 && $data['note'] <= 20) {
+
+                $noteValide = $data['note'];
+
+            } else {
                 return $this->json(['message' => 'note no valide']);
             }
 
@@ -348,7 +352,7 @@ class HistoryMyGameController extends AbstractController
             $userNote = new UserRate();
             $userNote->setUser($user);
             $userNote->setGame($game);
-            $userNote->setRating($data['note']);
+            $userNote->setRating($noteValide);
             if (!empty($data['content'])){
                 if ($data['content'] != null && $data['content'] != ""){
                     $userNote->setContent($data['content']);
@@ -721,20 +725,41 @@ class HistoryMyGameController extends AbstractController
                     $newNote = $data['rate']['rating'];
 
                     if ($rate->getRating() != $newNote){
-                        if ($newNote >= 0 && $newNote <= 20) {
+                        if (filter_var($newNote, FILTER_VALIDATE_INT) !== false && $newNote >= 0 && $newNote <= 20) {
 
                             $rate->setRating($newNote);
-                            if (!empty($data['rate']['content'])){
-                                if ($rate->getContent() != $data['rate']['content']){
-                                    $rate->setContent($data['rate']['content']);
-                                }
-                            }
-
-                            $this->entityManager->persist($rate);
-                            $this->entityManager->flush();
 
                         }
                     }
+
+                    if (!empty($data['rate']['content'])){
+                        if ($rate->getContent() != $data['rate']['content']){
+                            $rate->setContent($data['rate']['content']);
+                        }
+                    }
+
+                    $this->entityManager->persist($rate);
+                    $this->entityManager->flush();
+                } else if (!empty($data['rate']['rating']) || !empty($data['rate']['content'])){
+
+                    $newRate = new UserRate();
+
+                    if (!empty($data['rate']['content'])) {
+                        $newNote = $data['rate']['rating'];
+                        if (filter_var($newNote, FILTER_VALIDATE_INT) !== false && $newNote >= 0 && $newNote <= 20) {
+                            $newRate->setRating($newNote);
+                            $newRate->setRating($newNote);
+                        }
+                    }
+
+                    if (!empty($data['rate']['content'])){
+                        $newRate->setContent($data['rate']['content']);
+                    }
+
+
+                    $this->entityManager->persist($newRate);
+                    $this->entityManager->flush();
+
                 }
 
             }
