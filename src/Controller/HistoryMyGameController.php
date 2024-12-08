@@ -736,6 +736,8 @@ class HistoryMyGameController extends AbstractController
                         if ($rate->getContent() != $data['rate']['content']){
                             $rate->setContent($data['rate']['content']);
                         }
+                    } else {
+                        $rate->setContent(null);
                     }
 
                     $this->entityManager->persist($rate);
