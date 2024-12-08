@@ -807,15 +807,25 @@ class HistoryMyGameController extends AbstractController
                         /* UPDATE  */
                         $newSpeedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findOneBy(['id' => $oneSpeedrunUpload['id']]);
 
-                        if ($oneSpeedrunUpload['chrono']){
-                            if ($newSpeedrun->getChrono() != $oneSpeedrunUpload['chrono'] && $oneSpeedrunUpload['chrono'] != ""){
-                                $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
+
+                        if (isset($oneSpeedrunUpload['chrono'])) {
+                            if ($oneSpeedrunUpload['chrono']) {
+                                if ($newSpeedrun->getChrono() != $oneSpeedrunUpload['chrono'] && $oneSpeedrunUpload['chrono'] != "") {
+                                    $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
+                                }
                             }
+                        } else {
+                          $newSpeedrun->setChrono(null);
                         }
-                        if ($oneSpeedrunUpload['category']) {
-                            if ($newSpeedrun->getCategory() != $oneSpeedrunUpload['category'] && $oneSpeedrunUpload['category'] != "") {
-                                $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+
+                        if (isset($oneSpeedrunUpload['category'])) {
+                            if ($oneSpeedrunUpload['category']) {
+                                if ($newSpeedrun->getCategory() != $oneSpeedrunUpload['category'] && $oneSpeedrunUpload['category'] != "") {
+                                    $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+                                }
                             }
+                        } else {
+                            $newSpeedrun->setCategory(null);
                         }
                         if (isset($oneSpeedrunUpload['link'])) {
                             if ($newSpeedrun->getLink() != $oneSpeedrunUpload['link'] && $oneSpeedrunUpload['link'] != "") {
@@ -830,13 +840,30 @@ class HistoryMyGameController extends AbstractController
                         /* CREER */
                         $newSpeedrun = new HmgSpeedrun();
                         $newSpeedrun->setMyGame($historyMyGame);
-                        $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
-                        $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+
+                        if (isset($oneSpeedrunUpload['chrono'])) {
+                            if ($oneSpeedrunUpload['chrono'] != "") {
+                                $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
+                            }
+                        } else {
+                            $newSpeedrun->setChrono(null);
+                        }
+
+                        if (isset($oneSpeedrunUpload['category'])) {
+                            if ($oneSpeedrunUpload['category'] != "") {
+                                $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+                            }
+                        } else {
+                            $newSpeedrun->setCategory(null);
+                        }
+
 
                         if (isset($oneSpeedrunUpload['link'])) {
                             if ($oneSpeedrunUpload['link'] != "") {
                                 $newSpeedrun->setLink($oneSpeedrunUpload['link']);
                             }
+                        } else {
+                            $newSpeedrun->setLink(null);
                         }
 
                     }
