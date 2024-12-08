@@ -16,9 +16,9 @@ class HmgSpeedrun
     #[Groups(['historygame:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(length: 255)]
     #[Groups(['historygame:read'])]
-    private ?\DateTimeInterface $chrono = null;
+    private ?string $chrono = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['historygame:read'])]
@@ -37,12 +37,12 @@ class HmgSpeedrun
         return $this->id;
     }
 
-    public function getChrono(): ?\DateTimeInterface
+    public function getChrono(): ?string
     {
         return $this->chrono;
     }
 
-    public function setChrono(\DateTimeInterface $chrono): static
+    public function setChrono(string $chrono): static
     {
         $this->chrono = $chrono;
 
