@@ -37,7 +37,7 @@ class UserRate
     private ?game $game = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['userRate:read'])]
+    #[Groups(['userRate:read','historygame:read'])]
     private ?string $content = null;
 
     public function getId(): ?int
