@@ -241,19 +241,16 @@ class HistoryMyGameController extends AbstractController
 
             /* GET MY GAME*/
             $rate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $user, 'game' => $game]);
-            $message = [
-                'message' => "good",
-                'result' => [
-                    "id" => $historyMyGame->getId(),
-                    "myGame" => $historyMyGame,
-                    "copyGame" => [$newCopy],
-                    "speedrun" => [],
-                    "screenshot" => [],
-                    "rate" => $rate,
-                ]
+            $result = [
+                "id" => $historyMyGame->getId(),
+                "myGame" => $historyMyGame,
+                "copyGame" => [$newCopy],
+                "speedrun" => [],
+                "screenshot" => [],
+                "rate" => $rate,
             ];
 
-            return $this->json(['message' => 'add game is collection', 'result' => $message], 200, [], ['groups' => 'historygame:read']);
+            return $this->json(['message' => 'add game is collection', 'result' => $result], 200, [], ['groups' => 'historygame:read']);
         }
 
         return $this->json(['message' => 'no token']);
