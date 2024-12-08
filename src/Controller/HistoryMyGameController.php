@@ -836,7 +836,7 @@ class HistoryMyGameController extends AbstractController
                         }
 
 
-                    } else if (!empty($oneSpeedrunUpload['chrono']) && !empty($oneSpeedrunUpload['category'])) {
+                    } else if (!empty($oneSpeedrunUpload['chrono']) || !empty($oneSpeedrunUpload['category'])) {
                         /* CREER */
                         $newSpeedrun = new HmgSpeedrun();
                         $newSpeedrun->setMyGame($historyMyGame);
