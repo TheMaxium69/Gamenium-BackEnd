@@ -780,7 +780,7 @@ class HistoryMyGameController extends AbstractController
 
 
             /* SPEEDRUN */
-            if ($data['speedrun']){
+            if ($data['speedrun'] || $data['speedrun'] == []){
                 $allSpeedrunUpload = $data['speedrun'];
 
                 $onlyCreate = false;
@@ -794,8 +794,10 @@ class HistoryMyGameController extends AbstractController
                     $isDB = false;
                     if (!$onlyCreate){
                         foreach ($speedRunDB as $oneSpeedrunDB) {
-                            if ($oneSpeedrunDB->getId() == $oneSpeedrunUpload['id']){
-                                $isDB = true;
+                            if(isset($oneSpeedrunUpload['id'])){
+                                if ($oneSpeedrunDB->getId() == $oneSpeedrunUpload['id']){
+                                    $isDB = true;
+                                }
                             }
                         }
                     }
@@ -805,16 +807,22 @@ class HistoryMyGameController extends AbstractController
                         /* UPDATE  */
                         $newSpeedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->findOneBy(['id' => $oneSpeedrunUpload['id']]);
 
-                        if ($newSpeedrun->getChrono() != $oneSpeedrunUpload['chrono'] && $oneSpeedrunUpload['chrono'] != ""){
-                            $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
+                        if ($oneSpeedrunUpload['chrono']){
+                            if ($newSpeedrun->getChrono() != $oneSpeedrunUpload['chrono'] && $oneSpeedrunUpload['chrono'] != ""){
+                                $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
+                            }
                         }
-
-                        if ($newSpeedrun->getCategory() != $oneSpeedrunUpload['category'] && $oneSpeedrunUpload['category'] != ""){
-                            $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+                        if ($oneSpeedrunUpload['category']) {
+                            if ($newSpeedrun->getCategory() != $oneSpeedrunUpload['category'] && $oneSpeedrunUpload['category'] != "") {
+                                $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
+                            }
                         }
-
-                        if ($newSpeedrun->getLink() != $oneSpeedrunUpload['link'] && $oneSpeedrunUpload['link'] != ""){
-                            $newSpeedrun->setLink($oneSpeedrunUpload['link']);
+                        if (isset($oneSpeedrunUpload['link'])) {
+                            if ($newSpeedrun->getLink() != $oneSpeedrunUpload['link'] && $oneSpeedrunUpload['link'] != "") {
+                                $newSpeedrun->setLink($oneSpeedrunUpload['link']);
+                            }
+                        } else {
+                            $newSpeedrun->setLink(null);
                         }
 
 
@@ -825,8 +833,10 @@ class HistoryMyGameController extends AbstractController
                         $newSpeedrun->setChrono($oneSpeedrunUpload['chrono']);
                         $newSpeedrun->setCategory($oneSpeedrunUpload['category']);
 
-                        if ($oneSpeedrunUpload['link'] != ""){
-                            $newSpeedrun->setLink($oneSpeedrunUpload['link']);
+                        if (isset($oneSpeedrunUpload['link'])) {
+                            if ($oneSpeedrunUpload['link'] != "") {
+                                $newSpeedrun->setLink($oneSpeedrunUpload['link']);
+                            }
                         }
 
                     }
@@ -840,9 +850,11 @@ class HistoryMyGameController extends AbstractController
                 foreach ($speedRunDB as $oneSpeedrunDB) {
                     $foundInUpload = false;
                     foreach ($allSpeedrunUpload as $oneSpeedrunUpload) {
-                        if ($oneSpeedrunDB->getId() == $oneSpeedrunUpload['id']) {
-                            $foundInUpload = true;
-                            break;
+                        if(isset($oneSpeedrunUpload['id'])) {
+                            if ($oneSpeedrunDB->getId() == $oneSpeedrunUpload['id']) {
+                                $foundInUpload = true;
+                                break;
+                            }
                         }
                     }
                     if (!$foundInUpload) {
