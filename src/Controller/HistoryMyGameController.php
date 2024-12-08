@@ -724,12 +724,12 @@ class HistoryMyGameController extends AbstractController
                         if ($newNote >= 0 && $newNote <= 20) {
 
                             $rate->setRating($newNote);
-                            if (!empty($data['rate']['comment'])){
-                                if ($rate->getContent() != $data['rate']['comment']){
-                                    $rate->setContent($data['rate']['comment']);
+                            if (!empty($data['rate']['content'])){
+                                if ($rate->getContent() != $data['rate']['content']){
+                                    $rate->setContent($data['rate']['content']);
                                 }
                             }
-                            
+
                             $this->entityManager->persist($rate);
                             $this->entityManager->flush();
 
