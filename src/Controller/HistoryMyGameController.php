@@ -742,29 +742,24 @@ class HistoryMyGameController extends AbstractController
 
                     $this->entityManager->persist($rate);
                     $this->entityManager->flush();
-                } else if (!empty($data['rate']['rating']) || !empty($data['rate']['content'])){
+                } else if (!empty($data['rate']['rating'])){
 
-                    $newRate = new UserRate();
+                    $newNote = $data['rate']['rating'];
+                    if (filter_var($newNote, FILTER_VALIDATE_INT) !== false && $newNote >= 0 && $newNote <= 20) {
 
-                    if (!empty($data['rate']['content'])) {
-                        $newNote = $data['rate']['rating'];
-                        if (filter_var($newNote, FILTER_VALIDATE_INT) !== false && $newNote >= 0 && $newNote <= 20) {
-                            $newRate->setRating($newNote);
-                            $newRate->setRating($newNote);
+                        $newRate = new UserRate();
+                        $newRate->setRating($newNote);
+                        if (!empty($data['rate']['content'])){
+                            $newRate->setContent($data['rate']['content']);
                         }
+                        $newRate->setGame($historyMyGame->getGame());
+                        $newRate->setUser($user);
+
+
+                        $this->entityManager->persist($newRate);
+                        $this->entityManager->flush();
                     }
 
-                    if (!empty($data['rate']['content'])){
-                        $newRate->setContent($data['rate']['content']);
-                    }
-
-
-                    $newRate->setGame($historyMyGame->getGame());
-                    $newRate->setUser($user);
-
-
-                    $this->entityManager->persist($newRate);
-                    $this->entityManager->flush();
 
                 }
 
