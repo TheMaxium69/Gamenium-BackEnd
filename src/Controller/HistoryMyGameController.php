@@ -754,6 +754,8 @@ class HistoryMyGameController extends AbstractController
                         }
                         $newRate->setGame($historyMyGame->getGame());
                         $newRate->setUser($user);
+                        $newRate->setCreatedAt(New \DateTimeImmutable());
+                        $newRate->setIp("10.10.10.10");
 
 
                         $this->entityManager->persist($newRate);
