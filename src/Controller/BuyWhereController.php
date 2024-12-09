@@ -55,7 +55,7 @@ class BuyWhereController extends AbstractController
                 $i++;
             }
 
-            $allBuywheres = array_merge($buywhereUser, $buywherePublic);
+            $allBuywheres = array_merge($buywherePublic, $buywhereUser);
 
         }
         return $this->json(['message' => 'good', 'result' => $allBuywheres], 200, [], ['groups' => 'buywhereuser:read']);
