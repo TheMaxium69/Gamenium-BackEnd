@@ -43,7 +43,7 @@ class BuyWhereController extends AbstractController
             }
 
             $buywhereUser = $this->buywhere->findBy(['user' => $user, 'is_public' => false]);
-
+            $buywherePublic = $this->buywhere->findBy(['is_public' => true]);
 
             $i = 0;
             foreach ($buywhereUser as $buywhere) {
@@ -55,8 +55,10 @@ class BuyWhereController extends AbstractController
                 $i++;
             }
 
+            $allBuywheres = array_merge($buywhereUser, $buywherePublic);
+
         }
-        return $this->json(['message' => 'good', 'result' => $buywhereUser], 200, [], ['groups' => 'buywhereuser:read']);
+        return $this->json(['message' => 'good', 'result' => $allBuywheres], 200, [], ['groups' => 'buywhereuser:read']);
     }
 
     #[Route('/createbuywhere/', name: 'create_buywere', methods:"POST")]
