@@ -13,16 +13,16 @@ class BuyWhere
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['buywhere:read','historygame:read'])]
+    #[Groups(['buywhere:read','historygame:read','buywhereuser:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['buywhere:read','historygame:read'])]
+    #[Groups(['buywhere:read','historygame:read','buywhereuser:read'])]
     private ?bool $is_public = null;
 
 
     #[ORM\Column(length: 255)]
-    #[Groups(['buywhere:read','historygame:read'])]
+    #[Groups(['buywhere:read','historygame:read','buywhereuser:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -33,6 +33,10 @@ class BuyWhere
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $user = null;
+
+    #[Groups(['buywhereuser:read'])]
+    private ?int $nb_use = null;
+
 
     public function getId(): ?int
     {
@@ -95,6 +99,18 @@ class BuyWhere
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getNbUse(): ?int
+    {
+        return $this->nb_use;
+    }
+
+    public function setNbUse(int $nb_use): static
+    {
+        $this->nb_use = $nb_use;
 
         return $this;
     }

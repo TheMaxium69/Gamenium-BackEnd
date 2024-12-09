@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BuyWhere;
+use App\Entity\HmgCopyPurchase;
 use App\Entity\User;
 use App\Repository\BuyWhereRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,17 +42,125 @@ class BuyWhereController extends AbstractController
                 return $this->json(['message' => 'Token invalide']);
             }
 
-            $buywhereUser = $this->buywhere->findBy(['user' => $user]);
+            $buywhereUser = $this->buywhere->findBy(['user' => $user, 'is_public' => false]);
+
+
+            $i = 0;
+            foreach ($buywhereUser as $buywhere) {
+
+                $allPurchaseWithBuyWhere = $this->entityManager->getRepository(HmgCopyPurchase::class)->findBy(['buy_where'=>$buywhere]);
+
+                $buywhereUser[$i]->setNbUse(count($allPurchaseWithBuyWhere));
+
+                $i++;
+            }
+
         }
-        return $this->json(['message' => 'good', 'result' => $buywhereUser], 200, [], ['groups' => 'buywhere:read']);
+        return $this->json(['message' => 'good', 'result' => $buywhereUser], 200, [], ['groups' => 'buywhereuser:read']);
     }
 
-    #[Route('/buywhere/{id}', name: 'buywere_by_id', methods:"GET")]
-    public function getOneBuyWhere(int $id): JSONResponse
+    #[Route('/createbuywhere/', name: 'create_buywere', methods:"POST")]
+    public function createBuyWhere(Request $request): JSONResponse
     {
-        $buywhereOne = $this->buywhere->find($id);
-        return $this->json(['message' => 'good', 'result' => $buywhereOne], 200, [], ['groups' => 'buywhere:read']);
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['name']) || trim($data['name']) === ""){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if(!$user){
+                return $this->json(['message' => 'User invalide']);
+            }
+
+            $buywhereDB = $this->buywhere->findBy(['user' => $user, 'name' => $data['name']]);
+            if ($buywhereDB){
+                return $this->json(['message' => 'BuyWhere already exist']);
+            }
+
+
+            $buywhere = new BuyWhere();
+            $buywhere->setName($data['name']);
+            $buywhere->setIp($newIp);
+            $buywhere->setUser($user);
+            $buywhere->setIsPublic(false);
+            $buywhere->setCreatedAt(new \DateTimeimmutable());
+            $this->entityManager->persist($buywhere);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $buywhere], 200, [], ['groups' => 'buywhere:read']);
+
+
+
+        } else {
+            return $this->json(['message' => 'Token invalide']);
+        }
+
     }
+
+    #[Route('/deletebuywhere/{id}', name: 'delete_buywhere', methods:"DELETE")]
+    public function deleteBuyWhere(int $id, Request $request): JSONResponse
+    {
+        if (!$id) {
+            return $this->json(['message' => 'No id']);
+        }
+
+        $buywhere = $this->buywhere->findOneBy(["id" => $id]);
+        if (!$buywhere) {
+            return $this->json(['message' => 'BuyWhere not found']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if(!$user){
+                return $this->json(['message' => 'User invalide']);
+            }
+
+            if ($buywhere->getUser()->getId() !== $user->getId()) {
+                return $this->json(['message' => 'no have permission']);
+            }
+
+            $purchase = $this->entityManager->getRepository(HmgCopyPurchase::class)->findBy(['buy_where' => $buywhere]);
+
+            if ($purchase) {
+                return $this->json(['message' => 'buywhere is use']);
+            }
+
+            $this->entityManager->remove($buywhere);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good']);
+
+        } else {
+            return $this->json(['message' => 'Token invalide']);
+        }
+
+    }
+
 
 
 }
