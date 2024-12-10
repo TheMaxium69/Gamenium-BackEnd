@@ -29,6 +29,32 @@ class CommentController extends AbstractController
         private LikeRepository $likeRepository
     ) {}
 
+    #[Route('/countCommentByActu/{id}', name: 'comment_count', methods:"GET")]
+    public function countComByActu(int $id): JsonResponse
+    {
+        $totalcom = 0;
+
+        $actu = $this->entityManager->getRepository(PostActu::class)->find($id);
+        if (!$actu){
+            return $this->json(['message' => 'actuality not found']);
+        }
+
+        $comment = $this->commentRepository->findBy(['post' => $actu]);
+        if (!$comment){
+            return $this->json(['message' => 'good', 'result' => $totalcom]);
+        }
+
+        $totalcom = $totalcom + count($comment);
+        foreach ($comment as $com) {
+            $tempComReply = null;
+            $tempComReply = $this->commentReplyRepository->findBy(['comment' => $com]);
+            $totalcom = $totalcom + count($tempComReply);
+        }
+
+        return $this->json(['message' => 'good', 'result' => $totalcom]);
+    }
+
+
     #[Route('/getCommentByActu/{id}', name: 'comment_by_actu', methods:"GET")]
     public function getCommentByActu(int $id):JsonResponse
     {
@@ -195,7 +221,7 @@ class CommentController extends AbstractController
         foreach ($allReply as $reply) {
             $reply->setComment(null);
         }
-        
+
         $this->entityManager->remove($comment);
         $this->entityManager->flush();
 
