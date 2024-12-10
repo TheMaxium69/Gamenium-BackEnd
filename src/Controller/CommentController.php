@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\PostActu;
 use App\Entity\User;
+use App\Repository\CommentReplyRepository;
 use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\UserRepository;
@@ -23,6 +24,7 @@ class CommentController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private CommentRepository $commentRepository,
+        private CommentReplyRepository $commentReplyRepository,
         private UserRepository $userRepository,
         private LikeRepository $likeRepository
     ) {}
@@ -187,8 +189,13 @@ class CommentController extends AbstractController
         foreach ($allLikes as $like) {
             $like->setComment(null);
         }
-        
 
+
+        $allReply = $this->commentReplyRepository->findBy(['comment' => $comment]);
+        foreach ($allReply as $reply) {
+            $reply->setComment(null);
+        }
+        
         $this->entityManager->remove($comment);
         $this->entityManager->flush();
 
