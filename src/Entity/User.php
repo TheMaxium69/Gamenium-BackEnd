@@ -13,18 +13,18 @@ class User
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['comment:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read'])]
+    #[Groups(['comment:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read', 'commentreply:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['user:read', 'comment:read'])]
+    #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
     private ?int $id_useritium = null;
 
     #[ORM\Column]
     private array $user_role = [] ;
 
     #[ORM\Column]
-    #[Groups(['user:read', 'comment:read'])]
+    #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
     private ?\DateTimeImmutable $joinAt = null;
 
     #[ORM\Column]
@@ -38,26 +38,26 @@ class User
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'comment:read'])]
+    #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read'])]
+    #[Groups(['user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read', 'commentreply:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read','comment:read'])]
+    #[Groups(['user:read','comment:read', 'commentreply:read'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
     #[ORM\ManyToOne(cascade: ['persist'], targetEntity: Picture::class)]
-    #[Groups(['user:read', 'comment:read'])]
+    #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
     private ?picture $pp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'comment:read'])]
+    #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
     private ?string $color = null;
 
     public function getId(): ?int
