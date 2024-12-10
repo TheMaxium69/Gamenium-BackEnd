@@ -65,7 +65,7 @@ class CommentController extends AbstractController
         return $this->json(['message' => 'good', 'result' => [
             'total' => $totalcom,
             'reply' => $commentReply,
-        ]]);
+        ]], 200, [], ['groups' => 'commentreply:read']);
     }
 
 
