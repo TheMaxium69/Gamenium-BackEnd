@@ -212,7 +212,11 @@ class CommentController extends AbstractController
     }
 
     #[Route('/comment/{id}', name: 'comment_delete', methods:"DELETE")]
-    public function deleteComment(int $id):JsonResponse{
+    public function deleteComment(int $id, Request $request):JsonResponse{
+
+        if (!$id) {
+            return $this->json(['message' => 'no id']);
+        }
 
         $comment = $this->commentRepository->find($id);
 
@@ -221,21 +225,40 @@ class CommentController extends AbstractController
             return $this->json(['message' => 'Comment not found'], 200);
         }
 
-        $allLikes = $this->likeRepository->findBy(['comment' => $comment]);
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        foreach ($allLikes as $like) {
-            $like->setComment(null);
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user) {
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            if ($comment->getUser()->getId() != $user->getId()) {
+                return $this->json(['message' => 'You have no permission']);
+            }
+
+            $allLikes = $this->likeRepository->findBy(['comment' => $comment]);
+
+            foreach ($allLikes as $like) {
+                $like->setComment(null);
+            }
+
+
+            $allReply = $this->commentReplyRepository->findBy(['comment' => $comment]);
+            foreach ($allReply as $reply) {
+                $reply->setComment(null);
+            }
+
+            $this->entityManager->remove($comment);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'Comment deleted successfully']);
+        } else {
+            return $this->json(['message' => 'no token']);
         }
-
-
-        $allReply = $this->commentReplyRepository->findBy(['comment' => $comment]);
-        foreach ($allReply as $reply) {
-            $reply->setComment(null);
-        }
-
-        $this->entityManager->remove($comment);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Comment deleted successfully']);
     }
 }
