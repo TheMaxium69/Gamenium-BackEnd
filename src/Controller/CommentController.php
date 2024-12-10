@@ -33,6 +33,7 @@ class CommentController extends AbstractController
     public function countComByActu(int $id): JsonResponse
     {
         $totalcom = 0;
+        $commentReply = [];
 
         $actu = $this->entityManager->getRepository(PostActu::class)->find($id);
         if (!$actu){
@@ -41,17 +42,30 @@ class CommentController extends AbstractController
 
         $comment = $this->commentRepository->findBy(['post' => $actu]);
         if (!$comment){
-            return $this->json(['message' => 'good', 'result' => $totalcom]);
+            return $this->json(['message' => 'good', 'result' => [
+                'total' => 0,
+                'reply' => 0
+            ]]);
         }
 
         $totalcom = $totalcom + count($comment);
+
         foreach ($comment as $com) {
             $tempComReply = null;
             $tempComReply = $this->commentReplyRepository->findBy(['comment' => $com]);
+            if ($tempComReply){
+                $commentReply[] = [
+                    'id' => $com->getId(),
+                    'reply' => $tempComReply
+                ];
+            }
             $totalcom = $totalcom + count($tempComReply);
         }
 
-        return $this->json(['message' => 'good', 'result' => $totalcom]);
+        return $this->json(['message' => 'good', 'result' => [
+            'total' => $totalcom,
+            'reply' => $commentReply,
+        ]]);
     }
 
 
