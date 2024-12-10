@@ -10,6 +10,7 @@ use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -91,4 +92,24 @@ class CommentReplyController extends AbstractController
         return $this->json(['message' => 'no token']);
 
     }
+
+
+    #[Route('/getReplyByComment/{id}', name: 'app_reply_by_comment')]
+    public function getReplyByComment(int $id): JsonResponse
+    {
+
+        $commentReply = $this->entityManager->getRepository(CommentReply::class)->findBy(['comment' => $id]);
+
+        return $this->json(['message' => 'good', 'result' => $commentReply], 200, [], ['groups' => 'commentreply:read']);
+
+    }
+
+
+
+
+
+
+
+
+
 }
