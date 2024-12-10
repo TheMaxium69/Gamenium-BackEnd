@@ -105,6 +105,38 @@ class CommentReplyController extends AbstractController
     }
 
 
+    #[Route('/deleteReply/{id}', name: 'app_delete_reply')]
+    public function deleteReply(int $id, Request $request): JsonResponse
+    {
+
+        $commentReply = $this->entityManager->getRepository(CommentReply::class)->findOneBy(['id' => $id]);
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$user) {
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            if ($commentReply->getUser()->getId() != $user->getId()){
+                return $this->json(['message' => 'no have permission']);
+            }
+
+            $this->entityManager->remove($commentReply);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good']);
+            
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+
+    }
 
 
 
