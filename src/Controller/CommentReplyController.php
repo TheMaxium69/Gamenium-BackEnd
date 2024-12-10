@@ -67,7 +67,7 @@ class CommentReplyController extends AbstractController
             }
 
             /*SI L'COMMENT EXISTE*/
-            $comment = $this->entityManager->getRepository(PostActu::class)->findOneBy(['id' => $idComment]);
+            $comment = $this->entityManager->getRepository(Comment::class)->findOneBy(['id' => $idComment]);
             if (!$comment){
                 return $this->json(['message' => 'comment is failed']);
             }
