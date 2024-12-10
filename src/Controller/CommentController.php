@@ -54,10 +54,7 @@ class CommentController extends AbstractController
             $tempComReply = null;
             $tempComReply = $this->commentReplyRepository->findBy(['comment' => $com]);
             if ($tempComReply){
-                $commentReply[] = [
-                    'id' => $com->getId(),
-                    'reply' => $tempComReply
-                ];
+                $commentReply[] = $tempComReply;
             }
             $totalcom = $totalcom + count($tempComReply);
         }
