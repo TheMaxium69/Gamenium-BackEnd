@@ -105,7 +105,7 @@ class CommentReplyController extends AbstractController
     }
 
 
-    #[Route('/deleteReply/{id}', name: 'app_delete_reply')]
+    #[Route('/deleteReply/{id}', name: 'app_delete_reply', methods: ['DELETE'])]
     public function deleteReply(int $id, Request $request): JsonResponse
     {
 
@@ -131,7 +131,7 @@ class CommentReplyController extends AbstractController
             $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
-            
+
         } else {
             return $this->json(['message' => 'no token']);
         }
