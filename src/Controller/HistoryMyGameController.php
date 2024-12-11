@@ -776,6 +776,8 @@ class HistoryMyGameController extends AbstractController
 
                 }
 
+            } else {
+                return $this->json(['message' => 'no permission']);
             }
 
 
