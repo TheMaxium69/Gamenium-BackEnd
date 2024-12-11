@@ -29,7 +29,7 @@ class HmgTagsRepository extends ServiceEntityRepository
     {
 
         return $this->createQueryBuilder('tag2')
-            ->select('count(hmg.id)')
+            ->select('count(hmg)')
             ->from(HistoryMyGame::class, 'hmg')
             ->join('hmg.hmgTags', 'tag')
             ->where('tag.id = :tagId')
