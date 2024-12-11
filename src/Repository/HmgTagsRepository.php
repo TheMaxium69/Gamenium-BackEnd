@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\HistoryMyGame;
 use App\Entity\HmgTags;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,6 +20,23 @@ class HmgTagsRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, HmgTags::class);
+    }
+
+    /**
+     * @return int Returns le nombre de Hmg
+     */
+    public function countHmgWithTags($tagId): int
+    {
+
+        return $this->createQueryBuilder('tag2')
+            ->select('count(hmg.id)')
+            ->from(HistoryMyGame::class, 'hmg')
+            ->join('hmg.hmgTags', 'tag')
+            ->where('tag.id = :tagId')
+            ->setParameter('tagId', $tagId)
+            ->getQuery()
+            ->getSingleScalarResult();
+
     }
 
 //    /**

@@ -14,7 +14,7 @@ class HmgTags
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'hmgTags:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
@@ -22,15 +22,15 @@ class HmgTags
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'hmgTags:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'hmgTags:read'])]
     private ?string $color = null;
 
     #[ORM\Column]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'hmgTags:read'])]
     private ?bool $is_public = null;
 
     #[ORM\Column(length: 255)]
@@ -41,6 +41,10 @@ class HmgTags
 
     #[ORM\ManyToMany(targetEntity: HistoryMyGame::class, inversedBy: 'hmgTags')]
     private Collection $HistoryMyGame;
+
+    #[Groups(['hmgTags:read'])]
+    private ?int $nb_use = null;
+
 
     public function __construct()
     {
@@ -144,6 +148,18 @@ class HmgTags
     public function removeHistoryMyGame(HistoryMyGame $historyMyGame): static
     {
         $this->HistoryMyGame->removeElement($historyMyGame);
+
+        return $this;
+    }
+
+    public function getNbUse(): ?int
+    {
+        return $this->nb_use;
+    }
+
+    public function setNbUse(int $nb_use): static
+    {
+        $this->nb_use = $nb_use;
 
         return $this;
     }
