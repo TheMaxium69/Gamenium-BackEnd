@@ -142,16 +142,8 @@ class HmgTagsController extends AbstractController
                 return $this->json(['message' => 'no have permission']);
             }
 
-            $tagsUser = $this->hmgTagsRepository->findBy(['user' => $user, 'is_public' => false]);
+            $nbUse = $this->hmgTagsRepository->countHmgWithTags($tag->getId());
 
-            $i = 0;
-            foreach ($tagsUser as $oneTags) {
-                $allHmgWithTags = $this->hmgTagsRepository->countHmgWithTags($oneTags->getId());
-                $tagsUser[$i]->setNbUse(count($allHmgWithTags));
-                $i++;
-            }
-
-            $nbUse = $tag->getNbUse();
             if($nbUse) {
                 return $this->json(['message' => 'Tag is use']);
             }
