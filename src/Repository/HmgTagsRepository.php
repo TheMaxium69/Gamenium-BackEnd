@@ -25,17 +25,17 @@ class HmgTagsRepository extends ServiceEntityRepository
     /**
      * @return int Returns le nombre de Hmg
      */
-    public function countHmgWithTags($tagId): int
+    public function countHmgWithTags($tagId): array
     {
 
         return $this->createQueryBuilder('tag2')
-            ->select('count(hmg)')
+            ->select('hmg')
             ->from(HistoryMyGame::class, 'hmg')
             ->join('hmg.hmgTags', 'tag')
-            ->where('tag.id = :tagId')
+            ->andWhere('tag.id = :tagId')
             ->setParameter('tagId', $tagId)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getResult();
 
     }
 
