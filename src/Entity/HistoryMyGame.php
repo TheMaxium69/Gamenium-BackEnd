@@ -55,6 +55,7 @@ class HistoryMyGame
     private ?plateform $plateform = null;
 
     #[ORM\ManyToMany(targetEntity: HmgTags::class, mappedBy: 'HistoryMyGame')]
+    #[Groups(['historygame:read'])]
     private Collection $hmgTags;
 
     public function __construct()

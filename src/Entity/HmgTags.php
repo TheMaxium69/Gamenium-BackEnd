@@ -6,6 +6,7 @@ use App\Repository\HmgTagsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HmgTagsRepository::class)]
 class HmgTags
@@ -13,6 +14,7 @@ class HmgTags
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['historygame:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
@@ -20,12 +22,15 @@ class HmgTags
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['historygame:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['historygame:read'])]
     private ?string $color = null;
 
     #[ORM\Column]
+    #[Groups(['historygame:read'])]
     private ?bool $is_public = null;
 
     #[ORM\Column(length: 255)]
