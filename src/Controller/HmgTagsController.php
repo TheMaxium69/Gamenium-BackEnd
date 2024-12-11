@@ -52,4 +52,119 @@ class HmgTagsController extends AbstractController
         }
         return $this->json(['message' => 'good', 'result' => $allTags], 200, [], ['groups' => 'hmgTags:read']);
     }
+
+    #[Route('/createtag', name:'create_tag', methods:"POST")]
+    public function createTag(Request $request): JSONResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['name']) || trim($data['name']) === ""){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+
+        if (!isset($data['color']) || trim($data['color']) === ""){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        /* SET UNE IP */
+        if (!isset($data['ip'])) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $data['ip'];
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if(!$user){
+                return $this->json(['message' => 'User invalide']);
+            }
+
+            $tagDB = $this->hmgTagsRepository->findBy(['user' => $user, 'name' => $data['name']]);
+            if ($tagDB){
+                return $this->json(['message' => 'Tag already exist']);
+            }
+
+            $tag = new HmgTags();
+            $tag->setName($data['name']);
+            $tag->setIp($newIp);
+            $tag->setUser($user);
+            $tag->setColor($data['color']);
+            $tag->setIsPublic(false);
+            $tag->setCreatedAt(new \DateTimeimmutable());
+            $this->entityManager->persist($tag);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $tag], 200, [], ['groups' => 'hmgTags:read']);
+
+
+
+        } else {
+            return $this->json(['message' => 'Token invalide']);
+        }
+    }
+
+    #[Route('/deletetag/{id}', name: 'delete_tag', methods:"DELETE")]
+    public function deleteTag(int $id, Request $request): JSONResponse
+    {
+        if (!$id) {
+            return $this->json(['message' => 'No id']);
+        }
+
+        $tag = $this->hmgTagsRepository->findOneBy(["id" => $id]);
+        if (!$tag) {
+            return $this->json(['message' => 'Tag not found']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if(!$user){
+                return $this->json(['message' => 'User invalide']);
+            }
+
+            if ($tag->getUser()->getId() !== $user->getId()) {
+                return $this->json(['message' => 'no have permission']);
+            }
+
+            $tagsUser = $this->hmgTagsRepository->findBy(['user' => $user, 'is_public' => false]);
+
+            $i = 0;
+            foreach ($tagsUser as $oneTags) {
+                $allHmgWithTags = $this->hmgTagsRepository->countHmgWithTags($oneTags->getId());
+                $tagsUser[$i]->setNbUse(count($allHmgWithTags));
+                $i++;
+            }
+
+            $nbUse = $tag->getNbUse();
+            if($nbUse) {
+                return $this->json(['message' => 'Tag is use']);
+            }
+            
+            $this->entityManager->remove($tag);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good']);
+
+        } else {
+            return $this->json(['message' => 'Token invalide']);
+        }
+
+    }
+
 }
