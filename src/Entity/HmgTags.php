@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\HmgTagsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HmgTagsRepository::class)]
@@ -31,6 +33,14 @@ class HmgTags
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\ManyToMany(targetEntity: HistoryMyGame::class, inversedBy: 'hmgTags')]
+    private Collection $HistoryMyGame;
+
+    public function __construct()
+    {
+        $this->HistoryMyGame = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,6 +115,30 @@ class HmgTags
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HistoryMyGame>
+     */
+    public function getHistoryMyGame(): Collection
+    {
+        return $this->HistoryMyGame;
+    }
+
+    public function addHistoryMyGame(HistoryMyGame $historyMyGame): static
+    {
+        if (!$this->HistoryMyGame->contains($historyMyGame)) {
+            $this->HistoryMyGame->add($historyMyGame);
+        }
+
+        return $this;
+    }
+
+    public function removeHistoryMyGame(HistoryMyGame $historyMyGame): static
+    {
+        $this->HistoryMyGame->removeElement($historyMyGame);
 
         return $this;
     }

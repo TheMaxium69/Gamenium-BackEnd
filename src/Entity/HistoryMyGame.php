@@ -54,6 +54,14 @@ class HistoryMyGame
     #[Groups(['historygame:read'])]
     private ?plateform $plateform = null;
 
+    #[ORM\ManyToMany(targetEntity: HmgTags::class, mappedBy: 'HistoryMyGame')]
+    private Collection $hmgTags;
+
+    public function __construct()
+    {
+        $this->hmgTags = new ArrayCollection();
+    }
+
 
 //    public function __construct()
 //    {
@@ -157,6 +165,33 @@ class HistoryMyGame
     public function setPlateform(?plateform $plateform): static
     {
         $this->plateform = $plateform;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HmgTags>
+     */
+    public function getHmgTags(): Collection
+    {
+        return $this->hmgTags;
+    }
+
+    public function addHmgTag(HmgTags $hmgTag): static
+    {
+        if (!$this->hmgTags->contains($hmgTag)) {
+            $this->hmgTags->add($hmgTag);
+            $hmgTag->addHistoryMyGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHmgTag(HmgTags $hmgTag): static
+    {
+        if ($this->hmgTags->removeElement($hmgTag)) {
+            $hmgTag->removeHistoryMyGame($this);
+        }
 
         return $this;
     }
