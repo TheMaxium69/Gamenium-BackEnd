@@ -13,6 +13,7 @@ use App\Entity\HmgCopyPurchase;
 use App\Entity\HmgCopyRegion;
 use App\Entity\HmgScreenshot;
 use App\Entity\HmgSpeedrun;
+use App\Entity\HmgTags;
 use App\Entity\Plateform;
 use App\Entity\User;
 use App\Entity\UserRate;
@@ -424,6 +425,51 @@ class HistoryMyGameController extends AbstractController
                 }
                 if (isset($data['myGame']['wish_list']) && $data['myGame']['wish_list'] != $historyMyGame->isWishList() && $data['myGame']['wish_list'] || !$data['myGame']['wish_list']){
                     $historyMyGame->setWishList($data['myGame']['wish_list']);
+                }
+
+
+                /* GESTION DES TAGS*/
+                if (isset($data['myGame']['hmgTags'])){
+
+                    $allTags = $data['myGame']['hmgTags'];
+                    $tagsDB = $historyMyGame->getHmgTags();
+
+                        /* AJOUTER LES NOUVEAU*/
+
+                    /* ADD */
+                    foreach ($allTags as $tagOne) {
+                        $found = false;
+                        foreach ($tagsDB as $tagOneDB) {
+                            if ($tagOneDB->getId() == $tagOne) {
+                                $found = true;
+                                break;
+                            }
+                        }
+
+                        if (!$found) {
+                            $tagToAdd = $this->entityManager->getRepository(HmgTags::class)->findOneBy(['id' => $tagOne]);
+                            $historyMyGame->addHmgTag($tagToAdd);
+                        }
+
+                    }
+
+
+                    /* SUPRESSION */
+
+                    foreach ($tagsDB as $tagOneDB){
+                        $found = false;
+                        foreach ($allTags AS $tagOne) {
+                            if ($tagOne == $tagOneDB->getId()) {
+                                $found = true;
+                                break;
+                            }
+                        }
+
+                        if (!$found){
+                            $historyMyGame->removeHmgTag($tagOneDB);
+                        }
+                    }
+
                 }
 
                 $this->entityManager->persist($historyMyGame);
