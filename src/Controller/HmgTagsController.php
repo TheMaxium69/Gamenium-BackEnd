@@ -42,12 +42,8 @@ class HmgTagsController extends AbstractController
 
             $i = 0;
             foreach ($tagsUser as $oneTags) {
-                $countTags = $this->hmgTagsRepository->countHmgWithTags($oneTags->getId());
-//                var_dump($countTags);
-                foreach ($countTags as $oneTag) {
-                    var_dump($oneTag->getId());
-                }
-                $tagsUser[$i]->setNbUse(count($countTags));
+                $allHmgWithTags = $this->hmgTagsRepository->countHmgWithTags($oneTags->getId());
+                $tagsUser[$i]->setNbUse(count($allHmgWithTags));
                 $i++;
             }
 
