@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\HmgCopyRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -46,6 +48,15 @@ class HmgCopy
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?HistoryMyGame $HistoryMyGame = null;
+
+    #[ORM\ManyToMany(targetEntity: HmgCopyLanguage::class, inversedBy: 'hmgCopies')]
+    #[Groups(['historygame:read'])]
+    private Collection $language;
+
+    public function __construct()
+    {
+        $this->language = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -144,6 +155,30 @@ class HmgCopy
     public function setHistoryMyGame(?HistoryMyGame $HistoryMyGame): static
     {
         $this->HistoryMyGame = $HistoryMyGame;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HmgCopyLanguage>
+     */
+    public function getLanguage(): Collection
+    {
+        return $this->language;
+    }
+
+    public function addLanguage(HmgCopyLanguage $language): static
+    {
+        if (!$this->language->contains($language)) {
+            $this->language->add($language);
+        }
+
+        return $this;
+    }
+
+    public function removeLanguage(HmgCopyLanguage $language): static
+    {
+        $this->language->removeElement($language);
 
         return $this;
     }
