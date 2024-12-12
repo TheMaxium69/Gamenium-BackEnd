@@ -9,6 +9,7 @@ use App\Entity\HistoryMyGame;
 use App\Entity\HmgCopy;
 use App\Entity\HmgCopyEtat;
 use App\Entity\HmgCopyFormat;
+use App\Entity\HmgCopyLanguage;
 use App\Entity\HmgCopyPurchase;
 use App\Entity\HmgCopyRegion;
 use App\Entity\HmgScreenshot;
@@ -543,6 +544,49 @@ class HistoryMyGameController extends AbstractController
                                 if ($newRegion){
                                     $copyGameOne->setRegion($newRegion);
                                 }
+                            }
+
+                            /* GESTION DES LANG*/
+                            if (isset($updatedCopyGameOne['hmgLanguages'])){ /* TODO : VERIFI LA CONDITION */
+
+                                $allLang = $updatedCopyGameOne['hmgLanguages'];
+                                $langDB = $copyGameOne->getHmgLanguages();
+
+                                /* AJOUTER LES NOUVEAU*/
+
+                                /* ADD */
+                                foreach ($allLang as $langOne) {
+                                    $found = false;
+                                    foreach ($langDB as $langOneDB) {
+                                        if ($langOneDB->getId() == $allLang) {
+                                            $found = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!$found) {
+                                        $langToAdd = $this->entityManager->getRepository(HmgCopyLanguage::class)->findOneBy(['id' => $langOne]);
+                                        $copyGameOne->addLanguage($langToAdd);
+                                    }
+
+                                }
+
+
+                                /* SUPRESSION */
+                                foreach ($langDB as $langOneDB){
+                                    $found = false;
+                                    foreach ($allLang AS $langOne) {
+                                        if ($langOne == $langOneDB->getId()) {
+                                            $found = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!$found){
+                                        $copyGameOne->removeLanguage($langOneDB);
+                                    }
+                                }
+
                             }
 
 
