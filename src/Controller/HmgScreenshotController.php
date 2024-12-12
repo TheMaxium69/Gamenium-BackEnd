@@ -20,21 +20,14 @@ class HmgScreenshotController extends AbstractController
         private EntityManagerInterface $entityManager
     ) {}
 
-    #[Route('/screenshot-upload', name: 'app_hmg_screenshot', methods:['POST'])]
+    #[Route('/upload/screenshot/', name: 'app_hmg_screenshot', methods:['POST'])]
     public function upload(Request $request): JsonResponse
     {
 
-//        $data = json_decode($request->getContent(), true);
-//
-//        /*SI LE JSON A PAS DE SOUCI */
-//        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-//            return $this->json(['message' => 'Format JSON invalide']);
-//        }
-
         $data = [
-            'id_mygame' => 23,
-            'id_category' => 1,
-            'ip' => '10.10.10.10'
+            'id_mygame' => $request->request->get('id_mygame', null),
+            'id_category' => $request->request->get('id_category', null),
+            'ip' => $request->request->get('ip', '0.0.0.0')
         ];
 
         if(!isset($data['id_mygame']) && !isset($data['id_category'])){
