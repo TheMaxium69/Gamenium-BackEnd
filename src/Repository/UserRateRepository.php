@@ -21,6 +21,23 @@ class UserRateRepository extends ServiceEntityRepository
         parent::__construct($registry, UserRate::class);
     }
 
+    public function calcMoyenByGame($idGame): int
+    {
+
+        $qb = $this->createQueryBuilder('ur')
+            ->select('AVG(ur.rating) / 20 as moyenne')
+            ->andWhere('ur.game = :idGame')
+            ->setParameter('idGame', $idGame)
+            ->getQuery();
+
+        $result = $qb->getSingleScalarResult();
+
+        return (int)(floatval($result) * 20);
+
+    }
+
+
+
 //    /**
 //     * @return UserRate[] Returns an array of UserRate objects
 //     */

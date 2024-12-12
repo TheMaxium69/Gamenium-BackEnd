@@ -105,6 +105,9 @@ class Game
     #[ORM\OneToMany(targetEntity: View::class, mappedBy: 'game')]
     private Collection $views;
 
+    #[Groups(['game:read'])]
+    private ?int $moyenRateUser = null;
+
     public function __construct()
     {
         $this->postActus = new ArrayCollection();
@@ -386,5 +389,18 @@ class Game
         return $this;
     }
 
-    
+    public function getMoyenRateUser(): ?int
+    {
+        return $this->moyenRateUser;
+    }
+
+    public function setMoyenRateUser(?int $moyenRateUser): static
+    {
+        $this->moyenRateUser = $moyenRateUser;
+
+        return $this;
+    }
+
+
+
 }

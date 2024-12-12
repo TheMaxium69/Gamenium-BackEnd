@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\UserRate;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,45 +27,45 @@ class GameController extends AbstractController
 //        return $this->json($games , 200 , [], ['groups' => 'game:read']);
 //    }
 
-    #[Route('/games/{page}/{limit}', name: 'get_all_games_paginated', methods: ['GET'])]
-    public function getAllGamesPaginated(Request $request, int $page, int $limit, GameRepository $gameRepository): JsonResponse
-    {
-
-        if ($limit <= 100){
-
-            $offset = ($page - 1) * $limit;
-
-            $games = $gameRepository->findBy([], null, $limit, $offset);
-
-            if ($games == []) {
-                $message = [
-                    'message' => "vide",
-                    'page' => $page,
-                    'limit' => $limit,
-                ];
-                return $this->json($message);
-            } else {
-                $message = [
-                    'message' => "good",
-                    'page' => $page,
-                    'limit' => $limit,
-                    'result' => $games
-                ];
-
-                return $this->json($message , 200 , [], ['groups' => 'game:read']);
-            }
-
-        } else {
-
-            $message = [
-                'message' => "100 is max",
-                'page' => $page,
-                'limit' => $limit,
-            ];
-            return $this->json($message);
-        }
-
-    }
+//    #[Route('/games/{page}/{limit}', name: 'get_all_games_paginated', methods: ['GET'])]
+//    public function getAllGamesPaginated(Request $request, int $page, int $limit, GameRepository $gameRepository): JsonResponse
+//    {
+//
+//        if ($limit <= 100){
+//
+//            $offset = ($page - 1) * $limit;
+//
+//            $games = $gameRepository->findBy([], null, $limit, $offset);
+//
+//            if ($games == []) {
+//                $message = [
+//                    'message' => "vide",
+//                    'page' => $page,
+//                    'limit' => $limit,
+//                ];
+//                return $this->json($message);
+//            } else {
+//                $message = [
+//                    'message' => "good",
+//                    'page' => $page,
+//                    'limit' => $limit,
+//                    'result' => $games
+//                ];
+//
+//                return $this->json($message , 200 , [], ['groups' => 'game:read']);
+//            }
+//
+//        } else {
+//
+//            $message = [
+//                'message' => "100 is max",
+//                'page' => $page,
+//                'limit' => $limit,
+//            ];
+//            return $this->json($message);
+//        }
+//
+//    }
 
     #[Route('/game/{id}', name: 'get_game_by_id', methods: ['GET'])]
     public function getGameById(int $id): JsonResponse
@@ -74,6 +75,8 @@ class GameController extends AbstractController
         if(!$game){
             return $this->json(['message' => 'Game not found']);
         } else {
+
+            $game->setMoyenRateUser($this->entityManager->getRepository(UserRate::class)->calcMoyenByGame($game->getId()));
             $message = [
                 'message' => "good",
                 'result' => $game
@@ -153,6 +156,7 @@ class GameController extends AbstractController
             $oneGame['imageTags'] = json_decode($oneGame['image_tags']);
             $oneGame['originalGameRating'] = json_decode($oneGame['original_game_rating']);
             $oneGame['platforms'] = json_decode($oneGame['platforms']);
+            $oneGame['moyenRateUser'] = $this->entityManager->getRepository(UserRate::class)->calcMoyenByGame($oneGame['id']);
 
             /* nameVariable */
             $oneGame = array_merge($oneGame, [
