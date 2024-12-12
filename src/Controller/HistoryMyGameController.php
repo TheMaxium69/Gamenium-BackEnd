@@ -1000,6 +1000,7 @@ class HistoryMyGameController extends AbstractController
 
 
             $speedRun = $this->entityManager->getRepository(HmgSpeedrun::class)->findBy(['MyGame' => $historyMyGame]);
+            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy(['MyGame' => $historyMyGame]);
 
             /* FORMER LE RETOUR*/
             $message = [
@@ -1009,7 +1010,7 @@ class HistoryMyGameController extends AbstractController
                     "myGame" => $historyMyGame,
                     "copyGame" => $finalCopyGame ?? [],
                     "speedrun" => $speedRun ?? [],
-                    "screenshot" => $data['screenshot'],
+                    "screenshot" => $screenshot ?? [],
                     "rate" => $rate ?? $newRate ?? null,
                 ]
             ];
