@@ -12,11 +12,11 @@ class HmgScreenshotCategory
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'screenshot:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'screenshot:read'])]
     private ?string $name = null;
 
     public function getId(): ?int

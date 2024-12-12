@@ -12,12 +12,12 @@ class HmgScreenshot
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'screenshot:read'])]
     private ?int $id = null;
 
     #[ORM\OneToOne(targetEntity: 'App\Entity\picture', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'screenshot:read'])]
     private ?picture $picture = null;
 
     #[ORM\ManyToOne]
@@ -26,11 +26,12 @@ class HmgScreenshot
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'screenshot:read'])]
     private ?HmgScreenshotCategory $category = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['screenshot:read'])]
     private ?HistoryMyGame $MyGame = null;
 
     public function getId(): ?int
