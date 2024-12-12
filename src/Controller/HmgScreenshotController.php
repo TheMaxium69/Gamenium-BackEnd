@@ -136,7 +136,9 @@ class HmgScreenshotController extends AbstractController
 
     }
 
-    #[Route('/delete-screenshot/{id}', name: 'delete_photo', methods: ['DELETE'])]
+
+
+    #[Route('/delete-screenshot/{id}', name: 'delete_screenshot', methods: ['DELETE'])]
     public function deletePhoto(int $id, Request $request) : JsonResponse 
     {   
 
@@ -172,13 +174,17 @@ class HmgScreenshotController extends AbstractController
             $this->entityManager->flush();
             
             return $this->json(['message' => 'good']);
-        }
 
-        return $this->json(['message' => 'Erreur dans la suppression de la photo']);
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
     }
 
-    #[Route('/categories', name: 'app_getAllCategories', methods: ['GET'])]
-    public function getAllCategories(): Response 
+
+
+
+    #[Route('/screenshot-categories', name: 'app_getAllCategoriesScreenshot', methods: ['GET'])]
+    public function getAllScreenshotCategories(): Response
     {
         $categories = $this->hmgScreenshotCategoryRepository->findAll();
 
