@@ -14,11 +14,11 @@ class HmgCopyLanguage
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['copyLanguage:read'])]
+    #[Groups(['copyLanguage:read', 'historygame:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['copyLanguage:read'])]
+    #[Groups(['copyLanguage:read', 'historygame:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: HmgCopy::class, mappedBy: 'language')]

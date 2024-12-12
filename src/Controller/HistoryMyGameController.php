@@ -742,6 +742,17 @@ class HistoryMyGameController extends AbstractController
                         $NEWcopyGame->setRegion($newRegion);
                     }
 
+                    if (isset($addCopy['hmgLanguages'])) { /* TODO : VERIFI LA CONDITION */
+
+                        $allLang = $addCopy['hmgLanguages'];
+
+                        /* ADD */
+                        foreach ($allLang as $langOne) {
+                            $langToAdd = $this->entityManager->getRepository(HmgCopyLanguage::class)->findOneBy(['id' => $langOne]);
+                            $NEWcopyGame->addLanguage($langToAdd);
+                        }
+                    }
+
                     /* GEREZ LE PURCHASE */
                     if ($addCopy['purchase']) {
 
