@@ -91,7 +91,7 @@ class HmgScreenshotController extends AbstractController
                 return $this->json(['message' => 'file is missing']);
             }
 
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
 
             if (!in_array($screenshot->getMimeType(), $allowedTypes)){
                 return $this->json(['message' => 'not allowed type']);
