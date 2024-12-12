@@ -133,42 +133,46 @@ class HmgScreenshotController extends AbstractController
 
     }
 
-    #[Route('/delete-screenshot/{id}', name: 'delete_photo', methods: ['DELETE'])]
-    public function deletePhoto(int $id, Request $request) : JsonResponse 
-    {   
+    // #[Route('/delete-screenshot/{id}', name: 'delete_photo', methods: ['DELETE'])]
+    // public function deletePhoto(int $id, Request $request) : JsonResponse 
+    // {   
 
-        if(!$id){
-            return $this->json(['message' => 'no screenshot found']);
-        }
+    //     if(!$id){
+    //         return $this->json(['message' => 'no screenshot found']);
+    //     }
 
-        $authorizationHeader = $request->headers->get('Authorization');
+    //     $authorizationHeader = $request->headers->get('Authorization');
 
-        if (strpos($authorizationHeader, 'Bearer ') === 0) {
-            $token = substr($authorizationHeader, 7);
+    //     if (strpos($authorizationHeader, 'Bearer ') === 0) {
+    //         $token = substr($authorizationHeader, 7);
             
-            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+    //         $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-            if (!$user) {
-                return $this->json(['message' => 'token is failed']);
-            }
+    //         if (!$user) {
+    //             return $this->json(['message' => 'token is failed']);
+    //         }
 
-            // On stock l'id de la photo a supprimer
-            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findBy() 
+    //         // On stock l'id de la photo a supprimer
+    //         $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->find($id); 
 
-            // On set null la pp de l'user
-            $user->setPp(null);
+    //         if(!$screenshot){
+    //             return $this->json(['message' => 'token is failed']);
+    //         }
+
+    //         // On set null la pp de l'user
+    //         $user->setPp(null);
             
-            // On trouve la photo grace a son id et on la supprime de la bdd
-            $profilePicture = $this->entityManager->getRepository(Picture::class)->find($pictureId);
-            $this->entityManager->remove($profilePicture);
+    //         // On trouve la photo grace a son id et on la supprime de la bdd
+    //         $profilePicture = $this->entityManager->getRepository(Picture::class)->find($pictureId);
+    //         $this->entityManager->remove($profilePicture);
         
-            $this->entityManager->flush();
+    //         $this->entityManager->flush();
             
-            return $this->json(['message' => 'photo supprimée']);
-        }
+    //         return $this->json(['message' => 'photo supprimée']);
+    //     }
 
-        return $this->json(['message' => 'Erreur dans la suppression de la photo']);
-    }
+    //     return $this->json(['message' => 'Erreur dans la suppression de la photo']);
+    // }
 
 
 
