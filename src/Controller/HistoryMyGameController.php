@@ -550,7 +550,7 @@ class HistoryMyGameController extends AbstractController
                             if (isset($updatedCopyGameOne['hmgLanguages'])){ /* TODO : VERIFI LA CONDITION */
 
                                 $allLang = $updatedCopyGameOne['hmgLanguages'];
-                                $langDB = $copyGameOne->getHmgLanguages();
+                                $langDB = $copyGameOne->getLanguage();
 
                                 /* AJOUTER LES NOUVEAU*/
 
