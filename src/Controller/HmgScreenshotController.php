@@ -7,17 +7,20 @@ use App\Entity\HmgScreenshot;
 use App\Entity\HmgScreenshotCategory;
 use App\Entity\Picture;
 use App\Entity\User;
+use App\Repository\HmgScreenshotCategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HmgScreenshotController extends AbstractController
 {
 
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private HmgScreenshotCategoryRepository $hmgScreenshotCategoryRepository
     ) {}
 
     #[Route('/upload/screenshot/', name: 'app_hmg_screenshot', methods:['POST'])]
@@ -133,47 +136,54 @@ class HmgScreenshotController extends AbstractController
 
     }
 
-    // #[Route('/delete-screenshot/{id}', name: 'delete_photo', methods: ['DELETE'])]
-    // public function deletePhoto(int $id, Request $request) : JsonResponse 
-    // {   
+    #[Route('/delete-screenshot/{id}', name: 'delete_photo', methods: ['DELETE'])]
+    public function deletePhoto(int $id, Request $request) : JsonResponse 
+    {   
 
-    //     if(!$id){
-    //         return $this->json(['message' => 'no screenshot found']);
-    //     }
+        if(!$id){
+            return $this->json(['message' => 'no id found']);
+        }
 
-    //     $authorizationHeader = $request->headers->get('Authorization');
+        $authorizationHeader = $request->headers->get('Authorization');
 
-    //     if (strpos($authorizationHeader, 'Bearer ') === 0) {
-    //         $token = substr($authorizationHeader, 7);
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
             
-    //         $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-    //         if (!$user) {
-    //             return $this->json(['message' => 'token is failed']);
-    //         }
+            if (!$user) {
+                return $this->json(['message' => 'token is failed']);
+            }
 
-    //         // On stock l'id de la photo a supprimer
-    //         $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->find($id); 
+            // On stock l'id de la photo a supprimer
+            $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findOneBy(['id' => $id]); 
 
-    //         if(!$screenshot){
-    //             return $this->json(['message' => 'token is failed']);
-    //         }
+            if(!$screenshot){
+                return $this->json(['message' => 'no screeshot found']);
+            }
 
-    //         // On set null la pp de l'user
-    //         $user->setPp(null);
+            if($screenshot->getPicture()->getUser()->getId() != $user->getId()){
+                return $this->json(['message' => 'delete not allowed']);
+            }
+
             
-    //         // On trouve la photo grace a son id et on la supprime de la bdd
-    //         $profilePicture = $this->entityManager->getRepository(Picture::class)->find($pictureId);
-    //         $this->entityManager->remove($profilePicture);
+            $this->entityManager->remove($screenshot);
         
-    //         $this->entityManager->flush();
+            $this->entityManager->flush();
             
-    //         return $this->json(['message' => 'photo supprimée']);
-    //     }
+            return $this->json(['message' => 'good']);
+        }
 
-    //     return $this->json(['message' => 'Erreur dans la suppression de la photo']);
-    // }
+        return $this->json(['message' => 'Erreur dans la suppression de la photo']);
+    }
 
+    #[Route('/categories', name: 'app_getAllCategories', methods: ['GET'])]
+    public function getAllCategories(): Response 
+    {
+        $categories = $this->hmgScreenshotCategoryRepository->findAll();
+
+        return $this->json(['message' => 'good', 'result' => $categories], 200, [], ['groups' => 'screenshot:read']);
+    }
 
 
 
