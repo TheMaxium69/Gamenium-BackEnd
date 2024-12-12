@@ -12,7 +12,7 @@ class Devise
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read', 'devise:read'])]
+    #[Groups(['default:read', 'historygame:read', 'devise:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
