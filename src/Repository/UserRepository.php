@@ -24,7 +24,7 @@ class UserRepository extends ServiceEntityRepository
     public function searchUserByName(string $searchValue, int $limit = 10): array
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.username LIKE :searchValue')
+            ->andWhere('u.username LIKE :searchValue OR u.displayname_useritium LIKE :searchValue')
             ->setParameter('searchValue', '%' . $searchValue . '%')
             ->setMaxResults($limit)
             ->getQuery()
