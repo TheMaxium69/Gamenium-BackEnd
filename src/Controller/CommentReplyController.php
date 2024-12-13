@@ -40,7 +40,7 @@ class CommentReplyController extends AbstractController
         }
 
         /* MET UNE LIMITE DE TAILLE DU COMMENTAIRE */
-        if (strlen(($data['content'])) > 300) {
+        if (strlen(($data['content'])) > 255) {
             return $this->json(['message' => 'to long content']);
         }
 
