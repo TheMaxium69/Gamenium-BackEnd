@@ -163,11 +163,13 @@ class CommentController extends AbstractController
         }
 
         /* SET UNE IP */
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
+
 
         $idActu = $data['id_post'];
         $content = $data['content'];
