@@ -80,41 +80,4 @@ class BadgeController extends AbstractController
         }
     }
 
-    #[Route('/badge', name: 'create_badge', methods: ['POST'])]
-    public function createBadge(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $badge = new Badge();
-        $badge->setName($data['name']);
-        $badge->setCreatedAt(new \DateTimeImmutable($data['created_at']));
-
-        // Assuming $data['picture'] contains the Picture data (you might need to adjust this based on your requirements)
-        $picture = new Picture();
-        $picture->setUrl($data['picture']['url']);
-        $picture->setPostedAt(new \DateTimeImmutable($data['picture']['posted_at']));
-        $picture->setIp($data['picture']['ip']);
-
-        $badge->setPicture($picture);
-
-        $this->entityManager->persist($badge);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Badge created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/badge/{id}', name: 'delete_badge', methods: ['DELETE'])]
-    public function deleteBadge(int $id): JsonResponse
-    {
-        $badge = $this->badgeRepository->find($id);
-
-        if (!$badge) {
-            return $this->json(['message' => 'Badge not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($badge);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Badge deleted successfully']);
-    }
 }

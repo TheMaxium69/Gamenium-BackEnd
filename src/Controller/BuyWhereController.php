@@ -77,10 +77,11 @@ class BuyWhereController extends AbstractController
         }
 
         /* SET UNE IP */
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
 
         $authorizationHeader = $request->headers->get('Authorization');

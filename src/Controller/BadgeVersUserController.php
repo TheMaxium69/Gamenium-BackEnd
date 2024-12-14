@@ -37,35 +37,4 @@ class BadgeVersUserController extends AbstractController
 
         return $this->json($badgeVersUser);
     }
-
-    #[Route('/badgeversuser', name: 'create_badgeversuser', methods: ['POST'])]
-    public function createBadgeVersUser(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $badgeVersUser = new BadgeVersUser();
-        $badgeVersUser->setIdUser($data['id_user']);
-        $badgeVersUser->setIdBadge($data['id_badge']);
-        $badgeVersUser->setCreatedAt(new \DateTimeImmutable());
-
-        $this->entityManager->persist($badgeVersUser);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Badge Vers User created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/badgeversuser/{id}', name: 'delete_badgeversuser', methods: ['DELETE'])]
-    public function deleteBadgeVersUser(int $id): JsonResponse
-    {
-        $badgeVersUser = $this->badgeVersUserRepository->find($id);
-
-        if (!$badgeVersUser) {
-            return $this->json(['message' => 'Badge Vers User not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($badgeVersUser);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Badge Vers User deleted successfully']);
-    }
 }
