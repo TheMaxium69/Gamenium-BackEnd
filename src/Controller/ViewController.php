@@ -351,12 +351,12 @@ class ViewController extends AbstractController
 
             if ($latestViewByUser !== null) {
                 if ($latestViewByUser && $latestViewByUser->getViewAt() && $latestViewByUser->getViewAt() >= (new \DateTimeImmutable())->sub(new \DateInterval('PT12H'))) {
-                    $ipIsLock = true; /* LOCK - vue dans les 12 dernier heure */
+                    $userIsLock = true; /* LOCK - vue dans les 12 dernier heure */
                 } else {
-                    $ipIsLock = false; /* notLock - vue dans audela des 12 dernier heure  */
+                    $userIsLock = false; /* notLock - vue dans audela des 12 dernier heure  */
                 }
             } else {
-                $ipIsLock = false; /* notLock - aucune vue */
+                $userIsLock = false; /* notLock - aucune vue */
             }
 
         }
@@ -368,8 +368,8 @@ class ViewController extends AbstractController
          *
          * */
 
-        var_dump($userIsLock);
-        var_dump($ipIsLock);
+//        var_dump($userIsLock);
+//        var_dump($ipIsLock);
         if (!$userIsLock && !$ipIsLock) {
             return false;
         }
