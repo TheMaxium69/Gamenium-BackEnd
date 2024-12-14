@@ -9,24 +9,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TestController extends AbstractController
 {
-    #[Route('/test', name: 'app_test', methods: ['GET'])]
-    public function index(Request $request): Response
+    #[Route('/getIp', name: 'app_test', methods: ['GET'])]
+    public function getIp(Request $request): Response
     {
 
         $ip = $request->getClientIp();
 
-        $ips = $request->getClientIps();
-
-
-
-
-        return $this->json([
-            "ip" => $ip,
-            "ips" => $ips,
-            "httpHost" => $request->getHttpHost(),
-            "host" => $request->getHost(),
-            "port" => $request->getPort(),
-            "Languages" => $request->getLanguages(),
-        ]);
+        return $this->json([ "message" => "good", "result" => $ip], 200);
     }
 }

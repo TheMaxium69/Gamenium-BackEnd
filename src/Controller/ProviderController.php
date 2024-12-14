@@ -55,43 +55,43 @@ class ProviderController extends AbstractController
 
     }
 
-    #[Route('/provider', name:'provider_create', methods:'POST')]
-    public function createProvider(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $provider = new Provider();
-        $provider->setTagName($data['name']);
-        $provider->setDisplayName($data['displayName']);
-        $provider->setCountry($data['country']);
-        $provider->setCreatedAt(new \DateTimeImmutable());
-        $provider->setJoindeAt(new \DateTimeImmutable());
-        $provider->setPicture($data['picture']);
-        $provider->setParentCompany($data['parentCompany']);
-        $provider->setContent($data['content']);
-        $provider->setBanner($data['banner']);
-
-        $this->entityManager->persist($provider);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Provider created successfully'], Response::HTTP_CREATED);
-
-    }
-
-    #[Route('/provider/{id}', name:'provider_delete', methods:'DELETE')]
-    public function deleteProvider(int $id): JsonResponse
-    {
-        $provider = $this->providerRepository->find($id);
-
-        if (!$provider) {
-            return $this->json(['message' => 'Badge not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($provider);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Provide deleted successfully']);
-    }
+//    #[Route('/provider', name:'provider_create', methods:'POST')]
+//    public function createProvider(Request $request): JsonResponse
+//    {
+//        $data = json_decode($request->getContent(), true);
+//
+//        $provider = new Provider();
+//        $provider->setTagName($data['name']);
+//        $provider->setDisplayName($data['displayName']);
+//        $provider->setCountry($data['country']);
+//        $provider->setCreatedAt(new \DateTimeImmutable());
+//        $provider->setJoindeAt(new \DateTimeImmutable());
+//        $provider->setPicture($data['picture']);
+//        $provider->setParentCompany($data['parentCompany']);
+//        $provider->setContent($data['content']);
+//        $provider->setBanner($data['banner']);
+//
+//        $this->entityManager->persist($provider);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'Provider created successfully'], Response::HTTP_CREATED);
+//
+//    }
+//
+//    #[Route('/provider/{id}', name:'provider_delete', methods:'DELETE')]
+//    public function deleteProvider(int $id): JsonResponse
+//    {
+//        $provider = $this->providerRepository->find($id);
+//
+//        if (!$provider) {
+//            return $this->json(['message' => 'Badge not found'], Response::HTTP_NOT_FOUND);
+//        }
+//
+//        $this->entityManager->remove($provider);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'Provide deleted successfully']);
+//    }
 
     #[Route('/providers/search', name: 'providers', methods: ['POST'])]
     public function searchUsers(Request $request): JsonResponse

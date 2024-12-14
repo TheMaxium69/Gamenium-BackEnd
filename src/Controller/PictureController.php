@@ -48,10 +48,11 @@ class PictureController extends AbstractController
             return $this->json(['message' => 'Only JPEG, PNG, and GIF images are allowed']);
         }
 
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
 
         $fileName  = 'userPP_' . $this->randomName() . '.' . $photoFile->guessExtension();

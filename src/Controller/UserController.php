@@ -227,14 +227,6 @@ class UserController extends AbstractController
         return $this->json(['message' => 'Theme color updated successfully']);
 
     }
-    
-    #[Route('/get-ip/', name: 'get_ip', methods: ['GET'])]
-    public function getIp(Request $request): JsonResponse
-    {
-        $ip = $request->getClientIp();
-
-        return $this->json(['ip' => $ip]);
-    }
 
     #[Route('/users/search', name: 'search_users', methods: ['POST'])]
     public function searchUsers(Request $request): JsonResponse

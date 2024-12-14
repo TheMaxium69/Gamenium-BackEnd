@@ -37,36 +37,36 @@ class MyAccountExterneController extends AbstractController
 
         return $this->json($myAccountExterne);
     }
-
-    #[Route('/myaccountexterne', name: 'create_myaccountexterne', methods: ['POST'])]
-    public function createMyAccountExterne(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $myAccountExterne = new MyAccountExterne();
-        $myAccountExterne->setIdNetwork($data['id_network']);
-        $myAccountExterne->setIdUser($data['id_user']);
-        $myAccountExterne->setCreatedAt(new \DateTimeImmutable());
-        $myAccountExterne->setApiKey($data['api_key']);
-
-        $this->entityManager->persist($myAccountExterne);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'MyAccountExterne created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/myaccountexterne/{id}', name: 'delete_myaccountexterne', methods: ['DELETE'])]
-    public function deleteMyAccountExterne(int $id): JsonResponse
-    {
-        $myAccountExterne = $this->myAccountExterneRepository->find($id);
-
-        if (!$myAccountExterne) {
-            return $this->json(['message' => 'MyAccountExterne not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($myAccountExterne);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'MyAccountExterne deleted successfully']);
-    }
+//
+//    #[Route('/myaccountexterne', name: 'create_myaccountexterne', methods: ['POST'])]
+//    public function createMyAccountExterne(Request $request): JsonResponse
+//    {
+//        $data = json_decode($request->getContent(), true);
+//
+//        $myAccountExterne = new MyAccountExterne();
+//        $myAccountExterne->setIdNetwork($data['id_network']);
+//        $myAccountExterne->setIdUser($data['id_user']);
+//        $myAccountExterne->setCreatedAt(new \DateTimeImmutable());
+//        $myAccountExterne->setApiKey($data['api_key']);
+//
+//        $this->entityManager->persist($myAccountExterne);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'MyAccountExterne created successfully'], Response::HTTP_CREATED);
+//    }
+//
+//    #[Route('/myaccountexterne/{id}', name: 'delete_myaccountexterne', methods: ['DELETE'])]
+//    public function deleteMyAccountExterne(int $id): JsonResponse
+//    {
+//        $myAccountExterne = $this->myAccountExterneRepository->find($id);
+//
+//        if (!$myAccountExterne) {
+//            return $this->json(['message' => 'MyAccountExterne not found'], Response::HTTP_NOT_FOUND);
+//        }
+//
+//        $this->entityManager->remove($myAccountExterne);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'MyAccountExterne deleted successfully']);
+//    }
 }

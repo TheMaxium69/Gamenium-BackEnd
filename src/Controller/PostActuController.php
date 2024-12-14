@@ -55,37 +55,37 @@ class PostActuController extends AbstractController
         }
     }
 
-    #[Route('/postactus', name: 'create_postactu', methods: ['POST'])]
-    public function createPostActu(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $postActu = new PostActu();
-        $postActu->setCreatedAt(new \DateTimeImmutable($data['created_at']));
-        $postActu->setContent($data['content']);
-        $postActu->setLastEdit($data['last_edit']);
-        $postActu->setNbEdit($data['nb_edit']);
-
-        $this->entityManager->persist($postActu);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'PostActu created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/postactus/{id}', name: 'delete_postactu', methods: ['DELETE'])]
-    public function deletePostActu(int $id): JsonResponse
-    {
-        $postActu = $this->postActuRepository->find($id);
-
-        if (!$postActu) {
-            return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($postActu);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'PostActu deleted successfully']);
-    }
+//    #[Route('/postactus', name: 'create_postactu', methods: ['POST'])]
+//    public function createPostActu(Request $request): JsonResponse
+//    {
+//        $data = json_decode($request->getContent(), true);
+//
+//        $postActu = new PostActu();
+//        $postActu->setCreatedAt(new \DateTimeImmutable($data['created_at']));
+//        $postActu->setContent($data['content']);
+//        $postActu->setLastEdit($data['last_edit']);
+//        $postActu->setNbEdit($data['nb_edit']);
+//
+//        $this->entityManager->persist($postActu);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'PostActu created successfully'], Response::HTTP_CREATED);
+//    }
+//
+//    #[Route('/postactus/{id}', name: 'delete_postactu', methods: ['DELETE'])]
+//    public function deletePostActu(int $id): JsonResponse
+//    {
+//        $postActu = $this->postActuRepository->find($id);
+//
+//        if (!$postActu) {
+//            return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
+//        }
+//
+//        $this->entityManager->remove($postActu);
+//        $this->entityManager->flush();
+//
+//        return $this->json(['message' => 'PostActu deleted successfully']);
+//    }
     
 
 
