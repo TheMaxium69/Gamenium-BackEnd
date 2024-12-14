@@ -324,6 +324,13 @@ class HistoryMyGameController extends AbstractController
             return $this->json(['message' => 'undefine of field']);
         }
 
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
+            $newIp = "0.0.0.0";
+        } else {
+            $newIp = $ip;
+        }
+
         $authorizationHeader = $request->headers->get('Authorization');
 
         /*SI LE TOKEN EST REMPLIE */
@@ -372,7 +379,7 @@ class HistoryMyGameController extends AbstractController
                 }
             }
             $userNote->setCreatedAt(New \DateTimeImmutable());
-            $userNote->setIp("10.10.10.10");
+            $userNote->setIp($newIp);
 
             $this->entityManager->persist($userNote);
             $this->entityManager->flush();

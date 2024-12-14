@@ -43,38 +43,7 @@ class GameProfileController extends AbstractController
 
         return $this->json($gameProfile);
     }
-#[Route('/gameprofiles', name: 'create_gameprofile', methods: ['POST'])]
-    public function createGameProfile(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
 
-        $gameProfile = new GameProfile();
-        $gameProfile->setJoinedAt(new \DateTimeImmutable($data['joined_at']));
-        $picture = new Picture();
-        $picture->setUrl($data['picture']['url']);
-        $picture->setPostedAt(new \DateTimeImmutable($data['picture']['posted_at']));
-        $picture->setIp($data['picture']['ip']);
 
-        $gameProfile->setPicture($picture);
 
-        $this->entityManager->persist($gameProfile);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'GameProfile created successfully'], Response::HTTP_CREATED);
-    }
-
-    #[Route('/gameprofiles/{id}', name: 'delete_gameprofile', methods: ['DELETE'])]
-    public function deleteGameProfile(int $id): JsonResponse
-    {
-        $gameProfile = $this->gameProfileRepository->find($id);
-
-        if (!$gameProfile) {
-            return $this->json(['message' => 'GameProfile not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->entityManager->remove($gameProfile);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'GameProfile deleted successfully']);
-    }
 }
