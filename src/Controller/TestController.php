@@ -15,9 +15,18 @@ class TestController extends AbstractController
 
         $ip = $request->getClientIp();
 
+        $ips = $request->getClientIps();
 
 
 
-        return $this->json($ip);
+
+        return $this->json([
+            "ip" => $ip,
+            "ips" => $ips,
+            "httpHost" => $request->getHttpHost(),
+            "host" => $request->getHost(),
+            "port" => $request->getPort(),
+            "Languages" => $request->getLanguages(),
+        ]);
     }
 }
