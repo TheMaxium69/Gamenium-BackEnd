@@ -43,10 +43,11 @@ class ViewController extends AbstractController
         }
 
         /* SET UNE IP */
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
 
         $idPostActu = $data['id'];
@@ -100,10 +101,11 @@ class ViewController extends AbstractController
         }
 
         /* SET UNE IP */
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
 
         $idProvider = $data['id'];
@@ -157,10 +159,11 @@ class ViewController extends AbstractController
         }
 
         /* SET UNE IP */
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
 
         $idgame = $data['id'];
@@ -214,10 +217,11 @@ class ViewController extends AbstractController
         }
 
         /* SET UNE IP */
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
 
         $idprofile = $data['id'];

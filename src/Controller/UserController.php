@@ -43,10 +43,11 @@ class UserController extends AbstractController
 
         }
 
-        if (!isset($data['ip'])) {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
         } else {
-            $newIp = $data['ip'];
+            $newIp = $ip;
         }
 
 
@@ -121,7 +122,7 @@ class UserController extends AbstractController
                 $user->setLastConnection(new \DateTimeImmutable());
 //                $user->setIdPicture(1);
                     $ip = [
-                        "10.0.0.1"
+                        $newIp
                     ];
                 $user->setIp($ip);
                 $user->setEmail($resultUseritiumArray['result']['email']);
@@ -163,7 +164,7 @@ class UserController extends AbstractController
         // VERIFICATION DES CHAMP
         if (!isset($data['token'])) {
 
-            return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Missing required fields']);
 
         } else {
 
@@ -187,7 +188,7 @@ class UserController extends AbstractController
 
             } else {
 
-                return $this->json(['message' => 'Token Invalide'], Response::HTTP_BAD_REQUEST);
+                return $this->json(['message' => 'Token Invalide']);
 
             }
 
