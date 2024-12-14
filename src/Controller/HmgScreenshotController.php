@@ -29,18 +29,18 @@ class HmgScreenshotController extends AbstractController
 
         $data = [
             'id_mygame' => $request->request->get('id_mygame', null),
-            'id_category' => $request->request->get('id_category', null),
-            'ip' => $request->request->get('ip', '0.0.0.0')
+            'id_category' => $request->request->get('id_category', null)
         ];
 
         if(!isset($data['id_mygame']) && !isset($data['id_category'])){
             return $this->json(['message' => 'undefine of field']);
         }
 
-        if (!isset($data['ip'])){
-            $newIp = $data['ip'];
-        } else {
+        $ip = $request->getClientIp();
+        if (!isset($ip)) {
             $newIp = "0.0.0.0";
+        } else {
+            $newIp = $ip;
         }
 
         $authorizationHeader = $request->headers->get('Authorization');
