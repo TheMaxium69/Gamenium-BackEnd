@@ -69,18 +69,23 @@ class ViewController extends AbstractController
 
         }
 
-        $view = new View();
-        $view->setPostActu($postActu);
-        if ($user) {
-            $view->setWho($user);
+        $isSpam = $this->algoNoSpam($postActu, 'actu', $newIp, $user);
+        if ($isSpam === false) {
+            $view = new View();
+            $view->setPostActu($postActu);
+            if ($user) {
+                $view->setWho($user);
+            }
+            $view->setIp($newIp);
+            $view->setViewAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($view);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
+        } else {
+            return $this->json(['message' => 'spam']);
         }
-        $view->setIp($newIp);
-        $view->setViewAt(new \DateTimeImmutable());
-
-        $this->entityManager->persist($view);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
 
     }
 
@@ -126,18 +131,23 @@ class ViewController extends AbstractController
 
         }
 
-        $view = new View();
-        $view->setProvider($provider);
-        if ($user) {
-            $view->setWho($user);
+        $isSpam = $this->algoNoSpam($provider, 'provider', $newIp, $user);
+        if ($isSpam === false) {
+            $view = new View();
+            $view->setProvider($provider);
+            if ($user) {
+                $view->setWho($user);
+            }
+            $view->setIp($newIp);
+            $view->setViewAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($view);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
+        } else {
+            return $this->json(['message' => 'spam']);
         }
-        $view->setIp($newIp);
-        $view->setViewAt(new \DateTimeImmutable());
-
-        $this->entityManager->persist($view);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
 
 
     }
@@ -184,18 +194,24 @@ class ViewController extends AbstractController
 
         }
 
-        $view = new View();
-        $view->setGame($game);
-        if ($user) {
-            $view->setWho($user);
+        $isSpam = $this->algoNoSpam($game, 'game', $newIp, $user);
+        if ($isSpam === false) {
+
+            $view = new View();
+            $view->setGame($game);
+            if ($user) {
+                $view->setWho($user);
+            }
+            $view->setIp($newIp);
+            $view->setViewAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($view);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
+        } else {
+            return $this->json(['message' => 'spam']);
         }
-        $view->setIp($newIp);
-        $view->setViewAt(new \DateTimeImmutable());
-
-        $this->entityManager->persist($view);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
 
 
     }
@@ -242,18 +258,24 @@ class ViewController extends AbstractController
 
         }
 
-        $view = new View();
-        $view->setProfile($profile);
-        if ($user) {
-            $view->setWho($user);
+        $isSpam = $this->algoNoSpam($profile, 'profile', $newIp, $user);
+
+        if ($isSpam === false) {
+            $view = new View();
+            $view->setProfile($profile);
+            if ($user) {
+                $view->setWho($user);
+            }
+            $view->setIp($newIp);
+            $view->setViewAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($view);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
+        } else {
+            return $this->json(['message' => 'spam']);
         }
-        $view->setIp($newIp);
-        $view->setViewAt(new \DateTimeImmutable());
-
-        $this->entityManager->persist($view);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'good', 'result' => $view], 200, [], ['groups' => 'view:read']);
 
 
     }
@@ -283,6 +305,74 @@ class ViewController extends AbstractController
         ];
 
         return $this->json($message, 200, [], ['groups' => 'view:read']);
+    }
+
+
+    function algoNoSpam($object, $type, $ip, $user = null)
+    {
+
+        if ($type !== 'actu' && $type !== 'provider' && $type !== 'game' && $type !== 'profile') {
+            return true; /* LOCK - aucun vue peut etre verifier*/
+        }
+
+        /*
+         *
+         * GEREZ AVEC L'IP
+         *
+         * */
+        $ipIsLock = true;
+        if ($ip === "0.0.0.0") {
+            return true; /* LOCK - ne pas comtabilisé si on n'a pas pu recupere l'ip */
+        } else {
+
+            $latestViewByIp = $this->viewRepository->findLatestViewByIpAndType($ip, $object, $type);
+
+            if ($latestViewByIp !== null) {
+                if ($latestViewByIp && $latestViewByIp->getViewAt() && $latestViewByIp->getViewAt() >= (new \DateTimeImmutable())->sub(new \DateInterval('PT12H'))) {
+                    $ipIsLock = true; /* LOCK - vue dans les 12 dernier heure */
+                } else {
+                    $ipIsLock = false; /* notLock - vue dans audela des 12 dernier heure  */
+                }
+            } else {
+                $ipIsLock = false; /* notLock - aucune vue */
+            }
+
+        }
+
+        /*
+         *
+         * GEREZ AVEC L'UTILISATEUR
+         *
+         * */
+        $userIsLock = true;
+        if ($user !== null) {
+
+            $latestViewByUser = $this->viewRepository->findLatestViewByUserAndType($user, $object, $type);
+
+            if ($latestViewByUser !== null) {
+                if ($latestViewByUser && $latestViewByUser->getViewAt() && $latestViewByUser->getViewAt() >= (new \DateTimeImmutable())->sub(new \DateInterval('PT12H'))) {
+                    $ipIsLock = true; /* LOCK - vue dans les 12 dernier heure */
+                } else {
+                    $ipIsLock = false; /* notLock - vue dans audela des 12 dernier heure  */
+                }
+            } else {
+                $ipIsLock = false; /* notLock - aucune vue */
+            }
+
+        }
+
+
+        /*
+         *
+         * VERIFICATION
+         *
+         * */
+
+        if (!$userIsLock && !$ipIsLock) {
+            return false;
+        }
+
+        return true; /* LOCK FOR DEFAULT */
     }
 
 }
