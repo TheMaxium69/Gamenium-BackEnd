@@ -368,6 +368,8 @@ class ViewController extends AbstractController
          *
          * */
 
+        var_dump($userIsLock);
+        var_dump($ipIsLock);
         if (!$userIsLock && !$ipIsLock) {
             return false;
         }
