@@ -24,7 +24,7 @@ class HmgCopyPurchase
     #[Groups(['historygame:read'])]
     private ?BuyWhere $buy_where = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['historygame:read'])]
     private ?string $content = null;
 

@@ -36,7 +36,7 @@ class UserRate
     #[Groups(['userRate:read'])]
     private ?game $game = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['userRate:read','historygame:read'])]
     private ?string $content = null;
 

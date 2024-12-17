@@ -25,7 +25,7 @@ class HmgCopy
     #[Groups(['historygame:read'])]
     private ?string $barcode = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['historygame:read'])]
     private ?string $content = null;
 
