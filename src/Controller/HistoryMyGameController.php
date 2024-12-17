@@ -298,6 +298,16 @@ class HistoryMyGameController extends AbstractController
                 }
             }
 
+            // Check si l'user a ajouté une note pour ce jeux et la supprime s'il y a un résultat
+            $game = $myGame->getGame();
+            if (count($this->entityManager->getRepository(HistoryMyGame::class)->findBy(['game' => $game, 'user' => $user])) == 1) {
+                $userRate = $this->entityManager->getRepository(UserRate::class)->findOneBy(['game' => $game, 'user' => $user]);
+    
+                if ($userRate) {
+                    $this->entityManager->remove($userRate);
+                }
+            }
+
             $this->entityManager->remove($myGame);
             $this->entityManager->flush();
 
