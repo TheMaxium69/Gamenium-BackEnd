@@ -114,10 +114,6 @@ class UserController extends AbstractController
                 $user = new User();
 
                 $user->setIdUseritium($resultUseritiumArray['result']['id']);
-                    $role = [
-                        "user"
-                    ];
-                $user->setUserRole($role);
                 $user->setJoinAt(new \DateTimeImmutable());
                 $user->setLastConnection(new \DateTimeImmutable());
 //                $user->setIdPicture(1);
@@ -182,7 +178,7 @@ class UserController extends AbstractController
                     "displayname" => $user->getDisplayname(),
                     "displaynameUseritium" => $user->getDisplaynameUseritium(),
                     "joinAt" => $user->getJoinAt(),
-                    "userRole" => $user->getUserRole(),
+                    "userRole" => $user->getRoles(),
                     "themeColor" => $user->getColor()
                 ]]);
 

@@ -5,10 +5,11 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,8 +21,8 @@ class User
     #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
     private ?int $id_useritium = null;
 
-    #[ORM\Column]
-    private array $user_role = [] ;
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
 
     #[ORM\Column]
     #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
@@ -60,6 +61,20 @@ class User
     #[Groups(['user:read', 'comment:read', 'commentreply:read'])]
     private ?string $color = null;
 
+
+    /**
+     * The public representation of the user (e.g. a username, an email address, etc.)
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,16 +92,18 @@ class User
         return $this;
     }
 
-    public function getUserRole(): array
+    public function getRoles(): array
     {
-        $user_role = $this->user_role;
+        $roles = $this->roles;
+
+        $roles[] = 'ROLE_USER';
         
-        return array_unique($user_role);
+        return array_unique($roles);
     }
 
-    public function setUserRole(array $user_role): static
+    public function setRoles(array $roles): self
     {
-        $this->user_role = $user_role;
+        $this->roles = $roles;
 
         return $this;
     }
@@ -211,5 +228,10 @@ class User
         $this->color = $color;
 
         return $this;
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
     }
 }
