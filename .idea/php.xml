@@ -159,6 +159,7 @@
       <path value="$PROJECT_DIR$/vendor/amphp/http-client" />
       <path value="$PROJECT_DIR$/vendor/amphp/serialization" />
       <path value="$PROJECT_DIR$/vendor/amphp/http" />
+      <path value="$PROJECT_DIR$/vendor/symfony/apache-pack" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />
