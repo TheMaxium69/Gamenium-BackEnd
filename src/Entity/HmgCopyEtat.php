@@ -21,16 +21,12 @@ class HmgCopyEtat
     #[Groups(['historygame:read', 'copyEtat:read', 'historyplateform:read'])]
     private ?string $name = null;
 
-    #[ORM\OneToMany(targetEntity: HmgCopy::class, mappedBy: 'etat')]
-    private Collection $hmgCopies;
-
-    #[ORM\OneToMany(targetEntity: HmpCopy::class, mappedBy: 'etat')]
-    private Collection $hmpCopies;
+//    #[ORM\OneToMany(targetEntity: HmgCopy::class, mappedBy: 'etat')]
+//    private Collection $hmgCopies;
 
     public function __construct()
     {
-        $this->hmgCopies = new ArrayCollection();
-        $this->hmpCopies = new ArrayCollection();
+//        $this->hmgCopies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -49,34 +45,34 @@ class HmgCopyEtat
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, HmgCopy>
-     */
-    public function getHmgCopies(): Collection
-    {
-        return $this->hmgCopies;
-    }
-
-    public function addHmgCopy(HmgCopy $hmgCopy): static
-    {
-        if (!$this->hmgCopies->contains($hmgCopy)) {
-            $this->hmgCopies->add($hmgCopy);
-            $hmgCopy->setEtat($this);
-        }
-
-        return $this;
-    }
-
-    public function removeHmgCopy(HmgCopy $hmgCopy): static
-    {
-        if ($this->hmgCopies->removeElement($hmgCopy)) {
-            // set the owning side to null (unless already changed)
-            if ($hmgCopy->getEtat() === $this) {
-                $hmgCopy->setEtat(null);
-            }
-        }
-
-        return $this;
-    }
+//
+//    /**
+//     * @return Collection<int, HmgCopy>
+//     */
+//    public function getHmgCopies(): Collection
+//    {
+//        return $this->hmgCopies;
+//    }
+//
+//    public function addHmgCopy(HmgCopy $hmgCopy): static
+//    {
+//        if (!$this->hmgCopies->contains($hmgCopy)) {
+//            $this->hmgCopies->add($hmgCopy);
+//            $hmgCopy->setEtat($this);
+//        }
+//
+//        return $this;
+//    }
+//
+//    public function removeHmgCopy(HmgCopy $hmgCopy): static
+//    {
+//        if ($this->hmgCopies->removeElement($hmgCopy)) {
+//            // set the owning side to null (unless already changed)
+//            if ($hmgCopy->getEtat() === $this) {
+//                $hmgCopy->setEtat(null);
+//            }
+//        }
+//
+//        return $this;
+//    }
 }
