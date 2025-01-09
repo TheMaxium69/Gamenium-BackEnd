@@ -24,9 +24,13 @@ class HmgCopyEtat
     #[ORM\OneToMany(targetEntity: HmgCopy::class, mappedBy: 'etat')]
     private Collection $hmgCopies;
 
+    #[ORM\OneToMany(targetEntity: HmpCopy::class, mappedBy: 'etat')]
+    private Collection $hmpCopies;
+
     public function __construct()
     {
         $this->hmgCopies = new ArrayCollection();
+        $this->hmpCopies = new ArrayCollection();
     }
 
     public function getId(): ?int
