@@ -12,11 +12,11 @@ class HmgCopyRegion
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read', 'copyRegion:read'])]
+    #[Groups(['historygame:read', 'copyRegion:read', 'historyplateform:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read', 'copyRegion:read'])]
+    #[Groups(['historygame:read', 'copyRegion:read', 'historyplateform:read'])]
     private ?string $name = null;
 
     public function getId(): ?int

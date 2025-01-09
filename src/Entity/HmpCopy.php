@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\HmpCopyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HmpCopyRepository::class)]
 class HmpCopy
@@ -12,31 +13,40 @@ class HmpCopy
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['historyplateform:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['historyplateform:read'])]
     private ?HistoryMyPlateform $history_my_plateform = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['historyplateform:read'])]
     private ?string $edition = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['historyplateform:read'])]
     private ?string $barcode = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['historyplateform:read'])]
     private ?string $content = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['historyplateform:read'])]
     private ?bool $isBox = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['historyplateform:read'])]
     private ?hmgCopyEtat $etat = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['historyplateform:read'])]
     private ?hmgCopyPurchase $purchase = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['historyplateform:read'])]
     private ?hmgCopyRegion $region = null;
 
     public function getId(): ?int

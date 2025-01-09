@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\HistoryMyPlateformRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: HistoryMyPlateformRepository::class)]
 class HistoryMyPlateform
@@ -11,17 +12,21 @@ class HistoryMyPlateform
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['historyplateform:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['historyplateform:read'])]
     private ?plateform $plateform = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['historyplateform:read'])]
     private ?user $user = null;
 
     #[ORM\Column]
+    #[Groups(['historyplateform:read'])]
     private ?\DateTimeImmutable $added_at = null;
 
     public function getId(): ?int

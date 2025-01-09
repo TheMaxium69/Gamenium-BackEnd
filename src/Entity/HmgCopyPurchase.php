@@ -13,35 +13,35 @@ class HmgCopyPurchase
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?int $price = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?BuyWhere $buy_where = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Devise')]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?devise $devise = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?int $year_buy_at = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?int $month_buy_at = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['historygame:read'])]
+    #[Groups(['historygame:read', 'historyplateform:read'])]
     private ?int $day_buy_at = null;
 
     public function getId(): ?int
