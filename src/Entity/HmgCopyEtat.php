@@ -14,11 +14,11 @@ class HmgCopyEtat
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read', 'copyEtat:read'])]
+    #[Groups(['historygame:read', 'copyEtat:read', 'historyplateform:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['historygame:read', 'copyEtat:read'])]
+    #[Groups(['historygame:read', 'copyEtat:read', 'historyplateform:read'])]
     private ?string $name = null;
 
     #[ORM\OneToMany(targetEntity: HmgCopy::class, mappedBy: 'etat')]
