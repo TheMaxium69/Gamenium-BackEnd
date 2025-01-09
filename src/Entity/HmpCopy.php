@@ -41,11 +41,11 @@ class HmpCopy
     #[Groups(['historyplateform:read'])]
     private ?hmgCopyEtat $etat = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\HmgCopyPurchase')]
     #[Groups(['historyplateform:read'])]
     private ?hmgCopyPurchase $purchase = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\HmgCopyRegion')]
     #[Groups(['historyplateform:read'])]
     private ?hmgCopyRegion $region = null;
 
