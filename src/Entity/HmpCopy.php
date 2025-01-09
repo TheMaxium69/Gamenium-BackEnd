@@ -18,7 +18,6 @@ class HmpCopy
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['historyplateform:read'])]
     private ?HistoryMyPlateform $history_my_plateform = null;
 
     #[ORM\Column(length: 255, nullable: true)]
