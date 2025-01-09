@@ -37,7 +37,7 @@ class HmpCopy
     #[Groups(['historyplateform:read'])]
     private ?bool $isBox = null;
 
-    #[ORM\ManyToOne(targetEntity: hmgCopyEtat::class)]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\hmgCopyEtat')]
     #[Groups(['historyplateform:read'])]
     private ?hmgCopyEtat $etat = null;
 
