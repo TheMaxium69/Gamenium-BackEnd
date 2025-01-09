@@ -34,8 +34,10 @@ class HistoryMyPlateformController extends AbstractController
 
 
         $myPlateform = $this->historyMyPlateformRepository->findOneBy(['user' => $user, 'plateform' => $plateform]);
+        var_dump($myPlateform);
 
         $copyPlateform = $this->entityManager->getRepository(HmpCopy::class)->findBy(['history_my_plateform' => $myPlateform]);
+        var_dump($copyPlateform);
 
         $message = [
             'message' => "good",
