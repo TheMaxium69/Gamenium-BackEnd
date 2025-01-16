@@ -188,9 +188,9 @@ class HistoryMyPlateformController extends AbstractController
     public function updateMyPlateform(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-
         /*On vérifie si le JSON n'a pas de soucis*/
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+
             return $this->json(['message' => 'Format JSON invalide']);
         }
 
@@ -556,7 +556,18 @@ class HistoryMyPlateformController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            return $this->json(['message' => 'plateforme modifiée'], 200, [], ['groups' => 'historygame:read']);
+            $message = [
+                'message'   => 'plateforme modifiée',
+                'result'    => [
+                    'id' => $historyMyPlateform->getId(),
+                    'myPlateform' => $historyMyPlateform,
+                    'copyPlateform' => $finalCopyGame
+                ]
+            ];
+
+
+
+            return $this->json($message, 200, [], ['groups' => 'historyplateform:read']);
 
         }
 
