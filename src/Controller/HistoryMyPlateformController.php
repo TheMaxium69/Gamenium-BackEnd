@@ -27,7 +27,7 @@ class HistoryMyPlateformController extends AbstractController
     ){}
 
     #[Route('/OneMyPlateform/{id_user}/{id_plateform}', name: 'get_one_hmp_by_user', methods: ['GET'])]
-    public function getOneMyHmpByUser(int $id_user, int $id_plateform): JsonResponse
+    public function getOneMyHmpByUser(int $id_user, int $id_plateform): Response
     {
 
         $plateform = $this->entityManager->getRepository(Plateform::class)->find($id_plateform);
@@ -42,6 +42,9 @@ class HistoryMyPlateformController extends AbstractController
 
 
         $myPlateform = $this->historyMyPlateformRepository->findOneBy(['user' => $user, 'plateform' => $plateform]);
+        if (!$myPlateform){
+            return $this->json(['message' => 'hmp not found']);
+        }
 
         $copyPlateform = $this->entityManager->getRepository(HmpCopy::class)->findBy(['history_my_plateform' => $myPlateform]);
 

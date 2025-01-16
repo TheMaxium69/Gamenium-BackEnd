@@ -15,7 +15,7 @@ class HistoryMyPlateform
     #[Groups(['historyplateform:read'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\Plateform')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['historyplateform:read'])]
     private ?plateform $plateform = null;
