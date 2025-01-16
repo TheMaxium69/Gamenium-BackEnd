@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\WarnTypeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: WarnTypeRepository::class)]
 class WarnType
@@ -11,6 +12,7 @@ class WarnType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['warn:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

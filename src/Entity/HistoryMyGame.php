@@ -16,7 +16,7 @@ class HistoryMyGame
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historygame:read', 'screenshot:read'])]
+    #[Groups(['historygame:read', 'screenshot:read', 'warn:read'])]
     private ?int $id = null;
 
     #[ORM\Column]

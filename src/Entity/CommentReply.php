@@ -13,7 +13,7 @@ class CommentReply
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['commentreply:read'])]
+    #[Groups(['commentreply:read', 'warn:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]

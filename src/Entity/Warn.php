@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\WarnRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: WarnRepository::class)]
 class Warn
@@ -11,40 +12,51 @@ class Warn
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['warn:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['warn:read'])]
     private ?WarnType $warnType = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
     private ?user $user = null;
 
     #[ORM\Column]
+    #[Groups(['warn:read'])]
     private ?\DateTimeImmutable $warnAt = null;
 
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['warn:read'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
     private ?User $profil = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
     private ?PostActu $actu = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
     private ?comment $comment = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
     private ?commentReply $commentReply = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
     private ?HistoryMyGame $hmg = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
     private ?historymyplateform $hmp = null;
 
     public function getId(): ?int
@@ -105,7 +117,7 @@ class Warn
         return $this->content;
     }
 
-    public function setContent(string $content): static
+    public function setContent(?string $content): static
     {
         $this->content = $content;
 

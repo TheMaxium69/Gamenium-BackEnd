@@ -12,7 +12,7 @@ class HistoryMyPlateform
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historyplateform:read'])]
+    #[Groups(['historyplateform:read', 'warn:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: 'App\Entity\Plateform')]

@@ -13,7 +13,7 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['comment:read', 'like:read', 'commentreply:read'])]
+    #[Groups(['comment:read', 'like:read', 'commentreply:read', 'warn:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
