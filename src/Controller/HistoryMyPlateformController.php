@@ -26,7 +26,7 @@ class HistoryMyPlateformController extends AbstractController
         private HistoryMyPlateformRepository $historyMyPlateformRepository
     ){}
 
-    #[Route('/OneMyPlateform/{id_user}/{id_plateform}', name: 'get_one_hmp_by_user', methods: ['GET'])]
+    #[Route('/OneMyPlateformByUserWithPlatform/{id_user}/{id_plateform}', name: 'get_one_hmp_by_user', methods: ['GET'])]
     public function getOneMyHmpByUser(int $id_user, int $id_plateform): Response
     {
 
@@ -58,6 +58,30 @@ class HistoryMyPlateformController extends AbstractController
         ];
 
         return $this->json($message, 200, [], ['groups' => 'historyplateform:read']);
+    }
+
+    #[Route('OneMyPlatform/{id_history_my_platform}', name: 'get_one_hmp_by_id', methods:['GET'])]
+    public function getOneMyHmpById(int $id_history_my_platform): Response
+    {
+        $myPlatform = $this->historyMyPlateformRepository->find($id_history_my_platform);
+
+        if (!$myPlatform){
+            return $this->json(['message' => 'hmp not found']);
+        }
+
+        $copyPlatform = $this->entityManager->getRepository(HmpCopy::class)->findBy(['history_my_plateform' => $myPlatform]);
+
+        $message = [
+            'message' => "good",
+            'result' => [
+                "id" => $myPlatform->getId(),
+                "myPlateform" => $myPlatform,
+                "copyPlateform" => $copyPlatform
+            ]
+        ];
+
+        return $this->json($message, 200, [], ['groups' => 'historyplateform:read']);
+
     }
 
     #[Route('allMyPlatform/', name: 'allHmpByHmp', methods: ['GET'])]
