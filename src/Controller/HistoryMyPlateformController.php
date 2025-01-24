@@ -84,36 +84,6 @@ class HistoryMyPlateformController extends AbstractController
 
     }
 
-    #[Route('allMyPlatform/', name: 'allHmpByHmp', methods: ['GET'])]
-    public function getAllMyHmpByUser(Request $request){
-
-        $authorizationHeader = $request->headers->get('Authorization');
-
-        if (strpos($authorizationHeader, 'Bearer ') === 0){
-            $token = substr($authorizationHeader, 7);
-
-            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
-            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
-            if (!$user){
-                return $this->json(['message' => 'token is failed']);
-            }
-
-            $MyUserToUserEntries = $this->entityManager->getRepository(HistoryMyPlateform::class)->findBy(['user' => $user]);
-
-            $allMyPlatforms = [];
-            foreach($MyUserToUserEntries as $entry) {
-                $allMyPlatforms[] = [
-                    "id" => $entry->getId(),
-                    "myPlateform" => $entry,
-                    "copyPlateform" => $this->entityManager->getRepository(HmpCopy::class)->findBy(['history_my_plateform' => $entry]),
-                ];
-            }
-
-            return $this->json(['message' => 'good', 'result' => $allMyPlatforms], 200, [], ['groups' => 'historyplateform:read']);
-        }
-        
-    }
-
     #[Route('/addHmp', name: 'addHmp', methods: ['POST'])]
     public function addHmp(Request $request): JsonResponse
     {

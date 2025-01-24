@@ -21,7 +21,7 @@ class Plateform
     private ?int $id_giant_bomb = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?string $guid = null;
 
     #[ORM\Column(length: 255)]
@@ -29,7 +29,7 @@ class Plateform
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?string $aliases = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -37,11 +37,11 @@ class Plateform
     private ?string $api_detail_url = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?string $abbreviation = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?array $company = null;
 
     #[ORM\Column(nullable: true)]
@@ -61,27 +61,27 @@ class Plateform
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?array $image = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?array $image_tags = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?string $install_base = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?string $online_support = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?string $original_price = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['plateform:read'])]
+    #[Groups(['plateform:read', 'historyplateform:read'])]
     private ?\DateTimeImmutable $release_date = null;
 
     #[ORM\Column(length: 255, nullable: true)]
