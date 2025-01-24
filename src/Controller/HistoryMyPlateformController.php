@@ -43,7 +43,7 @@ class HistoryMyPlateformController extends AbstractController
 
         $myPlateform = $this->historyMyPlateformRepository->findOneBy(['user' => $user, 'plateform' => $plateform]);
         if (!$myPlateform){
-            return $this->json(['message' => 'hmp not found']);
+            return $this->json(['message' => 'hmp not found', 'result2' => $plateform], 200, [], ['groups' => 'historyplateform:read']);
         }
 
         $copyPlateform = $this->entityManager->getRepository(HmpCopy::class)->findBy(['history_my_plateform' => $myPlateform]);
@@ -201,6 +201,8 @@ class HistoryMyPlateformController extends AbstractController
                     $this->entityManager->remove($oneMyPlateformCopy);
                 }
             }
+
+            /* VERIFIER QUIL PAS DE WARN ET LE SUPP */
 
             //Une fois qu'on sait qu'il n'y a plus d'exemplaire on veut supprimer le hmp
             $this->entityManager->remove($myPlateform);
