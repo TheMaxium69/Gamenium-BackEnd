@@ -226,7 +226,7 @@ class WarnController extends AbstractController
         return $this->json(['message' => 'Invalid Token']);
     }
 
-    #[Route('/updateWarn', name: 'update_warn', methods:['PUT'])]
+    #[Route('/updatewarn', name: 'update_warn', methods:['PUT'])]
     public function updateWarn(Request $request): JsonResponse
     {
 
