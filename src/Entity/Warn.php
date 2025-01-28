@@ -59,6 +59,9 @@ class Warn
     #[Groups(['warn:read'])]
     private ?historymyplateform $hmp = null;
 
+    #[ORM\Column]
+    private ?bool $is_manage = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -192,6 +195,18 @@ class Warn
     public function setHmp(?historymyplateform $hmp): static
     {
         $this->hmp = $hmp;
+
+        return $this;
+    }
+
+    public function isIsManage(): ?bool
+    {
+        return $this->is_manage;
+    }
+
+    public function setIsManage(bool $is_manage): static
+    {
+        $this->is_manage = $is_manage;
 
         return $this;
     }
