@@ -15,12 +15,12 @@ class Warn
     #[Groups(['warn:read'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: WarnType::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['warn:read'])]
     private ?WarnType $warnType = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: User::class)]
     #[Groups(['warn:read'])]
     private ?user $user = null;
 
@@ -35,31 +35,32 @@ class Warn
     #[Groups(['warn:read'])]
     private ?string $content = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: User::class)]
     #[Groups(['warn:read'])]
     private ?User $profil = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: PostActu::class)]
     #[Groups(['warn:read'])]
     private ?PostActu $actu = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: Comment::class)]
     #[Groups(['warn:read'])]
     private ?comment $comment = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: CommentReply::class)]
     #[Groups(['warn:read'])]
     private ?commentReply $commentReply = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: HistoryMyGame::class)]
     #[Groups(['warn:read'])]
     private ?HistoryMyGame $hmg = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne (targetEntity: HistoryMyPlateform::class)]
     #[Groups(['warn:read'])]
     private ?historymyplateform $hmp = null;
 
     #[ORM\Column]
+    #[Groups(['warn:read'])]
     private ?bool $is_manage = null;
 
     public function getId(): ?int

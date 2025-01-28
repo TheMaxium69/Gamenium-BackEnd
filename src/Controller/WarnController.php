@@ -169,13 +169,12 @@ class WarnController extends AbstractController
             }
 
             //on vérifie que le user a bien le role Administrateur
-            if (!in_array('ROLE_ADMIN', $user->getRoles()) || !in_array('ROLE_MODO', $user->getRoles())){
+            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_MODO', $user->getRoles())) {
                 return $this->json(['message' => 'no permission']);
             }
 
             //Une fois qu'on sait que c'est bien l'administrateur on récupère tous les warns
-            $warnAll = $this->warnRepository->findAll();
-
+            $warnAll = $this->warnRepository->findBy(['is_manage' => false]);
 
             return $this->json(['message' => 'good', 'result' => $warnAll], 200, [], ['groups' => 'warn:read']);
            
@@ -185,7 +184,7 @@ class WarnController extends AbstractController
 
     }
 
-    #[Route('/deleteWarn/{id}', name: 'delete_warn', methods:['DELETE'])]
+    #[Route('/deletewarn/{id}', name: 'delete_warn', methods:['DELETE'])]
     public function deleteWarn(Request $request, int $id): JsonResponse
     {
         //On verifie qu'on récupère un id
