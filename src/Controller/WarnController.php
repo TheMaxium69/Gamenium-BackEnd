@@ -169,16 +169,13 @@ class WarnController extends AbstractController
             }
 
             //on vérifie que le user a bien le role Administrateur
-            if (!in_array('ROLE_ADMIN', $user->getRoles()) || in_array('ROLE_MODO', $user->getRoles())){
+            if (!in_array('ROLE_ADMIN', $user->getRoles()) || !in_array('ROLE_MODO', $user->getRoles())){
                 return $this->json(['message' => 'no permission']);
             }
 
             //Une fois qu'on sait que c'est bien l'administrateur on récupère tous les warns
             $warnAll = $this->warnRepository->findAll();
 
-            if(!$warnAll){
-                return $this->json(['message' => 'Warn not found']);
-            }
 
             return $this->json(['message' => 'good', 'result' => $warnAll], 200, [], ['groups' => 'warn:read']);
            
@@ -188,7 +185,7 @@ class WarnController extends AbstractController
 
     }
 
-    #[Route('/deleteWarn/{id]', name: 'delete_warn', methods:['DELETE'])]
+    #[Route('/deleteWarn/{id}', name: 'delete_warn', methods:['DELETE'])]
     public function deleteWarn(Request $request, int $id): JsonResponse
     {
         //On verifie qu'on récupère un id
@@ -241,6 +238,12 @@ class WarnController extends AbstractController
             return $this->json(['message' => 'Invalid JSON format']);
         }
 
+        // On verifie que l'id transmit correspond a un Warn
+        $warn = $this->entityManager->getRepository(Warn::class)->findOneBy(['id' => $data['id']]);
+        if(!$warn){
+            return $this->json(['message' => 'Warn not found']);
+        }
+
         $authorizationHeader = $request->headers->get('Authorization');
 
         //On vérifie que le token n'est pas vide
@@ -258,12 +261,6 @@ class WarnController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            // //On verifie que l'id transmit correspond a un Warn
-            $warn = $this->entityManager->getRepository(Warn::class)->findOneBy(['id' => $data['id']]);
-            if(!$warn){
-                return $this->json(['message' => 'Warn not found']);
-            }
-
             //on modifie la variable is_manage à true
             $warn->setIsManage(true);
     
@@ -276,6 +273,11 @@ class WarnController extends AbstractController
 
         return $this->json(['message' => 'Invalid Token']);
     }
+
+
+
+
+
 
     function algoNoSpam($object, $type, $ip, $user = null)
     {
