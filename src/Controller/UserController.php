@@ -233,8 +233,15 @@ class UserController extends AbstractController
         $limit = $data['limit'];
 
         $results = $this->userRepository->searchUserByName($searchValue, $limit);
+
+        $finalResults = [];
+        foreach ($results as $user) {
+            if (!in_array('ROLE_BAN', $user->getRoles())) {
+                $finalResults[] = $user;
+            }
+        }
     
-        return $this->json($results, 200, [], ['groups' => 'user:read']);
+        return $this->json($finalResults, 200, [], ['groups' => 'user:read']);
     }
 
 
