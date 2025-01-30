@@ -173,7 +173,7 @@ class WarnController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            //Une fois qu'on sait que c'est bien l'administrateur on récupère tous les warns
+            //Une fois qu'on sait que c'est bien l'administrateur ou un modérateur on récupère tous les warns
             $warnAll = $this->warnRepository->findBy(['is_manage' => false]);
 
             return $this->json(['message' => 'good', 'result' => $warnAll], 200, [], ['groups' => 'warn:read']);
