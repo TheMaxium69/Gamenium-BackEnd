@@ -28,6 +28,10 @@ class ProfilController extends AbstractController
 
         } else {
 
+            if (in_array('ROLE_BAN', $user->getRoles())) {
+                return $this->json(['message' => 'user ban']);
+            }
+
             $profilSocialNetworks = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findBy(['user' => $user]);
             $historyMyGames = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $user]);
             $userRates = $this->entityManager->getRepository(UserRate::class)->findBy(['user' => $user]);

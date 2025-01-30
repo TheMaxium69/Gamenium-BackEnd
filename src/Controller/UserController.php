@@ -168,6 +168,9 @@ class UserController extends AbstractController
 
             $user = $this->user->findOneBy(['token' => $token]);
 
+            if (in_array('ROLE_BAN', $user->getRoles())) {
+                return $this->json(['message' => 'user ban']);
+            }
 
             if ($user){
 
