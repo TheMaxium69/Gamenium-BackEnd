@@ -102,8 +102,8 @@ class PostActuController extends AbstractController
         $postActu = new PostActu();
         $postActu->setTitle($data['title']);
         $postActu->setContent($data['content']);
-        $postActu->setCreatedAt(new \DateTimeImmutable); /*($data['created_at'])*/
-        $postActu->setLastEdit($data['last_edit']);
+        $postActu->setCreatedAt(new \DateTimeImmutable($data['created_at']));
+        // $postActu->setLastEdit($data['last_edit']);
         $postActu->setNbEdit($data['nb_edit']);
         $postActu->setUser($user);
         $postActu->setGame($game);
