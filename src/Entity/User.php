@@ -24,6 +24,7 @@ class User implements UserInterface
     private ?int $id_useritium = null;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['useradmin:read'])]
     private array $roles = [];
 
     #[ORM\Column]

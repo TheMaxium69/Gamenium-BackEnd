@@ -14,11 +14,11 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read'])]
+    #[Groups(['useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read'])]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(['gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read'])]
+    #[Groups(['useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read'])]
     private ?string $url = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
