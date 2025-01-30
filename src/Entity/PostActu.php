@@ -50,7 +50,7 @@ class PostActu
     private ?user $user = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'view:read'])]
+    #[Groups(['post:read', 'view:read', 'warn:read'])]
     private ?string $title = null;
 
     #[ORM\ManyToOne(targetEntity: Picture::class)]

@@ -32,7 +32,7 @@ class Comment
     private ?int $nb_edit = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'warn:read'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(targetEntity: PostActu::class)]

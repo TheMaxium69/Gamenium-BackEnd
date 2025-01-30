@@ -41,7 +41,7 @@ class CommentReply
     private ?int $nb_edit = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['commentreply:read'])]
+    #[Groups(['commentreply:read', 'warn:read'])]
     private ?string $content = null;
 
     public function getId(): ?int

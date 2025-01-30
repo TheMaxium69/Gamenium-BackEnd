@@ -49,7 +49,7 @@ class User implements UserInterface
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read','comment:read', 'commentreply:read'])]
+    #[Groups(['user:read','comment:read', 'commentreply:read', 'warn:read'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]

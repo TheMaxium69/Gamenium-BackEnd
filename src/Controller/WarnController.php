@@ -174,7 +174,7 @@ class WarnController extends AbstractController
             }
 
             //Une fois qu'on sait que c'est bien l'administrateur ou un modérateur on récupère tous les warns
-            $warnAll = $this->warnRepository->findBy(['is_manage' => false]);
+            $warnAll = $this->warnRepository->findBy(['is_manage' => false], ['warnAt' => 'ASC']);
 
             return $this->json(['message' => 'good', 'result' => $warnAll], 200, [], ['groups' => 'warn:read']);
            
