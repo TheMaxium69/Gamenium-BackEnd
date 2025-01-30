@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\LogRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LogRepository::class)]
 class Log
@@ -11,6 +12,7 @@ class Log
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['useradmin:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'logs')]
@@ -18,9 +20,11 @@ class Log
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['useradmin:read'])]
     private ?string $why = null;
 
     #[ORM\Column]
+    #[Groups(['useradmin:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne]

@@ -36,6 +36,7 @@ class User implements UserInterface
     private ?\DateTimeImmutable $lastConnection = null;
 
     #[ORM\Column]
+    #[Groups(['useradmin:read'])]
     private array $ip = [];
 
     #[ORM\Column(length: 255)]
@@ -66,6 +67,7 @@ class User implements UserInterface
     private ?string $color = null;
 
     #[ORM\OneToMany(targetEntity: Log::class, mappedBy: 'user', orphanRemoval: true)]
+    #[Groups(['useradmin:read'])]
     private Collection $logs;
 
     public function __construct()
