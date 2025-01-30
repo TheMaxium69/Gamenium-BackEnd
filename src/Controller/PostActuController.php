@@ -70,7 +70,7 @@ class PostActuController extends AbstractController
        }
 
        //validation des données requies
-       if (!isset($data['title'], $data['content'], $data['picture'], $data['game_id'])) {
+       if (!isset($data['title'], $data['content'], $data['picture_id'], $data['game_id'])) {
         return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
        }
 
