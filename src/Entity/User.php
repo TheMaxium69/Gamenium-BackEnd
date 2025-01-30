@@ -35,7 +35,6 @@ class User implements UserInterface
     private ?\DateTimeImmutable $lastConnection = null;
 
     #[ORM\Column]
-    #[Groups(['useradmin:read'])]
     private array $ip = [];
 
     #[ORM\Column(length: 255)]
