@@ -56,7 +56,6 @@ class ProfilController extends AbstractController
                     "displayname" => $user->getDisplayname(),
                     "displaynameUseritium" => $user->getDisplaynameUseritium(),
                     "joinAt" => $user->getJoinAt(),
-                    "lastConnection" => $user->getLastConnection(),
                     "themeColor" => $color,
                     "picture" => $picture,
                     "nbGame" => count($historyMyGames),
