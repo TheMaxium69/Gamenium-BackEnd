@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\LogRole;
 use App\Entity\User;
 use App\Repository\PostActuRepository;
 use App\Repository\UserRepository;
@@ -70,6 +71,33 @@ class AdministrationController extends AbstractController
 
 
 
+
+
+
+
+
+
+
+
+
+    /*
+     *
+     *
+     *
+     *
+     *
+     *
+     *  GESTION DES ROLES
+     *
+     *
+     *
+     *
+     *
+     * */
+
+
+
+
     #[Route('-add-role', name: 'add_role_admin', methods: ['POST'])]
     public function addRole(Request $request): JsonResponse
     {
@@ -119,6 +147,8 @@ class AdministrationController extends AbstractController
                 $pendingUser->setRoles($roles);
                 $this->entityManager->persist($pendingUser);
                 $this->entityManager->flush();
+
+                $this->createLogRole($pendingUser, $data['new_role'], 'add', $user);
 
                 return $this->json(['message' => 'Role added successfully']);
 
@@ -190,6 +220,8 @@ class AdministrationController extends AbstractController
                     $this->entityManager->persist($pendingUser);
                     $this->entityManager->flush();
 
+                    $this->createLogRole($pendingUser, $data['remove_role'], 'remove', $user);
+
                     return $this->json(['message' => 'Role remove successfully']);
 
                 } else {
@@ -211,6 +243,19 @@ class AdministrationController extends AbstractController
         }
     }
 
+    function createLogRole($pending_user, $role_update, $role_action, $user_action)
+    {
+
+        $logRole = new LogRole();
+        $logRole->setUser($pending_user);
+        $logRole->setRole($role_update);
+        $logRole->setAction($role_action);
+        $logRole->setActionBy($user_action);
+        $logRole->setCreatedAt(new \DateTimeImmutable());
+        $this->entityManager->persist($logRole);
+        $this->entityManager->flush();
+
+    }
 
 
 
