@@ -128,7 +128,12 @@ class CommentController extends AbstractController
             }
 
             //on vérifie que le user a bien le role Administrateur
-            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_MODO', $user->getRoles())) {
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+            !in_array('ROLE_ADMIN', $user->getRoles()) && 
+            !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) && 
+            !in_array('ROLE_MODO_SUPER', $user->getRoles()) && 
+            !in_array('ROLE_MODO', $user->getRoles())) 
+            {
                 return $this->json(['message' => 'no permission']);
             }
            

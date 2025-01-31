@@ -15,7 +15,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class WarnController extends AbstractController
@@ -168,12 +167,17 @@ class WarnController extends AbstractController
                 return $this->json(['message' => 'token is failed']);
             }
 
-            //on vérifie que le user a bien le role Administrateur
-            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_MODO', $user->getRoles())) {
+            //on vérifie que le user a bien un des rôles
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+            !in_array('ROLE_ADMIN', $user->getRoles()) && 
+            !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) && 
+            !in_array('ROLE_MODO_SUPER', $user->getRoles()) && 
+            !in_array('ROLE_MODO', $user->getRoles())) 
+            {
                 return $this->json(['message' => 'no permission']);
             }
 
-            //Une fois qu'on sait que c'est bien l'administrateur ou un modérateur on récupère tous les warns
+            //Une fois qu'on sait qu'il a les permissions on récupère tous les warns
             $warnAll = $this->warnRepository->findBy(['is_manage' => false], ['warnAt' => 'ASC']);
 
             return $this->json(['message' => 'good', 'result' => $warnAll], 200, [], ['groups' => 'warn:read']);
@@ -207,11 +211,17 @@ class WarnController extends AbstractController
                 return $this->json(['message' => 'token is failed']);
             }
 
-            //on vérifie que le user a bien le role Administrateur
-            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_MODO', $user->getRoles())) {
+            //on vérifie que le user a bien l'un des roles
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+            !in_array('ROLE_ADMIN', $user->getRoles()) && 
+            !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) && 
+            !in_array('ROLE_MODO_SUPER', $user->getRoles()) && 
+            !in_array('ROLE_MODO', $user->getRoles())) 
+            {
                 return $this->json(['message' => 'no permission']);
             }
 
+            // Une fois qu'on sait qu'il a les permissions on revoit tous les warn
             return $this->json(['message' => 'good', 'result' => $warn], 200, [], ['groups' => 'warn:read']);
         }
 
@@ -246,12 +256,12 @@ class WarnController extends AbstractController
                 return $this->json(['message' => 'token is failed']);
             }
 
-            //on vérifie que le user a bien le role Administrateur
-            if (!in_array('ROLE_ADMIN', $user->getRoles())){
+            //on vérifie que le user a bien le role Admin ou le role Owner
+            if (!in_array('ROLE_OWNER', $user->getRoles()) && !in_array('ROLE_ADMIN', $user->getRoles())) {
                 return $this->json(['message' => 'no permission']);
             }
 
-            //Une fois qu'on sait que c'est bien l'administrateur on supprime le warn
+            //Une fois qu'on sait qu'il a les permissions on supprime le warn
             $this->entityManager->remove($myWarn);
             $this->entityManager->flush();
 
@@ -290,12 +300,15 @@ class WarnController extends AbstractController
                 return $this->json(['message' => 'Token is failed']);
             }
 
-            //on vérifie que le user a bien le role Modérateur
-            if (!in_array('ROLE_MODO', $user->getRoles())){
+            //on vérifie que le user a bien l'un des roles
+            if (!in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) && 
+            !in_array('ROLE_MODO_SUPER', $user->getRoles()) && 
+            !in_array('ROLE_MODO', $user->getRoles()))
+            {
                 return $this->json(['message' => 'no permission']);
             }
 
-            //on modifie la variable is_manage à true
+            //Une fois qu'on sait qu'il a les permissions on modifie la variable is_manage à true
             $warn->setIsManage(true);
     
             $this->entityManager->persist($warn);
