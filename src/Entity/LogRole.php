@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\LogRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LogRoleRepository::class)]
 class LogRole
@@ -11,23 +12,29 @@ class LogRole
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['logrole:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['logrole:read'])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['logrole:read'])]
     private ?string $role = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['logrole:read'])]
     private ?string $action = null;
 
     #[ORM\Column]
+    #[Groups(['logrole:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['logrole:read'])]
     private ?user $action_by = null;
 
     public function getId(): ?int

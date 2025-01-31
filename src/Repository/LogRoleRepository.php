@@ -21,6 +21,16 @@ class LogRoleRepository extends ServiceEntityRepository
         parent::__construct($registry, LogRole::class);
     }
 
+    public function searchLogByName(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.role LIKE :searchValue OR u.action LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return LogRole[] Returns an array of LogRole objects
 //     */
