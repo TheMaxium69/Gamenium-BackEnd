@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\Picture;
 use App\Entity\PostActu;
+use App\Entity\Provider;
 use App\Entity\User;
 use App\Repository\PostActuRepository;
 use App\Repository\ProviderRepository;
@@ -98,16 +99,28 @@ class PostActuController extends AbstractController
             return $this->json(['message' => 'unknown picture']);
         }
 
+
+        //Si Provider fournis 
+        if (!empty($data['provider_id'])) {
+            $provider = $this->entityManager->getRepository(Provider::class)->find($data['provider_id']);
+            if (!$provider) {
+                return $this->json(['message' => 'Unknown provider'], Response::HTTP_NOT_FOUND);
+            }
+        }
+
         
         $postActu = new PostActu();
         $postActu->setTitle($data['title']);
         $postActu->setContent($data['content']);
         $postActu->setCreatedAt(new \DateTimeImmutable($data['created_at']));
         // $postActu->setLastEdit($data['last_edit']);
-        $postActu->setNbEdit($data['nb_edit']);
+        $postActu->setNbEdit($data['nb_edit'] ?? 0);
         $postActu->setUser($user);
         $postActu->setGame($game);
         $postActu->setPicture($picture);
+        if ($provider !== null) {
+            $postActu->setProvider($provider);
+        }
         
         $this->entityManager->persist($postActu);
         $this->entityManager->flush();
