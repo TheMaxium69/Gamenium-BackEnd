@@ -16,7 +16,7 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['game:read','gameprofile:read', 'post:read' , 'userRate:read', 'historygame:read', 'view:read'])]
+    #[Groups(['game:read','gameprofile:read', 'post:read' , 'userRate:read', 'historygame:read', 'view:read', 'post:read'])]
     private ?int $id = null;
 
     #[ORM\OneToMany(targetEntity: PostActu::class, mappedBy: 'Game')]
@@ -31,7 +31,7 @@ class Game
     private ?string $guid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['game:read', 'historygame:read', 'view:read'])]
+    #[Groups(['game:read', 'historygame:read', 'view:read', 'post:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -71,7 +71,7 @@ class Game
     private ?int $expectedReleaseYear = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['game:read', 'historygame:read'])]
+    #[Groups(['game:read', 'historygame:read', 'post:read'])]
     private ?array $image = null;
 
     #[ORM\Column(nullable: true)]

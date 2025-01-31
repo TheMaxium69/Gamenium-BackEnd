@@ -13,7 +13,7 @@ class Provider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['provider:read','post:read','followProvider:read', 'follow:read', 'view:read'])]
+    #[Groups(['provider:read','post:read','followProvider:read', 'follow:read', 'view:read', 'post:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -21,7 +21,7 @@ class Provider
     private ?string $tagName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read','post:read', 'follow:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read', 'post:read'])]
     private ?string $displayName = null;
 
     #[ORM\Column(nullable: true)]
