@@ -2,19 +2,44 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
+use App\Entity\Test;
+use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('test')]
 class TestController extends AbstractController
 {
-    #[Route('/getIp', name: 'app_test', methods: ['GET'])]
-    public function getIp(Request $request): Response
+
+    public function __construct(
+        private EntityManagerInterface $entityManager
+    ) {}
+
+
+    #[Route('/getbygame/{id}', name: 'test_by_game')]
+    public function getTestByGame(int $id): JsonResponse
     {
 
-        $ip = $request->getClientIp();
 
-        return $this->json([ "message" => "good", "result" => $ip], 200);
+        $game = $this->entityManager->getRepository(Game::class)->find($id);
+
+        if (!$game) {
+            return $this->json(['message' => 'game not found']);
+        }
+
+
+        $tests = $this->entityManager->getRepository(Test::class)->findBy(['game' => $game]);
+
+        if (!$tests) {
+            return $this->json(['message' => 'no tests found for this game']);
+        }
+
+        return $this->json(['message'=>'good','result' => $tests], 200, [], ['groups' => 'testRate:read']);
     }
+    
+    
+    
 }
