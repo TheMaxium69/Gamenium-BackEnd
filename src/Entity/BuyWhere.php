@@ -17,12 +17,12 @@ class BuyWhere
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['buywhere:read','historygame:read','buywhereuser:read'])]
+    #[Groups(['buywhere:read','historygame:read','buywhereuser:read', 'historyplateform:read'])]
     private ?bool $is_public = null;
 
 
     #[ORM\Column(length: 255)]
-    #[Groups(['buywhere:read','historygame:read','buywhereuser:read'])]
+    #[Groups(['buywhere:read','historygame:read','buywhereuser:read', 'historyplateform:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
