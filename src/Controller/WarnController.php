@@ -184,6 +184,42 @@ class WarnController extends AbstractController
 
     }
 
+    #[Route('/onewarn/{id}', name: 'one_warn', methods:['GET'])]
+    public function getWarnById(Request $request, int $id): JsonResponse {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        //On vérifie que le token n'est pas vide
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            
+            //on verifie que le user existe
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            //on vérifie que le user a bien le role Administrateur
+            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_MODO', $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            //Une fois qu'on sait que c'est bien l'administrateur ou un modérateur on récupère le warn
+            $warn = $this->warnRepository->find($id);
+
+            if(!$warn) {
+                return $this->json(['message' => 'warn not found']);
+            }
+
+            return $this->json(['message' => 'good', 'result' => $warn], 200, [], ['groups' => 'warn:read']);
+           
+        }
+
+        return $this->json(['message' => 'Token invalide']);
+
+    }
+
     #[Route('/deletewarn/{id}', name: 'delete_warn', methods:['DELETE'])]
     public function deleteWarn(Request $request, int $id): JsonResponse
     {
