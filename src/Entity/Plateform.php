@@ -61,7 +61,7 @@ class Plateform
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['plateform:read', 'historyplateform:read'])]
+    #[Groups(['plateform:read', 'historygame:read', 'historyplateform:read' ])]
     private ?array $image = null;
 
     #[ORM\Column(nullable: true)]
