@@ -14,11 +14,11 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['logrole:read', 'useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(['useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['logrole:read', 'useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $url = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
