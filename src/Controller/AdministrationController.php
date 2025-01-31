@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\HistoryMyGame;
 use App\Entity\LogRole;
+use App\Entity\ProfilSocialNetwork;
 use App\Entity\User;
+use App\Entity\UserRate;
 use App\Repository\PostActuRepository;
 use App\Repository\UserRepository;
 use App\Repository\ViewRepository;
@@ -68,6 +71,85 @@ class AdministrationController extends AbstractController
     }
 
 
+    // Get Profil User By Id
+    #[Route('-profil/{id}', name: 'one_profil', methods:['GET'])]
+    public function getProfilById(Request $request, int $id): JsonResponse {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (!$id) {
+            return $this->json(['message' => 'id not found']);
+        }
+
+        //on récupère l'utilisateur recherché
+        $userSearched = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $id]);
+
+        if(!$userSearched) {
+            return $this->json(['message' => 'user not found']);
+        }
+
+        //On vérifie que le token n'est pas vide
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            
+            //on verifie que le user existe
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            //on vérifie que le user a bien l'un des roles
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+            !in_array('ROLE_ADMIN', $user->getRoles()) && 
+            !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) && 
+            !in_array('ROLE_MODO_SUPER', $user->getRoles()) && 
+            !in_array('ROLE_MODO', $user->getRoles())) 
+            {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            // Une fois qu'on sait qu'il a les permissions on renvoit le profil signalé
+            $profilSocialNetworks = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findBy(['user' => $userSearched]);
+            $historyMyGames = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $userSearched]);
+            $userRates = $this->entityManager->getRepository(UserRate::class)->findBy(['user' => $userSearched]);
+
+            if ($userSearched->getPp() !== null) {
+                $picture = $userSearched->getPp()->getUrl();
+            } else {
+                $picture = null;
+            }
+
+            if ($userSearched->getColor() !== null) {
+                $color = $userSearched->getColor();
+            } else {
+                $color = null;
+            }
+
+            $message = [
+                'message' => "good",
+                'result' => [
+                    "id" => $userSearched->getId(),
+                    "username" => $userSearched->getUsername(),
+                    "displayname" => $userSearched->getDisplayname(),
+                    "displaynameUseritium" => $userSearched->getDisplaynameUseritium(),
+                    "joinAt" => $userSearched->getJoinAt(),
+                    "lastConnection" => $userSearched->getLastConnection(),
+                    "nbConnection" => count($userSearched->getIp()),
+                    "themeColor" => $color,
+                    "picture" => $picture,
+                    "nbGame" => count($historyMyGames),
+                    "nbNote" => count($userRates),
+                    "reseau" => $profilSocialNetworks
+                ]
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'profilSocialNetwork:read']);       
+        }
+
+        return $this->json(['message' => 'Token invalide']);
+
+    }
 
 
 
