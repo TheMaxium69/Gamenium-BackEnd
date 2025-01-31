@@ -37,6 +37,10 @@ class Test
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
+    #[ORM\Column]
+    #[Groups(['testRate:read'])]
+    private ?\DateTimeImmutable $test_at = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -98,6 +102,18 @@ class Test
     public function setIp(string $ip): static
     {
         $this->ip = $ip;
+
+        return $this;
+    }
+
+    public function getTestAt(): ?\DateTimeImmutable
+    {
+        return $this->test_at;
+    }
+
+    public function setTestAt(\DateTimeImmutable $test_at): static
+    {
+        $this->test_at = $test_at;
 
         return $this;
     }
