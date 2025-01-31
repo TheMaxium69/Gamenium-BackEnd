@@ -65,4 +65,270 @@ class AdministrationController extends AbstractController
         }
 
     }
+
+
+
+
+
+    #[Route('-add-role', name: 'add_role_admin', methods: ['POST'])]
+    public function addRole(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_user']) && !isset($data['new_role'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        $pendingUser = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $data['id_user']]);
+        if (!$pendingUser) {
+            return $this->json(['message' => 'user not found']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'user token not found']);
+            }
+
+            $canAddRole = $this->canManageRole($user->getRoles());
+
+            if (in_array($data['new_role'], $canAddRole, true)) {
+
+                $roles = $pendingUser->getRoles();
+
+                $roles = array_values(array_filter($roles, fn($role) => $role !== 'ROLE_USER'));
+
+                if (!in_array($data['new_role'], $roles, true)) {
+                    $roles[] = $data['new_role'];
+                }
+                
+                $pendingUser->setRoles($roles);
+                $this->entityManager->persist($pendingUser);
+                $this->entityManager->flush();
+
+                return $this->json(['message' => 'Role added successfully']);
+
+            } else {
+
+                return $this->json(['message' => 'Invalid role or no permission']);
+            }
+            
+        } else {
+
+            return $this->json(['message' => 'no permission']);
+
+        }
+    }
+
+
+
+
+
+
+    #[Route('-remove-role', name: 'remove_role_admin', methods: ['POST'])]
+    public function removeRole(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_user']) && !isset($data['remove_role'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        $pendingUser = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $data['id_user']]);
+        if (!$pendingUser) {
+            return $this->json(['message' => 'user not found']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'user token not found']);
+            }
+
+            $canAddRole = $this->canManageRole($user->getRoles());
+
+
+            if (in_array($data['remove_role'], $canAddRole, true)) {
+
+                $roles = $pendingUser->getRoles();
+
+                $roles = array_values(array_filter($roles, fn($role) => $role !== 'ROLE_USER'));
+
+                if (in_array($data['remove_role'], $roles, true)) {
+
+                    $roles = array_values(array_filter($roles, fn($role) => $role !== $data['remove_role']));
+
+                    $pendingUser->setRoles($roles);
+                    $this->entityManager->persist($pendingUser);
+                    $this->entityManager->flush();
+
+                    return $this->json(['message' => 'Role remove successfully']);
+
+                } else {
+
+                    return $this->json(['message' => 'Role not found']);
+
+                }
+
+            } else {
+
+                return $this->json(['message' => 'Invalid role or no permission']);
+            }
+
+
+        } else {
+
+            return $this->json(['message' => 'no permission']);
+
+        }
+    }
+
+
+
+
+
+
+    function canManageRole($rolesUser)
+    {
+
+        $canManageRoleArray = [];
+
+        foreach ($rolesUser as $role) {
+
+            /*
+             *
+             * ADMINISTRATION
+             *
+             * */
+
+            if ($role === 'ROLE_OWNER') {
+                $canManageRoleArray = array_merge($canManageRoleArray, [
+                    'ROLE_ADMIN',
+
+                    'ROLE_MODO_RESPONSABLE',
+                    'ROLE_MODO_SUPER',
+                    'ROLE_MODO',
+
+                    'ROLE_WRITE_RESPONSABLE',
+                    'ROLE_WRITE_SUPER',
+                    'ROLE_WRITE',
+
+                    'ROLE_TEST_RESPONSABLE',
+                    'ROLE_TEST',
+
+                    'ROLE_PROVIDER_ADMIN',
+                    'ROLE_PROVIDER',
+
+                    'ROLE_BETA',
+                    'ROLE_BAN',
+                ]);
+            }
+
+            if ($role === 'ROLE_ADMIN') {
+                $canManageRoleArray = array_merge($canManageRoleArray, [
+                    'ROLE_MODO_RESPONSABLE',
+                    'ROLE_MODO_SUPER',
+                    'ROLE_MODO',
+
+                    'ROLE_WRITE_RESPONSABLE',
+                    'ROLE_WRITE_SUPER',
+                    'ROLE_WRITE',
+
+                    'ROLE_TEST_RESPONSABLE',
+                    'ROLE_TEST',
+
+                    'ROLE_PROVIDER_ADMIN',
+                    'ROLE_PROVIDER',
+
+                    'ROLE_BETA',
+                    'ROLE_BAN',
+                ]);
+            }
+
+            /*
+             *
+             * MODERATION
+             *
+             * */
+            if ($role === 'ROLE_MODO_RESPONSABLE') {
+                $canManageRoleArray = array_merge($canManageRoleArray, [
+                    'ROLE_MODO_SUPER',
+                    'ROLE_MODO',
+                ]);
+            }
+
+
+            /*
+             *
+             * WRITE
+             *
+             * */
+            if ($role === 'ROLE_WRITE_RESPONSABLE') {
+                $canManageRoleArray = array_merge($canManageRoleArray, [
+                    'ROLE_WRITE_SUPER',
+                    'ROLE_WRITE',
+                ]);
+            }
+
+
+            /*
+             *
+             * TEST
+             *
+             * */
+            if ($role === 'ROLE_TEST_RESPONSABLE') {
+                $canManageRoleArray = array_merge($canManageRoleArray, [
+                    'ROLE_TEST',
+                ]);
+            }
+
+
+
+        }
+
+        return $canManageRoleArray;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
