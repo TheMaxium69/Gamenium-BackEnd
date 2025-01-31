@@ -21,6 +21,17 @@ class LogRepository extends ServiceEntityRepository
         parent::__construct($registry, Log::class);
     }
 
+    public function searchLogByName(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.why LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->orderBy('u.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Log[] Returns an array of Log objects
 //     */

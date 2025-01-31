@@ -12,23 +12,25 @@ class Log
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['useradmin:read'])]
+    #[Groups(['useradmin:read', 'log:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'logs')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['log:read'])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['useradmin:read'])]
+    #[Groups(['useradmin:read', 'log:read'])]
     private ?string $why = null;
 
     #[ORM\Column]
-    #[Groups(['useradmin:read'])]
+    #[Groups(['useradmin:read', 'log:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['log:read'])]
     private ?user $moderated_by = null;
 
     public function getId(): ?int
