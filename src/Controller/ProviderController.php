@@ -102,7 +102,7 @@ class ProviderController extends AbstractController
 
         $results = $this->providerRepository->searchProviderByName($searchValue, $limit);
     
-        return $this->json($results, 200, [], ['groups' => 'provider:read']);
+        return $this->json($results, 200, [], ['groups' => 'provider:read','picture:read']);
     }
 }
 
