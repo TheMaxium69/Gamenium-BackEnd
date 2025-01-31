@@ -48,15 +48,32 @@ class CommentController extends AbstractController
             ]]);
         }
 
-        $totalcom = $totalcom + count($comment);
+        $AllComment = [];
+        foreach ($comment as $commentOne) {
+            $user = $commentOne->getUser();
+            if (!in_array('ROLE_BAN', $user->getRoles())) {
+                $AllComment[] = $commentOne; // Stocker uniquement les replies sans User_Ban
+            }
+        }
 
-        foreach ($comment as $com) {
+
+        $totalcom = $totalcom + count($AllComment);
+
+        foreach ($AllComment as $com) {
             $tempComReply = null;
             $tempComReply = $this->commentReplyRepository->findBy(['comment' => $com]);
             if ($tempComReply){
-                $commentReply[$com->getId()] = $tempComReply;
+                $AllCommentReply = [];
+                foreach ($tempComReply as $commentOneReply) {
+                    $user = $commentOneReply->getUser();
+                    if (!in_array('ROLE_BAN', $user->getRoles())) {
+                        $AllCommentReply[] = $commentOneReply; // Stocker uniquement les replies sans User_Ban
+                    }
+                }
+
+                $commentReply[$com->getId()] = $AllCommentReply;
+                $totalcom = $totalcom + count($AllCommentReply);
             }
-            $totalcom = $totalcom + count($tempComReply);
         }
 
         return $this->json(['message' => 'good', 'result' => [
@@ -93,9 +110,17 @@ class CommentController extends AbstractController
 
             } else {
 
+                $AllComment = [];
+                foreach ($commentAll as $commentOne) {
+                    $user = $commentOne->getUser();
+                    if (!in_array('ROLE_BAN', $user->getRoles())) {
+                        $AllComment[] = $commentOne; // Stocker uniquement les replies sans User_Ban
+                    }
+                }
+
                 $message = [
                     'message' => "good",
-                    'result' => $commentAll
+                    'result' => $AllComment
                 ];
 
             }
