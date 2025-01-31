@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\CommentReply;
 use App\Entity\PostActu;
 use App\Entity\User;
+use App\Repository\CommentReplyRepository;
 use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\UserRepository;
@@ -21,7 +22,8 @@ class CommentReplyController extends AbstractController
 {
 
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private CommentReplyRepository $commentReplyRepository
     ) {}
 
     #[Route('/comment-reply-create/', name: 'app_comment_reply_create', methods: ['POST'])]
@@ -105,6 +107,15 @@ class CommentReplyController extends AbstractController
 
     }
 
+    #[Route('/getReplyById/{id}', name: 'app_reply_by_id')]
+    public function getReplyById(int $id): JsonResponse
+    {
+
+        $commentReply = $this->commentReplyRepository->find($id);
+
+        return $this->json(['message' => 'good', 'result' => $commentReply], 200, [], ['groups' => 'commentreply:read']);
+
+    }
 
     #[Route('/deleteReply/{id}', name: 'app_delete_reply', methods: ['DELETE'])]
     public function deleteReply(int $id, Request $request): JsonResponse
