@@ -27,6 +27,7 @@ class LogRoleRepository extends ServiceEntityRepository
             ->andWhere('u.role LIKE :searchValue OR u.action LIKE :searchValue')
             ->setParameter('searchValue', '%' . $searchValue . '%')
             ->setMaxResults($limit)
+            ->orderBy('u.id', 'DESC')
             ->getQuery()
             ->getResult();
     }
