@@ -44,7 +44,7 @@ class User implements UserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['log:read', 'logrole:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
+    #[Groups(['testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
@@ -52,18 +52,18 @@ class User implements UserInterface
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['log:read', 'logrole:read', 'useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
     #[ORM\ManyToOne(cascade: ['persist'], targetEntity: Picture::class)]
-    #[Groups(['log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
+    #[Groups(['testRate:read', 'log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
     private ?picture $pp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
+    #[Groups(['testRate:read', 'log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
     private ?string $color = null;
 
     #[ORM\OneToMany(targetEntity: Log::class, mappedBy: 'user', orphanRemoval: true)]
