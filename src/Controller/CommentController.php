@@ -105,6 +105,21 @@ class CommentController extends AbstractController
 
     }
 
+    #[Route('/getCommentById/{id}', name: 'comment_by_id', methods:"GET")]
+    public function getCommentById(int $id):JsonResponse
+    {
+
+        $comment = $this->commentRepository->find($id);
+
+        if (!$comment){
+            return $this->json(['message' => 'comment not found']);
+        }
+        
+        return $this->json(['message' => 'good', 'result' => $comment], 200, [], ['groups' => 'comment:read']);
+        
+
+    }
+
     #[Route('comments/me', name: 'get_user_comments', methods: "GET" )]
     public function getCommentByUser (Request $request) : JsonResponse {
 
