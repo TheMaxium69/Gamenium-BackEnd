@@ -33,7 +33,7 @@ class PostActu
 
 
     #[ORM\ManyToOne(inversedBy: 'postActus', targetEntity: Provider::class)]
-    #[Groups(['post:read'])]
+    #[Groups(['post:read', 'commentreply:admin', 'comment:admin'])]
     private ?Provider $Provider = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus', targetEntity: GameProfile::class)]
@@ -55,7 +55,7 @@ class PostActu
 
     #[ORM\ManyToOne(targetEntity: Picture::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['post:read'])]
+    #[Groups(['post:read', 'commentreply:admin', 'comment:admin'])]
     private ?Picture $picture = null;
 
     public function getId(): ?int
