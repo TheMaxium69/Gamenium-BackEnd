@@ -228,4 +228,54 @@ class PostActuController extends AbstractController
     
     return $this->json($response, 200, [], ['groups' => 'post:read']);
     }
+
+    #[Route('/postactus/upload', name: 'upload_postactu_picture', methods: ['POST'])]
+    public function uploadPostActuPicture(Request $request): JsonResponse
+    {
+        $UPLOAD_DIR = $this->getParameter('app.upload_dir');
+        $API_URL = $this->getParameter('app.api_url_dev');
+
+        $photoFile = $request->files->get('photo');
+
+        if (!$photoFile) {
+            return $this->json(['message' => 'No photo uploaded'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($photoFile->getMimeType(), $allowedTypes)) {
+            return $this->json(['message' => 'Only JPEG, PNG, and GIF images are allowed'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $fileName = 'post_' . uniqid() . '.' . $photoFile->guessExtension();
+        
+        try {
+            $photoFile->move($UPLOAD_DIR, $fileName);
+        } catch (\Exception $e) {
+            return $this->json(['message' => 'Failed to save the image', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
+        }
+        $token = substr($authorizationHeader, 7);
+
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $picture = new Picture();
+        $picture->setUrl($API_URL . "/" . $UPLOAD_DIR . $fileName);
+        $picture->setUser($user);
+        $picture->setPostedAt(new \DateTime());
+        $picture->setIp($request->getClientIp());
+
+        $this->entityManager->persist($picture);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'Image uploaded successfully', 'result' => $picture], Response::HTTP_CREATED, [], ['groups' => 'picture:read']);
+    }
+
+
 }
