@@ -87,6 +87,10 @@ class PostActuController extends AbstractController
             return $this->json(['message' => 'token is failed']);
         }
 
+        if (!in_array('ROLE_OWNER', $user->getRoles()) && !in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_WRITE_RESPONSABLE', $user->getRoles()) && !in_array('ROLE_WRITE_SUPER', $user->getRoles()) && !in_array('ROLE_WRITE', $user->getRoles())) {
+            return $this->json(['message' => 'no permission']);
+        }
+
         // Recherche de jeu
         $game = $this->entityManager->getRepository(Game::class)->find($data['game_id']);
         if (!$game) {
