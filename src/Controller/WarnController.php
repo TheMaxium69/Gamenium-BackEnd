@@ -189,6 +189,13 @@ class WarnController extends AbstractController
 
         $authorizationHeader = $request->headers->get('Authorization');
 
+        //on récupère le warn
+        $warn = $this->warnRepository->find($id);
+
+        if(!$warn) {
+            return $this->json(['message' => 'warn not found']);
+        }
+
         //On vérifie que le token n'est pas vide
         if (strpos($authorizationHeader, 'Bearer ') === 0) {
             $token = substr($authorizationHeader, 7);
@@ -205,15 +212,7 @@ class WarnController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            //Une fois qu'on sait que c'est bien l'administrateur ou un modérateur on récupère le warn
-            $warn = $this->warnRepository->find($id);
-
-            if(!$warn) {
-                return $this->json(['message' => 'warn not found']);
-            }
-
             return $this->json(['message' => 'good', 'result' => $warn], 200, [], ['groups' => 'warn:read']);
-           
         }
 
         return $this->json(['message' => 'Token invalide']);

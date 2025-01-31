@@ -16,11 +16,11 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'comment:read', 'screenshot:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read', 'commentreply:read', 'default:read', 'historyplateform:read', 'warn:read'])]
+    #[Groups(['useradmin:read', 'comment:read', 'screenshot:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read', 'commentreply:read', 'default:read', 'historyplateform:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read'])]
+    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id_useritium = null;
 
     #[ORM\Column(type: 'json')]
@@ -28,7 +28,7 @@ class User implements UserInterface
     private array $roles = [];
 
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read'])]
+    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
     private ?\DateTimeImmutable $joinAt = null;
 
     #[ORM\Column]
@@ -44,26 +44,26 @@ class User implements UserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read'])]
+    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['useradmin:read', 'default:read', 'screenshot:read', 'user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read', 'commentreply:read', 'historyplateform:read'])]
+    #[Groups(['useradmin:read', 'default:read', 'screenshot:read', 'user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read', 'commentreply:read', 'historyplateform:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read'])]
+    #[Groups(['useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
     #[ORM\ManyToOne(cascade: ['persist'], targetEntity: Picture::class)]
-    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read'])]
+    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
     private ?picture $pp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read'])]
+    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $color = null;
 
     #[ORM\OneToMany(targetEntity: Log::class, mappedBy: 'user', orphanRemoval: true)]

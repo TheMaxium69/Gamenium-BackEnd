@@ -13,34 +13,34 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['comment:read', 'like:read', 'commentreply:read', 'warn:read'])]
+    #[Groups(['comment:read', 'like:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'comment:admin'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'comment:admin'])]
     private ?\DateTimeInterface $last_edit = null;
 
     #[ORM\Column]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'comment:admin'])]
     private ?int $nb_edit = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['comment:read', 'warn:read'])]
+    #[Groups(['comment:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(targetEntity: PostActu::class)]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'commentreply:admin', 'comment:admin'])]
     private ?postactu $post = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'comment:admin'])]
     private ?user $user = null;
 
     public function getId(): ?int

@@ -13,7 +13,7 @@ class PostActu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['post:read' ,'comment:read' , 'like:read','followPageGame:read', 'view:read', 'warn:read'])]
+    #[Groups(['post:read' ,'comment:read' , 'like:read','followPageGame:read', 'view:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -50,7 +50,7 @@ class PostActu
     private ?user $user = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'view:read', 'warn:read'])]
+    #[Groups(['post:read', 'view:read', 'warn:read', 'comment:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $title = null;
 
     #[ORM\ManyToOne(targetEntity: Picture::class)]

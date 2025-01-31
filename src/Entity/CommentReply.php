@@ -13,35 +13,35 @@ class CommentReply
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['commentreply:read', 'warn:read'])]
+    #[Groups(['commentreply:read', 'warn:read', 'commentreply:admin'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[Groups(['commentreply:read'])]
+    #[Groups(['commentreply:read', 'commentreply:admin'])]
     private ?Comment $comment = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['commentreply:read'])]
+    #[Groups(['commentreply:read', 'commentreply:admin'])]
     private ?User $user = null;
 
     #[ORM\Column]
-    #[Groups(['commentreply:read'])]
+    #[Groups(['commentreply:read', 'commentreply:admin'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['commentreply:read'])]
+    #[Groups(['commentreply:read', 'commentreply:admin'])]
     private ?\DateTimeInterface $last_edit = null;
 
     #[ORM\Column]
-    #[Groups(['commentreply:read'])]
+    #[Groups(['commentreply:read', 'commentreply:admin'])]
     private ?int $nb_edit = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['commentreply:read', 'warn:read'])]
+    #[Groups(['commentreply:read', 'warn:read', 'commentreply:admin'])]
     private ?string $content = null;
 
     public function getId(): ?int

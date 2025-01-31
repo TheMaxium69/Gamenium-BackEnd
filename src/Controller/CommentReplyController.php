@@ -108,12 +108,35 @@ class CommentReplyController extends AbstractController
     }
 
     #[Route('/getReplyById/{id}', name: 'app_reply_by_id')]
-    public function getReplyById(int $id): JsonResponse
+    public function getReplyById(Request $request, int $id): JsonResponse
     {
+        $authorizationHeader = $request->headers->get('Authorization');
 
         $commentReply = $this->commentReplyRepository->find($id);
+        if(!$commentReply) {
+            return $this->json(['message' => 'Comment reply not found']);
+        }
 
-        return $this->json(['message' => 'good', 'result' => $commentReply], 200, [], ['groups' => 'commentreply:read']);
+        //On vérifie que le token n'est pas vide
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            
+            //on verifie que le user existe
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            //on vérifie que le user a bien le role Administrateur
+            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_MODO', $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+           
+            return $this->json(['message' => 'good', 'result' => $commentReply], 200, [], ['groups' => 'commentreply:admin']);
+        }
+
+        return $this->json(['message' => 'Token invalide']);
 
     }
 

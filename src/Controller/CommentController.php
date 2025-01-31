@@ -106,18 +106,36 @@ class CommentController extends AbstractController
     }
 
     #[Route('/getCommentById/{id}', name: 'comment_by_id', methods:"GET")]
-    public function getCommentById(int $id):JsonResponse
+    public function getCommentById(Request $request, int $id):JsonResponse
     {
 
-        $comment = $this->commentRepository->find($id);
+        $authorizationHeader = $request->headers->get('Authorization');
 
+        $comment = $this->commentRepository->find($id);
         if (!$comment){
             return $this->json(['message' => 'comment not found']);
         }
-        
-        return $this->json(['message' => 'good', 'result' => $comment], 200, [], ['groups' => 'comment:read']);
-        
 
+        //On vérifie que le token n'est pas vide
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            
+            //on verifie que le user existe
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            //on vérifie que le user a bien le role Administrateur
+            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_MODO', $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+           
+            return $this->json(['message' => 'good', 'result' => $comment], 200, [], ['groups' => 'comment:admin']);
+        }
+
+        return $this->json(['message' => 'Token invalide']);
     }
 
     #[Route('comments/me', name: 'get_user_comments', methods: "GET" )]
