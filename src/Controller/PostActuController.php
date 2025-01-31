@@ -233,7 +233,7 @@ class PostActuController extends AbstractController
     public function uploadPostActuPicture(Request $request): JsonResponse
     {
         $UPLOAD_DIR = $this->getParameter('app.upload_dir');
-        $API_URL = $this->getParameter('app.api_url_dev');
+        $API_URL = str_replace('https://', 'http://', $this->getParameter('app.api_url_dev')); 
 
         $photoFile = $request->files->get('photo');
 
