@@ -31,6 +31,7 @@ security:
     access_control:
          - { path: ^/login_user, roles: PUBLIC_ACCESS },
          - { path: ^/login_token, roles: PUBLIC_ACCESS },
+         - { path: ^/useritium, roles: PUBLIC_ACCESS },
          - { path: ^/, roles: ROLE_BETA }
         # - { path: ^/profile, roles: ROLE_USER }
 
