@@ -174,17 +174,32 @@ class StatController extends AbstractController
             $nb_sanction = $this->entityManager->getRepository(Log::class)->count();
 
             $nb_pp_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'PP DELETE']);
+            $nb_actu_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'ACTU DELETE']);
+            $nb_hmg_edited = $this->entityManager->getRepository(Log::class)->count(['why' => 'HMG EDITED']);
+            $nb_hmp_edited = $this->entityManager->getRepository(Log::class)->count(['why' => 'HMP EDITED']);
             $nb_comment_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'COMMENT DELETE']);
+            $nb_screen_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'SCREEN DELETE']);
+            $nb_user_ban = $this->entityManager->getRepository(Log::class)->count(['why' => 'USER BAN']);
 
             $result = [
                 'nb_sanction' => $nb_sanction,
                 'types' => [
                     'PP DELETE',
-                    'COMMENT DELETE'
+                    'ACTU DELETE',
+                    'HMG EDITED',
+                    'HMP EDITED',
+                    'COMMENT DELETE',
+                    'SCREEN DELETE',
+                    'USER BAN'
                 ],
                 'nb_types' => [
                     $nb_pp_delete,
+                    $nb_actu_delete,
+                    $nb_hmg_edited,
+                    $nb_hmp_edited,
                     $nb_comment_delete,
+                    $nb_screen_delete,
+                    $nb_user_ban
                 ]
             ];
 
