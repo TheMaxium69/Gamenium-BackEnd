@@ -17,7 +17,7 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['comment:read', 'comment:admin'])]
+    #[Groups(['comment:read', 'comment:admin', 'commentreply:admin'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(length: 255)]
@@ -40,7 +40,7 @@ class Comment
     private ?postactu $post = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[Groups(['comment:read', 'comment:admin'])]
+    #[Groups(['comment:read', 'comment:admin', 'commentreply:admin'])]
     private ?user $user = null;
 
     public function getId(): ?int
