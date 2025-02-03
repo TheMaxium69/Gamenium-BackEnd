@@ -13,15 +13,15 @@ class Provider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['provider:read','post:read','followProvider:read', 'follow:read', 'view:read', 'post:read'])]
+    #[Groups(['provider:read','post:read','followProvider:read', 'follow:read', 'view:read', 'post:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read','post:read', 'follow:read', 'view:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read', 'view:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $tagName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['provider:read','post:read', 'follow:read', 'post:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read', 'post:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $displayName = null;
 
     #[ORM\Column(nullable: true)]
@@ -40,7 +40,7 @@ class Provider
     private ?int $banner = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['provider:read','post:read', 'follow:read'])]
+    #[Groups(['provider:read','post:read', 'follow:read', 'commentreply:admin', 'comment:admin'])]
     private ?Picture $picture = null;
 
     #[ORM\Column(length: 255)]
