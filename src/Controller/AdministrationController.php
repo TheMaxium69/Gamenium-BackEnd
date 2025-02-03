@@ -10,6 +10,7 @@ use App\Entity\LogRole;
 use App\Entity\ProfilSocialNetwork;
 use App\Entity\User;
 use App\Entity\UserRate;
+use App\Entity\View;
 use App\Repository\PostActuRepository;
 use App\Repository\UserRepository;
 use App\Repository\ViewRepository;
@@ -150,6 +151,7 @@ class AdministrationController extends AbstractController
 
 
 
+
             $message = [
                 'message' => "good",
                 'result' => [
@@ -168,11 +170,12 @@ class AdministrationController extends AbstractController
                     "reseau" => $profilSocialNetworks,
                     "roles" => $userSearched->getRoles(),
                     "badges" => $userBadges,
-                    "nbSignal" => $nbSanction
+                    "nbSanction" => $nbSanction,
+                    "nbView" => $this->entityManager->getRepository(View::class)->count(['profile' => $userSearched]),
                 ]
             ];
 
-            return $this->json($message, 200, [], ['groups' => 'profilSocialNetwork:read']);       
+            return $this->json($message, 200, [], ['groups' => 'profilSocialNetwork:read']);
         }
 
         return $this->json(['message' => 'Token invalide']);
