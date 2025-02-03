@@ -145,6 +145,7 @@ class HistoryMyPlateformController extends AbstractController
 
             $newCopy = new HmpCopy();
             $newCopy->setHistoryMyPlateform($historyMyPlateform);
+            $newCopy->setPurchase($newPurchase);
             
             $this->entityManager->persist($newCopy);
 
