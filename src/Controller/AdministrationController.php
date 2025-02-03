@@ -208,6 +208,77 @@ class AdministrationController extends AbstractController
      *
      * */
 
+    #[Route('-ban/{id}', name: 'ban_admin', methods: ['GET'])]
+    public function toggleBan(Request $request, int $id): JsonResponse
+    {
+
+        $pendingUser = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $id]);
+        if (!$pendingUser) {
+            return $this->json(['message' => 'user not found']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'user token not found']);
+            }
+
+            //on vérifie que le user a bien l'un des roles
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+                !in_array('ROLE_ADMIN', $user->getRoles()) &&
+                !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_MODO_SUPER', $user->getRoles()) &&
+                !in_array('ROLE_MODO', $user->getRoles()))
+            {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $roles = $pendingUser->getRoles();
+            $roles = array_values(array_filter($roles, fn($role) => $role !== 'ROLE_USER'));
+
+            //on vérifie que le user a bien l'un des roles
+            if (in_array('ROLE_BAN', $roles))
+            {
+                /* IL DEJA EST BAN*/
+                $roles = array_values(array_filter($roles, fn($role) => $role !== 'ROLE_BAN'));
+                $this->createLogRole($pendingUser, 'ROLE_BAN', 'remove', $user);
+
+            } else {
+                /* IL N'EST PAS BAN */
+                $roles[] = 'ROLE_BAN';
+                $this->createLogRole($pendingUser, 'ROLE_BAN', 'add', $user);
+
+                /* FOR LOG */
+                $newLog = new Log();
+                $newLog->setWhy("BAN USER");
+                $newLog->setUser($pendingUser);
+                $newLog->setModeratedBy($user);
+                $newLog->setCreatedAt(new \DateTimeImmutable());
+                $this->entityManager->persist($newLog);
+                $this->entityManager->flush();
+                /* FOR LOG */
+            }
+
+            $pendingUser->setRoles($roles);
+            $this->entityManager->persist($pendingUser);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'toggle ban successfully']);
+
+        } else {
+
+            return $this->json(['message' => 'no permission']);
+
+        }
+    }
+
 
 
 
@@ -256,7 +327,7 @@ class AdministrationController extends AbstractController
                 if (!in_array($data['new_role'], $roles, true)) {
                     $roles[] = $data['new_role'];
                 }
-                
+
                 $pendingUser->setRoles($roles);
                 $this->entityManager->persist($pendingUser);
                 $this->entityManager->flush();
@@ -269,7 +340,7 @@ class AdministrationController extends AbstractController
 
                 return $this->json(['message' => 'Invalid role or no permission']);
             }
-            
+
         } else {
 
             return $this->json(['message' => 'no permission']);
@@ -406,7 +477,7 @@ class AdministrationController extends AbstractController
                     'ROLE_PROVIDER',
 
                     'ROLE_BETA',
-                    'ROLE_BAN',
+//                    'ROLE_BAN',
                 ]);
             }
 
@@ -427,7 +498,6 @@ class AdministrationController extends AbstractController
                     'ROLE_PROVIDER',
 
                     'ROLE_BETA',
-                    'ROLE_BAN',
                 ]);
             }
 
