@@ -24,7 +24,7 @@ class BadgeVersUser
     private ?user $user = null;
 
     #[ORM\ManyToOne(targetEntity: Badge::class)]
-    #[Groups(['badgesversuser:read'])]
+    #[Groups(['badgesversuser:read','useradmin:read'])]
     private ?Badge $badge = null;
 
     public function getId(): ?int

@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Badge;
+use App\Entity\BadgeVersUser;
 use App\Entity\HistoryMyGame;
 use App\Entity\LogRole;
 use App\Entity\ProfilSocialNetwork;
@@ -83,7 +85,7 @@ class AdministrationController extends AbstractController
 
         //on récupère l'utilisateur recherché
         $userSearched = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $id]);
-
+        
         if(!$userSearched) {
             return $this->json(['message' => 'user not found']);
         }
@@ -113,7 +115,17 @@ class AdministrationController extends AbstractController
             $profilSocialNetworks = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findBy(['user' => $userSearched]);
             $historyMyGames = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $userSearched]);
             $userRates = $this->entityManager->getRepository(UserRate::class)->findBy(['user' => $userSearched]);
-
+            $badgeVersUser = $this->entityManager->getRepository(BadgeVersUser::class)->findBy(['user' => $userSearched]);
+            $userBadges = [];
+            foreach ($badgeVersUser as $badge) {
+                $badgeName = $badge->getBadge()->getName();
+                $badgePicture = $badge->getBadge()->getPicture()->getUrl();
+                $userBadges[] = [
+                    "name" => $badgeName,
+                    "pictureUrl" => $badgePicture
+                ];
+            }
+            
             if ($userSearched->getPp() !== null) {
                 $picture = $userSearched->getPp()->getUrl();
             } else {
@@ -140,7 +152,9 @@ class AdministrationController extends AbstractController
                     "picture" => $picture,
                     "nbGame" => count($historyMyGames),
                     "nbNote" => count($userRates),
-                    "reseau" => $profilSocialNetworks
+                    "reseau" => $profilSocialNetworks,
+                    "roles" => $userSearched->getRoles(),
+                    "badges" => $userBadges
                 ]
             ];
 

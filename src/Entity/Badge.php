@@ -18,7 +18,7 @@ class Badge
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('badge:read')]
+    #[Groups(['badge:read','useradmin:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
@@ -26,7 +26,7 @@ class Badge
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('badge:read')]
+    #[Groups(['badge:read','useradmin:read'])]
     private ?Picture $picture = null;
     
     #[ORM\Column(type: Types::TEXT, nullable: true)]
