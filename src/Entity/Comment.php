@@ -43,6 +43,9 @@ class Comment
     #[Groups(['comment:read', 'comment:admin', 'commentreply:admin'])]
     private ?user $user = null;
 
+    #[ORM\Column]
+    private ?bool $is_deleted = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -128,6 +131,18 @@ class Comment
     public function setUser(?user $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function isIsDelete(): ?bool
+    {
+        return $this->is_deleted;
+    }
+
+    public function setIsDelete(bool $is_deleted): static
+    {
+        $this->is_deleted = $is_deleted;
 
         return $this;
     }

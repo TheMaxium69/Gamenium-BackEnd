@@ -44,6 +44,9 @@ class CommentReply
     #[Groups(['commentreply:read', 'warn:read', 'commentreply:admin'])]
     private ?string $content = null;
 
+    #[ORM\Column]
+    private ?bool $is_deleted = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -129,6 +132,18 @@ class CommentReply
     public function setContent(string $content): static
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function isIsDelete(): ?bool
+    {
+        return $this->is_deleted;
+    }
+
+    public function setIsDelete(bool $is_deleted): static
+    {
+        $this->is_deleted = $is_deleted;
 
         return $this;
     }
