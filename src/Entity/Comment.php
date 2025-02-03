@@ -135,12 +135,12 @@ class Comment
         return $this;
     }
 
-    public function isIsDelete(): ?bool
+    public function isIsDeleted(): ?bool
     {
         return $this->is_deleted;
     }
 
-    public function setIsDelete(bool $is_deleted): static
+    public function setIsDeleted(bool $is_deleted): static
     {
         $this->is_deleted = $is_deleted;
 
