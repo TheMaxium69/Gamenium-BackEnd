@@ -245,48 +245,6 @@ class TestController extends AbstractController
             return $this->json(['message' => 'Token invalide']);
         }
     }
-
-
-    #[Route('-users-search', name: 'search_users_admin', methods: ['POST'])]
-    public function searchUsers(Request $request): JsonResponse
-    {
-
-        $authorizationHeader = $request->headers->get('Authorization');
-
-        /*SI LE TOKEN EST REMPLIE */
-        if (strpos($authorizationHeader, 'Bearer ') === 0) {
-            $token = substr($authorizationHeader, 7);
-
-            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
-            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
-
-            if (!$user) {
-                return $this->json(['message' => 'no permission']);
-            }
-
-            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_WRITE_RESPONSABLE', 'ROLE_TEST_RESPONSABLE'], $user->getRoles())) {
-                return $this->json(['message' => 'no permission']);
-            }
-
-
-            $data = json_decode($request->getContent(), true);
-            $searchValue = $data['searchValue'] ?? '';
-            $limit = $data['limit'];
-
-            $results = $this->entityManager->getRepository(User::class)->searchUserByName($searchValue, $limit);
-
-            return $this->json($results, 200, [], ['groups' => 'useradmin:read']);
-
-
-
-
-        } else {
-
-            return $this->json(['message' => 'no permission']);
-
-        }
-
-    }
     
     
     
