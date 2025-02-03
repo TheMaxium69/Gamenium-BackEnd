@@ -58,6 +58,9 @@ class PostActu
     #[Groups(['post:read', 'commentreply:admin', 'comment:admin'])]
     private ?Picture $picture = null;
 
+    #[ORM\Column]
+    private ?bool $is_deleted = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -179,6 +182,18 @@ class PostActu
     public function setPicture(?Picture $picture): static
     {
         $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function isIsDeleted(): ?bool
+    {
+        return $this->is_deleted;
+    }
+
+    public function setIsDeleted(bool $is_deleted): static
+    {
+        $this->is_deleted = $is_deleted;
 
         return $this;
     }

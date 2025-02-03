@@ -32,6 +32,9 @@ class Picture
     #[Groups(['picture:read', 'screenshot:read'])]
     private ?user $user = null;
 
+    #[ORM\Column]
+    private ?bool $is_deleted = null;
+
 
 
     public function getId(): ?int
@@ -83,6 +86,18 @@ class Picture
     public function setUser(?user $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function isIsDeleted(): ?bool
+    {
+        return $this->is_deleted;
+    }
+
+    public function setIsDeleted(bool $is_deleted): static
+    {
+        $this->is_deleted = $is_deleted;
 
         return $this;
     }
