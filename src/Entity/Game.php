@@ -71,7 +71,7 @@ class Game
     private ?int $expectedReleaseYear = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['game:read', 'historygame:read', 'post:read'])]
+    #[Groups(['testRate:read', 'game:read', 'historygame:read', 'post:read'])]
     private ?array $image = null;
 
     #[ORM\Column(nullable: true)]

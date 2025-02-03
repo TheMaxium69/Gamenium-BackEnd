@@ -21,6 +21,15 @@ class TestRepository extends ServiceEntityRepository
         parent::__construct($registry, Test::class);
     }
 
+    public function findAllWithLimit(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Test[] Returns an array of Test objects
 //     */
