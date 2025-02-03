@@ -138,5 +138,73 @@ class PictureController extends AbstractController
         return $string;
     }
 
+
+    #[Route('/upload/provider', name: 'upload_provider', methods: ['POST'])]
+    public function uploadProvider(Request $request): JsonResponse
+    {
+        $UPLOAD_DIR = $this->getParameter('app.upload_dir');
+        $API_URL = str_replace('https://', 'http://', $this->getParameter('app.api_url_dev'));
+
+
+        if (!$request->files->has('photo')) {
+            return $this->json(['message' => 'No photo uploaded'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $photoFile = $request->files->get('photo');
+
+        if (!$photoFile || !$photoFile->isValid()) {
+            return $this->json(['message' => 'No photo uploaded or invalid file'], Response::HTTP_BAD_REQUEST);
+        }
+
+
+
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($photoFile->getMimeType(), $allowedTypes)) {
+            return $this->json(['message' => 'Only JPEG, PNG, and GIF images are allowed'], Response::HTTP_BAD_REQUEST);
+        }
+
+
+        if (!is_dir($UPLOAD_DIR)) {
+            mkdir($UPLOAD_DIR, 0777, true);
+        }
+
+
+        $fileName = 'provider_' . uniqid() . '.' . $photoFile->guessExtension();
+
+        try {
+            $photoFile->move($UPLOAD_DIR, $fileName);
+        } catch (\Exception $e) {
+            return $this->json(['message' => 'Failed to save the image', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+
+        $authorizationHeader = $request->headers->get('Authorization');
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
+        }
+        $token = substr($authorizationHeader, 7);
+
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if (!array_intersect(['ROLE_PROVIDER', 'ROLE_PROVIDER_ADMIN', 'ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_WRITE_RESPONSABLE', 'ROLE_WRITE_SUPER', 'ROLE_WRITE'], $user->getRoles())) {
+            return $this->json(['message' => 'no permission']);
+        }
+
+        $picture = new Picture();
+        $picture->setUrl($API_URL . "/" . $UPLOAD_DIR . "/" . $fileName);
+        $picture->setUser($user);
+        $picture->setPostedAt(new \DateTime());
+        $picture->setIp($request->getClientIp());
+        $picture->setIsDeleted(false);
+
+        $this->entityManager->persist($picture);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'Image uploaded successfully', 'result' => $picture], Response::HTTP_CREATED, [], ['groups' => 'picture:read']);
+    }
+
 }
 

@@ -71,8 +71,8 @@ class PostActuController extends AbstractController
        }
 
        //validation des données requies
-       if (!isset($data['title'], $data['content'], $data['picture_id'], $data['game_id'])) {
-        return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+       if (!isset($data['title'], $data['content'], $data['picture_id'], $data['provider_id'])) {
+        return $this->json(['message' => 'Missing required fields']);
        }
 
        $authorizationHeader = $request->headers->get('Authorization');
@@ -93,9 +93,6 @@ class PostActuController extends AbstractController
 
         // Recherche de jeu
         $game = $this->entityManager->getRepository(Game::class)->find($data['game_id']);
-        if (!$game) {
-            return $this->json(['message' => 'unknown game']);
-        }
 
         // Recherche de photo
         $picture = $this->entityManager->getRepository(Picture::class)->find($data['picture_id']);
@@ -103,15 +100,11 @@ class PostActuController extends AbstractController
             return $this->json(['message' => 'unknown picture']);
         }
 
-
-        //Si Provider fournis 
-        if (!empty($data['provider_id'])) {
-            $provider = $this->entityManager->getRepository(Provider::class)->find($data['provider_id']);
-            if (!$provider) {
-                return $this->json(['message' => 'Unknown provider'], Response::HTTP_NOT_FOUND);
-            }
+        //Si Provider fournis
+        $provider = $this->entityManager->getRepository(Provider::class)->find($data['provider_id']);
+        if (!$provider) {
+            return $this->json(['message' => 'Unknown provider']);
         }
-
         
         $postActu = new PostActu();
         $postActu->setTitle($data['title']);
@@ -122,6 +115,7 @@ class PostActuController extends AbstractController
         $postActu->setUser($user);
         $postActu->setGame($game);
         $postActu->setPicture($picture);
+        $postActu->setIsDeleted(false);
         if ($provider !== null) {
             $postActu->setProvider($provider);
         }
@@ -229,69 +223,7 @@ class PostActuController extends AbstractController
     return $this->json($response, 200, [], ['groups' => 'post:read']);
     }
 
-        #[Route('/postactus/upload', name: 'upload_postactu_picture', methods: ['POST'])]
-    public function uploadPostActuPicture(Request $request): JsonResponse
-    {
-        $UPLOAD_DIR = $this->getParameter('app.upload_dir');
-        $API_URL = str_replace('https://', 'http://', $this->getParameter('app.api_url_dev'));
 
-        
-        if (!$request->files->has('photo')) {
-            return $this->json(['message' => 'No photo uploaded'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $photoFile = $request->files->get('photo');
-
-        if (!$photoFile || !$photoFile->isValid()) {
-            return $this->json(['message' => 'No photo uploaded or invalid file'], Response::HTTP_BAD_REQUEST);
-}
-
-
-       
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array($photoFile->getMimeType(), $allowedTypes)) {
-            return $this->json(['message' => 'Only JPEG, PNG, and GIF images are allowed'], Response::HTTP_BAD_REQUEST);
-        }
-
-        
-        if (!is_dir($UPLOAD_DIR)) {
-            mkdir($UPLOAD_DIR, 0777, true); 
-        }
-
-       
-        $fileName = 'post_' . uniqid() . '.' . $photoFile->guessExtension();
-
-        try {
-            $photoFile->move($UPLOAD_DIR, $fileName);
-        } catch (\Exception $e) {
-            return $this->json(['message' => 'Failed to save the image', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-      
-        $authorizationHeader = $request->headers->get('Authorization');
-        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
-            return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
-        }
-        $token = substr($authorizationHeader, 7);
-
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
-        if (!$user) {
-            return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
-        }
-
-       
-        $picture = new Picture();
-        $picture->setUrl($API_URL . "/" . $UPLOAD_DIR . "/" . $fileName);
-        $picture->setUser($user);
-        $picture->setPostedAt(new \DateTime());
-        $picture->setIp($request->getClientIp());
-        $picture->setIsDeleted(false);
-
-        $this->entityManager->persist($picture);
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Image uploaded successfully', 'result' => $picture], Response::HTTP_CREATED, [], ['groups' => 'picture:read']);
-    }
 
 
     #[Route('/postactus/{id}', name: 'update_postactu', methods: ['PUT'])]
