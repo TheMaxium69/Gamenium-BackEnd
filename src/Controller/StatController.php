@@ -145,7 +145,7 @@ class StatController extends AbstractController
         } else {
 
             return $this->json(['message' => 'no token']);
-            
+
         }
 
     }
@@ -174,12 +174,18 @@ class StatController extends AbstractController
             $nb_sanction = $this->entityManager->getRepository(Log::class)->count();
 
             $nb_pp_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'PP DELETE']);
+            $nb_comment_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'COMMENT DELETE']);
 
             $result = [
                 'nb_sanction' => $nb_sanction,
                 'types' => [
-                    'PP DELETE' => $nb_pp_delete,
+                    'PP DELETE',
+                    'COMMENT DELETE'
                 ],
+                'nb_types' => [
+                    $nb_pp_delete,
+                    $nb_comment_delete,
+                ]
             ];
 
             return $this->json(['message' => 'good', 'result' => $result]);
