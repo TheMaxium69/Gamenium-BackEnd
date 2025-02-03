@@ -229,31 +229,45 @@ class PostActuController extends AbstractController
     return $this->json($response, 200, [], ['groups' => 'post:read']);
     }
 
-    #[Route('/postactus/upload', name: 'upload_postactu_picture', methods: ['POST'])]
+        #[Route('/postactus/upload', name: 'upload_postactu_picture', methods: ['POST'])]
     public function uploadPostActuPicture(Request $request): JsonResponse
     {
         $UPLOAD_DIR = $this->getParameter('app.upload_dir');
-        $API_URL = str_replace('https://', 'http://', $this->getParameter('app.api_url_dev')); 
+        $API_URL = str_replace('https://', 'http://', $this->getParameter('app.api_url_dev'));
 
-        $photoFile = $request->files->get('photo');
-
-        if (!$photoFile) {
+        
+        if (!$request->files->has('photo')) {
             return $this->json(['message' => 'No photo uploaded'], Response::HTTP_BAD_REQUEST);
         }
 
+        $photoFile = $request->files->get('photo');
+
+        if (!$photoFile || !$photoFile->isValid()) {
+            return $this->json(['message' => 'No photo uploaded or invalid file'], Response::HTTP_BAD_REQUEST);
+}
+
+
+       
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!in_array($photoFile->getMimeType(), $allowedTypes)) {
             return $this->json(['message' => 'Only JPEG, PNG, and GIF images are allowed'], Response::HTTP_BAD_REQUEST);
         }
 
-        $fileName = 'post_' . uniqid() . '.' . $photoFile->guessExtension();
         
+        if (!is_dir($UPLOAD_DIR)) {
+            mkdir($UPLOAD_DIR, 0777, true); 
+        }
+
+       
+        $fileName = 'post_' . uniqid() . '.' . $photoFile->guessExtension();
+
         try {
             $photoFile->move($UPLOAD_DIR, $fileName);
         } catch (\Exception $e) {
             return $this->json(['message' => 'Failed to save the image', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
+      
         $authorizationHeader = $request->headers->get('Authorization');
         if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
             return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
@@ -265,8 +279,9 @@ class PostActuController extends AbstractController
             return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
         }
 
+       
         $picture = new Picture();
-        $picture->setUrl($API_URL . "/" . $UPLOAD_DIR . $fileName);
+        $picture->setUrl($API_URL . "/" . $UPLOAD_DIR . "/" . $fileName);
         $picture->setUser($user);
         $picture->setPostedAt(new \DateTime());
         $picture->setIp($request->getClientIp());
@@ -277,6 +292,7 @@ class PostActuController extends AbstractController
         return $this->json(['message' => 'Image uploaded successfully', 'result' => $picture], Response::HTTP_CREATED, [], ['groups' => 'picture:read']);
     }
 
+
     #[Route('/postactus/{id}', name: 'update_postactu', methods: ['PUT'])]
     public function updatePostActu(int $id, Request $request): JsonResponse
     {
@@ -285,19 +301,18 @@ class PostActuController extends AbstractController
             return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
         }
 
-        // recup user pour token
+       
         $authorizationHeader = $request->headers->get('Authorization');
         if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
             return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
         }
-
         $token = substr($authorizationHeader, 7);
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
         if (!$user) {
             return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
         }
 
-        // verif du role
+        
         $userRoles = $user->getRoles();
         $isOwner = $postActu->getUser()->getId() === $user->getId();
         $canModifyAll = in_array('ROLE_WRITE_SUPER', $userRoles) || in_array('ROLE_WRITE_RESPONSABLE', $userRoles);
@@ -306,46 +321,40 @@ class PostActuController extends AbstractController
             return $this->json(['message' => 'You do not have permission to edit this post'], Response::HTTP_FORBIDDEN);
         }
 
-
+      
         $data = json_decode($request->getContent(), true);
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
             return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
         }
 
-        // met a jour les donnée
-        if (isset($data['title'])) {
-            $postActu->setTitle($data['title']);
-        }
-        if (isset($data['content'])) {
-            $postActu->setContent($data['content']);
-        }
+        
+        if (isset($data['title'])) $postActu->setTitle($data['title']);
+        if (isset($data['content'])) $postActu->setContent($data['content']);
         if (isset($data['game_id'])) {
             $game = $this->entityManager->getRepository(Game::class)->find($data['game_id']);
-            if ($game) {
-                $postActu->setGame($game);
-            }
+            if ($game) $postActu->setGame($game);
         }
         if (isset($data['provider_id'])) {
             $provider = $this->entityManager->getRepository(Provider::class)->find($data['provider_id']);
-            if ($provider) {
-                $postActu->setProvider($provider);
-            }
+            if ($provider) $postActu->setProvider($provider);
         }
         if (isset($data['picture_id'])) {
             $picture = $this->entityManager->getRepository(Picture::class)->find($data['picture_id']);
             if ($picture) {
                 $postActu->setPicture($picture);
+            } else {
+                return $this->json(['message' => 'Invalid picture ID'], Response::HTTP_BAD_REQUEST);
             }
         }
 
-        // track les edits
+      
         $postActu->setLastEdit(new \DateTime());
         $postActu->setNbEdit(($postActu->getNbEdit() ?? 0) + 1);
 
         $this->entityManager->persist($postActu);
         $this->entityManager->flush();
 
-        return $this->json(['message' => 'PostActu updated successfully'], Response::HTTP_OK, [], ['groups' => 'post:read']);
+        return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], Response::HTTP_OK, [], ['groups' => 'post:read']);
     }
 
 
