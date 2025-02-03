@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Badge;
 use App\Entity\BadgeVersUser;
 use App\Entity\HistoryMyGame;
+use App\Entity\Log;
 use App\Entity\LogRole;
 use App\Entity\ProfilSocialNetwork;
 use App\Entity\User;
@@ -116,6 +117,11 @@ class AdministrationController extends AbstractController
             $historyMyGames = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $userSearched]);
             $userRates = $this->entityManager->getRepository(UserRate::class)->findBy(['user' => $userSearched]);
             $badgeVersUser = $this->entityManager->getRepository(BadgeVersUser::class)->findBy(['user' => $userSearched]);
+            $signal = $this->entityManager->getRepository(Log::class)->findBy(['user' => $userSearched]);
+
+
+            $nbSignal = count($signal);
+
             $userBadges = [];
             foreach ($badgeVersUser as $badge) {
                 $badgeName = $badge->getBadge()->getName();
@@ -145,6 +151,8 @@ class AdministrationController extends AbstractController
                 $ipUsed = "no permission";
             }
 
+
+
             $message = [
                 'message' => "good",
                 'result' => [
@@ -162,7 +170,8 @@ class AdministrationController extends AbstractController
                     "nbNote" => count($userRates),
                     "reseau" => $profilSocialNetworks,
                     "roles" => $userSearched->getRoles(),
-                    "badges" => $userBadges
+                    "badges" => $userBadges,
+                    "nbSignal" => $nbSignal
                 ]
             ];
 
