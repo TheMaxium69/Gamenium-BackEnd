@@ -138,6 +138,13 @@ class AdministrationController extends AbstractController
                 $color = null;
             }
 
+            if (in_array('ROLE_OWNER', $user->getRoles()) ||
+            in_array('ROLE_ADMIN', $user->getRoles())) {
+                $ipUsed = $userSearched->getIp();
+            } else {
+                $ipUsed = "no permission";
+            }
+
             $message = [
                 'message' => "good",
                 'result' => [
@@ -148,6 +155,7 @@ class AdministrationController extends AbstractController
                     "joinAt" => $userSearched->getJoinAt(),
                     "lastConnection" => $userSearched->getLastConnection(),
                     "nbConnection" => count($userSearched->getIp()),
+                    "ipUsed" => $ipUsed,
                     "themeColor" => $color,
                     "picture" => $picture,
                     "nbGame" => count($historyMyGames),
