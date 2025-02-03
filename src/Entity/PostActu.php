@@ -55,7 +55,7 @@ class PostActu
 
     #[ORM\ManyToOne(targetEntity: Picture::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['post:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['warn:read', 'post:read', 'commentreply:admin', 'comment:admin'])]
     private ?Picture $picture = null;
 
     #[ORM\Column]
