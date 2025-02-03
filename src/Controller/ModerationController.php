@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\CommentReply;
+use App\Entity\HmpCopy;
 use App\Entity\Log;
 use App\Entity\Picture;
 use App\Entity\PostActu;
@@ -70,7 +71,7 @@ class ModerationController extends AbstractController
 
     }
 
-    #[Route('-comment', name: 'app_moderation-comment', methods:['POST'])]
+    #[Route('-comment', name: 'app_moderation_comment', methods:['POST'])]
     public function moderateDeleteComment(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -130,7 +131,7 @@ class ModerationController extends AbstractController
 
     }
     
-    #[Route('-comment-reply', name: 'app_moderation-comment-reply', methods:['POST'])]
+    #[Route('-comment-reply', name: 'app_moderation_comment-reply', methods:['POST'])]
     public function moderateDeleteCommentReply(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -190,7 +191,7 @@ class ModerationController extends AbstractController
 
     }
 
-    #[Route('-actu', name: 'app_moderation-actu', methods:['POST'])]
+    #[Route('-actu', name: 'app_moderation_actu', methods:['POST'])]
     public function moderateDeleteActu(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -250,7 +251,7 @@ class ModerationController extends AbstractController
 
     }
     
-    #[Route('-pp', name: 'app_moderation-pp', methods:['POST'])]
+    #[Route('-pp', name: 'app_moderation_pp', methods:['POST'])]
     public function moderateDeletePP(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -308,5 +309,86 @@ class ModerationController extends AbstractController
             return $this->json(['message' => 'no token']);
         }
 
+    }
+
+    #[Route('-hmp', name: 'app_moderation_hmp', methods:['PUT'])]
+    public function moderateHmp(Request $request): JsonResponse {
+
+        $data = $data = json_decode($request->getContent(), true);
+
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        if (!isset($data['copyPlateform_id'])) {
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        $copyPlatform = $this->entityManager->getRepository(HmpCopy::class)->find(['id' => $data['copyPlateform_id']]);
+
+        if(!$copyPlatform){
+            return $this->json(['message' => 'copy of platform not found']);
+        }
+        
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $moderated = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderated) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderated->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $HmpId = $copyPlatform->getHistoryMyPlateform();
+            $user = $HmpId->getUser();
+
+            if(isset($data['edition']) || isset($data['barcode']) || isset($data['content']) || isset($data['purchase_buy_where_name']) || isset($data['purchase_content'])){
+
+
+                if($data['edition']){
+                   $copyPlatform->setEdition(null); 
+                } else if ($data['barcode']){
+                    $copyPlatform->setBarcode(null);
+                } else if ($data['content']){
+                    $copyPlatform->setContent(null);
+                } else if ($data['purchase_buy_where_name']) {
+                    $copyPlatform->getPurchase()->setBuyWhere(null);
+                    // TODO : MAXIME DEMMERDE TOI =) 
+                } else if ($data['purchase_content']) {
+                    $copyPlatform->getPurchase()->setContent(null);
+                } else {
+                    return $this->json(['message' => 'error, no update']);
+                }
+
+                /* FOR LOG */
+                $newLog = new Log();
+                $newLog->setWhy("HMP EDITED");
+                $newLog->setUser($user);
+                $newLog->setModeratedBy($moderated);
+                $newLog->setCreatedAt(new \DateTimeImmutable());
+                $this->entityManager->persist($newLog);
+                $this->entityManager->flush();
+                /* FOR LOG */
+    
+                $this->entityManager->persist($copyPlatform);
+                $this->entityManager->flush();
+    
+                return $this->json(['message' => 'good']);
+
+            } else {
+                return $this->json(['message' => 'data incomplete']);
+            }
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
     }
 }
