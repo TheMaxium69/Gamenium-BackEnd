@@ -117,10 +117,7 @@ class AdministrationController extends AbstractController
             $historyMyGames = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['user' => $userSearched]);
             $userRates = $this->entityManager->getRepository(UserRate::class)->findBy(['user' => $userSearched]);
             $badgeVersUser = $this->entityManager->getRepository(BadgeVersUser::class)->findBy(['user' => $userSearched]);
-            $signal = $this->entityManager->getRepository(Log::class)->findBy(['user' => $userSearched]);
-
-
-            $nbSignal = count($signal);
+            $nbSanction = $this->entityManager->getRepository(Log::class)->count(['user' => $userSearched]);
 
             $userBadges = [];
             foreach ($badgeVersUser as $badge) {
@@ -171,7 +168,7 @@ class AdministrationController extends AbstractController
                     "reseau" => $profilSocialNetworks,
                     "roles" => $userSearched->getRoles(),
                     "badges" => $userBadges,
-                    "nbSignal" => $nbSignal
+                    "nbSignal" => $nbSanction
                 ]
             ];
 
