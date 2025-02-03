@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\Log;
 use App\Entity\PostActu;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class StatController extends AbstractController
@@ -118,10 +118,6 @@ class StatController extends AbstractController
 
             $nb_actu = $this->entityManager->getRepository(PostActu::class)->count();
 
-
-
-
-
             $result = [
                 'nb_user' => $nb_user,
                 'roles' => [
@@ -144,16 +140,55 @@ class StatController extends AbstractController
                 'nb_actu' => $nb_actu,
             ];
 
-
-
             return $this->json(['message' => 'good', 'result' => $result]);
+
         } else {
+
             return $this->json(['message' => 'no token']);
+            
         }
 
+    }
 
+    #[Route('/stats/sanction', name: 'app_stats_sanction')]
+    public function getStatsSanction(Request $request): JsonResponse
+    {
 
+        $authorizationHeader = $request->headers->get('Authorization');
 
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $myUser = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$myUser) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $myUser->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $nb_sanction = $this->entityManager->getRepository(Log::class)->count();
+
+            $nb_pp_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'PP DELETE']);
+
+            $result = [
+                'nb_sanction' => $nb_sanction,
+                'types' => [
+                    'PP DELETE' => $nb_pp_delete,
+                ],
+            ];
+
+            return $this->json(['message' => 'good', 'result' => $result]);
+
+        } else {
+
+            return $this->json(['message' => 'no token']);
+
+        }
 
     }
 
