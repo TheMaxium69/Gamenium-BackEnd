@@ -240,6 +240,13 @@ class AdministrationController extends AbstractController
             $roles = $pendingUser->getRoles();
             $roles = array_values(array_filter($roles, fn($role) => $role !== 'ROLE_USER'));
 
+            // on verifie si le moderateur peut ban
+
+            $canBan = $this->canBanRole($user->getRoles(), $roles);
+            if (!$canBan) {
+                return $this->json(['message' => 'your role have not permission']);
+            }
+
             //on vérifie que le user a bien l'un des roles
             if (in_array('ROLE_BAN', $roles))
             {
@@ -544,6 +551,19 @@ class AdministrationController extends AbstractController
     }
 
 
+    
+    function canBanRole($rolesModerateur, $rolesUser){
+        
+        $canManageRole = $this->canManageRole($rolesModerateur);
+
+        foreach ($rolesUser as $role) {
+            if (!in_array($role, $canManageRole, true) && $role !== 'ROLE_BAN') {
+                return false;
+            }
+        }
+        return true;
+        
+    }
 
 
 
