@@ -62,4 +62,12 @@ class UserProviderController extends AbstractController
 
 
     }
+
+
+
+
+    /* UPDATE */
+
+
+
 }

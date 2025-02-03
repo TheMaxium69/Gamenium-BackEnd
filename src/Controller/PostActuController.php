@@ -285,6 +285,7 @@ class PostActuController extends AbstractController
         $picture->setUser($user);
         $picture->setPostedAt(new \DateTime());
         $picture->setIp($request->getClientIp());
+        $picture->setIsDeleted(false);
 
         $this->entityManager->persist($picture);
         $this->entityManager->flush();
