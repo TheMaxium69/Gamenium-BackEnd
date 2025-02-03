@@ -289,19 +289,49 @@ class ViewController extends AbstractController
             return $this->json(['message' => 'post-actu undefine']);
         }
 
-        $postActuViews = $this->viewRepository->findBy(['PostActu' => $postActu]);
-
-        if (empty($postActuViews)) {
-            $message = [
-                "message" => "good",
-                "result" => 0
-            ];
-            return $this->json($message);
-        }
+        $postActuViews = $this->viewRepository->count(['PostActu' => $postActu]);
 
         $message = [
             "message" => "good",
-            "result" => count($postActuViews),
+            "result" => $postActuViews,
+        ];
+
+        return $this->json($message, 200, [], ['groups' => 'view:read']);
+    }
+
+    #[Route('-provider-show/{idProvider}', name: 'app_view_provider_show', methods: ['GET'])]
+    public function showProviderViews(int $idProvider): JsonResponse
+    {
+        $provider =$this->entityManager->getRepository(Provider::class)->find($idProvider);
+
+        if(!$provider) {
+            return $this->json(['message' => 'provider undefine']);
+        }
+
+        $provider = $this->viewRepository->count(['Provider' => $provider]);
+
+        $message = [
+            "message" => "good",
+            "result" => $provider,
+        ];
+
+        return $this->json($message, 200, [], ['groups' => 'view:read']);
+    }
+
+    #[Route('-game-show/{idGame}', name: 'app_view_game_show', methods: ['GET'])]
+    public function showGameViews(int $idGame): JsonResponse
+    {
+        $game =$this->entityManager->getRepository(Game::class)->find($idGame);
+
+        if(!$game) {
+            return $this->json(['message' => 'game undefine']);
+        }
+
+        $game = $this->viewRepository->count(['Game' => $game]);
+
+        $message = [
+            "message" => "good",
+            "result" => $game,
         ];
 
         return $this->json($message, 200, [], ['groups' => 'view:read']);
