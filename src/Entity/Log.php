@@ -12,7 +12,7 @@ class Log
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'log:read'])]
+    #[Groups(['usermodo:read', 'useradmin:read', 'log:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'logs')]

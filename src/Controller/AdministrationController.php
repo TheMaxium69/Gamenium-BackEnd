@@ -57,6 +57,11 @@ class AdministrationController extends AbstractController
             if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO', 'ROLE_WRITE_RESPONSABLE', 'ROLE_TEST_RESPONSABLE'], $user->getRoles())) {
                 return $this->json(['message' => 'no permission']);
             }
+
+            $group = 'usermodo:read';
+            if (array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                $group = 'useradmin:read';
+            }
             
 
             $data = json_decode($request->getContent(), true);
@@ -65,7 +70,7 @@ class AdministrationController extends AbstractController
 
             $results = $this->entityManager->getRepository(User::class)->searchUserByName($searchValue, $limit);
 
-            return $this->json($results, 200, [], ['groups' => 'useradmin:read']);
+            return $this->json($results, 200, [], ['groups' => $group]);
             
             
             

@@ -281,7 +281,7 @@ class ViewController extends AbstractController
     }
 
     #[Route('-actu-show/{idPostActu}', name: 'app_view_actu_show', methods: ['GET'])]
-    public function showActuViews(int $idPostActu): JsonResponse
+    public function showActuViews(int $idPostActu, Request $request): JsonResponse
     {
         $postActu =$this->postActuRepository->find($idPostActu);
 
@@ -289,18 +289,37 @@ class ViewController extends AbstractController
             return $this->json(['message' => 'post-actu undefine']);
         }
 
-        $postActuViews = $this->viewRepository->count(['PostActu' => $postActu]);
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        $message = [
-            "message" => "good",
-            "result" => $postActuViews,
-        ];
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
 
-        return $this->json($message, 200, [], ['groups' => 'view:read']);
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if ($user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $postActuViews = $this->viewRepository->count(['PostActu' => $postActu]);
+
+            $message = [
+                "message" => "good",
+                "result" => $postActuViews,
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'view:read']);
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
     }
 
     #[Route('-provider-show/{idProvider}', name: 'app_view_provider_show', methods: ['GET'])]
-    public function showProviderViews(int $idProvider): JsonResponse
+    public function showProviderViews(int $idProvider, Request $request): JsonResponse
     {
         $provider =$this->entityManager->getRepository(Provider::class)->find($idProvider);
 
@@ -308,18 +327,37 @@ class ViewController extends AbstractController
             return $this->json(['message' => 'provider undefine']);
         }
 
-        $provider = $this->viewRepository->count(['Provider' => $provider]);
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        $message = [
-            "message" => "good",
-            "result" => $provider,
-        ];
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
 
-        return $this->json($message, 200, [], ['groups' => 'view:read']);
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if ($user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $provider = $this->viewRepository->count(['Provider' => $provider]);
+
+            $message = [
+                "message" => "good",
+                "result" => $provider,
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'view:read']);
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
     }
 
     #[Route('-game-show/{idGame}', name: 'app_view_game_show', methods: ['GET'])]
-    public function showGameViews(int $idGame): JsonResponse
+    public function showGameViews(int $idGame, Request $request): JsonResponse
     {
         $game =$this->entityManager->getRepository(Game::class)->find($idGame);
 
@@ -327,14 +365,34 @@ class ViewController extends AbstractController
             return $this->json(['message' => 'game undefine']);
         }
 
-        $game = $this->viewRepository->count(['Game' => $game]);
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        $message = [
-            "message" => "good",
-            "result" => $game,
-        ];
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
 
-        return $this->json($message, 200, [], ['groups' => 'view:read']);
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if ($user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $game = $this->viewRepository->count(['Game' => $game]);
+
+            $message = [
+                "message" => "good",
+                "result" => $game,
+            ];
+
+            return $this->json($message, 200, [], ['groups' => 'view:read']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
     }
 
 

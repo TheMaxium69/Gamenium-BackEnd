@@ -16,23 +16,23 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'comment:read', 'screenshot:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read', 'commentreply:read', 'default:read', 'historyplateform:read', 'warn:read', 'commentreply:admin', 'comment:admin', 'post:read'])]
+    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'usermodo:read', 'comment:read', 'screenshot:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read', 'commentreply:read', 'default:read', 'historyplateform:read', 'warn:read', 'commentreply:admin', 'comment:admin', 'post:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['useradmin:read', 'usermodo:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id_useritium = null;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['useradmin:read'])]
+    #[Groups(['usermodo:read', 'useradmin:read'])]
     private array $roles = [];
 
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['usermodo:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin'])]
     private ?\DateTimeImmutable $joinAt = null;
 
     #[ORM\Column]
-    #[Groups(['useradmin:read', 'user:read'])]
+    #[Groups(['usermodo:read', 'useradmin:read', 'user:read'])]
     private ?\DateTimeImmutable $lastConnection = null;
 
     #[ORM\Column]
@@ -44,30 +44,30 @@ class User implements UserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
+    #[Groups(['usermodo:read', 'game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'default:read', 'screenshot:read', 'user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read', 'commentreply:read', 'historyplateform:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
+    #[Groups(['usermodo:read', 'game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'default:read', 'screenshot:read', 'user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read', 'commentreply:read', 'historyplateform:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['usermodo:read', 'game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $token = null;
 
     #[ORM\ManyToOne(cascade: ['persist'], targetEntity: Picture::class)]
-    #[Groups(['testRate:read', 'log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
+    #[Groups(['usermodo:read', 'testRate:read', 'log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
     private ?picture $pp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['testRate:read', 'log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
+    #[Groups(['usermodo:read', 'testRate:read', 'log:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'logrole:read', 'warn:read'])]
     private ?string $color = null;
 
     #[ORM\OneToMany(targetEntity: Log::class, mappedBy: 'user', orphanRemoval: true)]
-    #[Groups(['useradmin:read'])]
+    #[Groups(['usermodo:read', 'useradmin:read'])]
     private Collection $logs;
 
     public function __construct()
