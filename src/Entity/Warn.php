@@ -63,6 +63,10 @@ class Warn
     #[Groups(['warn:read'])]
     private ?bool $is_manage = null;
 
+    #[ORM\ManyToOne]
+    #[Groups(['warn:read'])]
+    private ?user $moderated_by = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -208,6 +212,18 @@ class Warn
     public function setIsManage(bool $is_manage): static
     {
         $this->is_manage = $is_manage;
+
+        return $this;
+    }
+
+    public function getModeratedBy(): ?user
+    {
+        return $this->moderated_by;
+    }
+
+    public function setModeratedBy(?user $moderated_by): static
+    {
+        $this->moderated_by = $moderated_by;
 
         return $this;
     }

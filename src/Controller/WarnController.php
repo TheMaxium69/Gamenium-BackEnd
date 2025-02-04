@@ -188,6 +188,40 @@ class WarnController extends AbstractController
 
     }
 
+    #[Route('/warns-admin', name: 'all_warn_admin', methods:['GET'])]
+    public function getAllWarnAdmin(Request $request): JsonResponse {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        //On vérifie que le token n'est pas vide
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            //on verifie que le user existe
+            if (!$user){
+                return $this->json(['message' => 'token is failed']);
+            }
+
+            //on vérifie que le user a bien un des rôles
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+            !in_array('ROLE_ADMIN', $user->getRoles()) )
+            {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            //Une fois qu'on sait qu'il a les permissions on récupère tous les warns
+            $warnAll = $this->warnRepository->findBy(['is_manage' => true], ['warnAt' => 'ASC']);
+
+            return $this->json(['message' => 'good', 'result' => $warnAll], 200, [], ['groups' => 'warn:read']);
+
+        }
+
+        return $this->json(['message' => 'Token invalide']);
+
+    }
+
     #[Route('/onewarn/{id}', name: 'one_warn', methods:['GET'])]
     public function getWarnById(Request $request, int $id): JsonResponse {
 
@@ -229,47 +263,47 @@ class WarnController extends AbstractController
 
     }
 
-    #[Route('/deletewarn/{id}', name: 'delete_warn', methods:['DELETE'])]
-    public function deleteWarn(Request $request, int $id): JsonResponse
-    {
-        //On verifie qu'on récupère un id
-        if (!$id) {
-            return $this->json(['message' => 'Id is required']);
-        }
-
-        //On verifie que l'id transmit correspond a un Warn
-        $myWarn = $this->entityManager->getRepository(Warn::class)->findOneBy(['id' => $id]);
-        if (!$myWarn) {
-            return $this->json(['message' => 'Warn not found']);
-        }
-
-        $authorizationHeader = $request->headers->get('Authorization');
-
-        //On vérifie que le token n'est pas vide
-        if (strpos($authorizationHeader, 'Bearer ') === 0) {
-            $token = substr($authorizationHeader, 7);
-
-            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
-            
-            //on verifie que le user existe
-            if (!$user){
-                return $this->json(['message' => 'token is failed']);
-            }
-
-            //on vérifie que le user a bien le role Admin ou le role Owner
-            if (!in_array('ROLE_OWNER', $user->getRoles()) && !in_array('ROLE_ADMIN', $user->getRoles())) {
-                return $this->json(['message' => 'no permission']);
-            }
-
-            //Une fois qu'on sait qu'il a les permissions on supprime le warn
-            $this->entityManager->remove($myWarn);
-            $this->entityManager->flush();
-
-            return $this->json(['message' => 'delete success']);
-        }
-
-        return $this->json(['message' => 'Invalid Token']);
-    }
+//    #[Route('/deletewarn/{id}', name: 'delete_warn', methods:['DELETE'])]
+//    public function deleteWarn(Request $request, int $id): JsonResponse
+//    {
+//        //On verifie qu'on récupère un id
+//        if (!$id) {
+//            return $this->json(['message' => 'Id is required']);
+//        }
+//
+//        //On verifie que l'id transmit correspond a un Warn
+//        $myWarn = $this->entityManager->getRepository(Warn::class)->findOneBy(['id' => $id]);
+//        if (!$myWarn) {
+//            return $this->json(['message' => 'Warn not found']);
+//        }
+//
+//        $authorizationHeader = $request->headers->get('Authorization');
+//
+//        //On vérifie que le token n'est pas vide
+//        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+//            $token = substr($authorizationHeader, 7);
+//
+//            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+//
+//            //on verifie que le user existe
+//            if (!$user){
+//                return $this->json(['message' => 'token is failed']);
+//            }
+//
+//            //on vérifie que le user a bien le role Admin ou le role Owner
+//            if (!in_array('ROLE_OWNER', $user->getRoles()) && !in_array('ROLE_ADMIN', $user->getRoles())) {
+//                return $this->json(['message' => 'no permission']);
+//            }
+//
+//            //Une fois qu'on sait qu'il a les permissions on supprime le warn
+//            $this->entityManager->remove($myWarn);
+//            $this->entityManager->flush();
+//
+//            return $this->json(['message' => 'delete success']);
+//        }
+//
+//        return $this->json(['message' => 'Invalid Token']);
+//    }
 
     #[Route('/updatewarn', name: 'update_warn', methods:['PUT'])]
     public function updateWarn(Request $request): JsonResponse
@@ -313,8 +347,10 @@ class WarnController extends AbstractController
             //Une fois qu'on sait qu'il a les permissions on modifie la variable is_manage à true
             if ($warn->getIsManage() === false){
                 $warn->setIsManage(true);
+                $warn->setModeratedBy($user);
             } else {
                 $warn->setIsManage(false);
+                $warn->setModeratedBy(null);
             }
     
             $this->entityManager->persist($warn);
