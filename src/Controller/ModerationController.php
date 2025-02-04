@@ -7,6 +7,7 @@ use App\Entity\CommentReply;
 use App\Entity\HistoryMyGame;
 use App\Entity\HmgCopy;
 use App\Entity\HmgCopyPurchase;
+use App\Entity\HmgScreenshot;
 use App\Entity\HmgSpeedrun;
 use App\Entity\HmgTags;
 use App\Entity\HmpCopy;
@@ -29,53 +30,6 @@ class ModerationController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager
     ) {}
-
-//    #[Route('-exemple', name: 'app_moderation')]
-//    public function exemple(Request $request): JsonResponse
-//    {
-//
-//        $authorizationHeader = $request->headers->get('Authorization');
-//
-//        /*SI LE TOKEN EST REMPLIE */
-//        if (strpos($authorizationHeader, 'Bearer ') === 0) {
-//            $token = substr($authorizationHeader, 7);
-//
-//            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
-//            $moderated = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
-//
-//            if (!$moderated) {
-//                return $this->json(['message' => 'no permission']);
-//            }
-//
-//            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderated->getRoles())) {
-//                return $this->json(['message' => 'no permission']);
-//            }
-//
-//
-//
-//
-//
-//            /* FOR LOG */
-//            $newLog = new Log();
-//            $newLog->setWhy("BAN USER");
-//            $newLog->setUser(/* SET L'UTILISATEUR CONCERNER */);
-//            $newLog->setModeratedBy($moderated);
-//            $newLog->setCreatedAt(new \DateTimeImmutable());
-//            $this->entityManager->persist($newLog);
-//            $this->entityManager->flush();
-//            /* FOR LOG */
-//
-//
-//
-//
-//
-//            return $this->json(['message' => 'good']);
-//
-//        } else {
-//            return $this->json(['message' => 'no token']);
-//        }
-//
-//    }
 
     #[Route('-comment', name: 'app_moderation_comment', methods:['POST'])]
     public function moderateDeleteComment(Request $request): JsonResponse
@@ -561,7 +515,20 @@ class ModerationController extends AbstractController
                 }
 
                 $this->entityManager->remove($tag);
-            } else {
+            } else if(isset($data['screenshot_id']) && $data['screenshot_id']){
+
+                $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->find(['id' => $data['screenshot_id']]);
+                if(!$screenshot) {
+                    return $this->json(['message' => 'Object not found']);
+                }
+
+                $user = $screenshot->getMyGame()->getUser();
+
+                $picture = $screenshot->getPicture();
+                $picture->setIsDeleted(true);
+                $this->entityManager->persist($picture);
+                
+            }else{
                 return $this->json(['message' => 'undefine of field']);
             }
 
