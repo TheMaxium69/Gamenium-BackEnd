@@ -29,6 +29,7 @@ class PostActu
     private ?\DateTimeInterface $last_edit = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['post:read'])]
     private ?int $nb_edit = null;
 
 
