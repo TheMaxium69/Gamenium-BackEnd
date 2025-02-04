@@ -4,11 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\CommentReply;
+use App\Entity\HmgCopy;
+use App\Entity\HmgSpeedrun;
+use App\Entity\HmgTags;
 use App\Entity\HmpCopy;
 use App\Entity\Log;
 use App\Entity\Picture;
 use App\Entity\PostActu;
 use App\Entity\User;
+use App\Entity\UserRate;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -386,6 +390,133 @@ class ModerationController extends AbstractController
             } else {
                 return $this->json(['message' => 'data incomplete']);
             }
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }
+
+    #[Route('-hmg', name: 'app_moderation_hmg', methods:['PUT'])]
+    public function moderateHmg(Request $request): JsonResponse {
+        $data = $data = json_decode($request->getContent(), true);
+
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        if (!isset($data['copyGame_id']) && !isset($data['speedrun_id']) && !isset($data['rate_id']) && !isset($data['tag_id'])) {
+
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        if($data['copyGame_id']){
+
+            $copyGame = $this->entityManager->getRepository(HmgCopy::class)->find(['id' => $data['copyGame_id']]);
+
+        } else if ($data['speedrun_id']){
+
+            $speedrun = $this->entityManager->getRepository(HmgSpeedrun::class)->find(['id' => $data['speedrun_id']]);
+
+        } else if ($data['rate_id']){
+
+            $rate = $this->entityManager->getRepository(UserRate::class)->find(['id' => $data['rate_id']]);
+
+        } else if($data['tag_id']){
+
+            $tag = $this->entityManager->getRepository(HmgTags::class)->find(['id' => $data['tag_id']]);
+        }
+
+        if(!$copyGame && !$speedrun && !$rate && !$tag){
+            return $this->json(['message' => 'Object not found']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $moderated = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderated) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderated->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if($copyGame){
+                $user = $copyGame->getHistoryMyGame()->getUser();
+
+                if($data['edition']){
+                    $copyGame->setEdition(null);
+                } else if($data['barcode']){
+                    $copyGame->setBarcode(null);
+                } else if($data['content']){
+                    $copyGame->setContent(null);
+                } else if($data['purchase_buy_where_name']){
+                    $copyGame->getPurchase()->setBuyWhere(null);  // ERREUR POTENTIAL
+                    // TODO : MAXIIIIIIME DEMMERDE TOI +)
+                } else if($data['purchase_content']){
+                    $copyGame->getPurchase()->setContent(null); // ERREUR POTENTIAL
+                } else {
+                    return $this->json(['message' => 'error, no update']);
+                }
+
+                $this->entityManager->persist($copyGame);
+
+            } else if($speedrun){
+                $user = $speedrun->getMyGame()->getUser();
+                
+                if($data['category']){
+                    $speedrun->setCategory(null);
+                } else if($data['chrono']){
+                    $speedrun->setChrono(null);
+                } else if($data['link']){
+                    $speedrun->setLink(null);
+                } else {
+                    return $this->json(['message' => 'error, no update']);
+                }
+
+                $this->entityManager->persist($speedrun);
+            
+            } else if($rate){
+                $user = $rate->getUser();
+                
+                if($data['rate_content']){
+                    $rate->setContent(null);
+                } else {
+                    return $this->json(['message' => 'error, no update']);
+                }
+
+                $this->entityManager->persist($rate);
+
+            } else if($tag){
+                $user = $tag->getUser();
+                if($data['']){
+
+                } else {
+                    return $this->json(['message' => 'error, no update']);
+                }
+
+                $this->entityManager->persist($tag);
+
+            }
+
+            /* FOR LOG */
+            $newLog = new Log();
+            $newLog->setWhy("HMP EDITED");
+            $newLog->setUser($user);
+            $newLog->setModeratedBy($moderated);
+            $newLog->setCreatedAt(new \DateTimeImmutable());
+            $this->entityManager->persist($newLog);
+            /* FOR LOG */
+
+            
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good']);
 
         } else {
             return $this->json(['message' => 'no token']);
