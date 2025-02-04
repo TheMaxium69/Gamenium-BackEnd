@@ -297,7 +297,7 @@ class ViewController extends AbstractController
             /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-            if ($user) {
+            if (!$user) {
                 return $this->json(['message' => 'no permission']);
             }
 
@@ -335,7 +335,7 @@ class ViewController extends AbstractController
             /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-            if ($user) {
+            if (!$user) {
                 return $this->json(['message' => 'no permission']);
             }
 
@@ -373,12 +373,12 @@ class ViewController extends AbstractController
             /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-            if ($user) {
+            if (!$user) {
                 return $this->json(['message' => 'no permission']);
             }
 
             if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
-                return $this->json(['message' => 'no permission']);
+                return $this->json(['message' => 'no have permission']);
             }
 
             $game = $this->viewRepository->count(['Game' => $game]);
