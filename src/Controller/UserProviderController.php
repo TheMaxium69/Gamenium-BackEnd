@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
 use App\Entity\Picture;
+use App\Entity\PostActu;
 use App\Entity\User;
 use App\Entity\UserProvider;
 use App\Repository\PostActuRepository;
@@ -160,8 +162,67 @@ class UserProviderController extends AbstractController
             return $this->json(['message' => 'no token']);
         }
 
-
-
     }
+
+    #[Route('/provider/createPostActu', name: 'create_postactu_provider', methods: ['POST'])]
+    public function createPostActuByProvider(Request $request): JsonResponse
+    {
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $token = substr($authorizationHeader, 7);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+        
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if (!array_intersect(['ROLE_PROVIDER', 'ROLE_PROVIDER_ADMIN'], $user->getRoles())) {
+            return $this->json(['message' => 'No permission'], Response::HTTP_FORBIDDEN);
+        }
+
+        
+        $userProvider = $this->entityManager->getRepository(UserProvider::class)->findOneBy(['user' => $user]);
+        if (!$userProvider) {
+            return $this->json(['message' => 'No provider linked to user'], Response::HTTP_FORBIDDEN);
+        }
+        $provider = $userProvider->getProvider();
+
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['title'], $data['content'], $data['picture_id'])) {
+            return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+        }
+
+        
+        $game = isset($data['game_id']) ? $this->entityManager->getRepository(Game::class)->find($data['game_id']) : null;
+
+        
+        $picture = $this->entityManager->getRepository(Picture::class)->find($data['picture_id']);
+        if (!$picture) {
+            return $this->json(['message' => 'Invalid picture ID'], Response::HTTP_BAD_REQUEST);
+        }
+
+        
+        $postActu = new PostActu();
+        $postActu->setTitle($data['title']);
+        $postActu->setContent($data['content']);
+        $postActu->setCreatedAt(new \DateTimeImmutable());
+        $postActu->setNbEdit(0);
+        $postActu->setUser($user);
+        $postActu->setProvider($provider);
+        $postActu->setPicture($picture);
+        if ($game) {
+            $postActu->setGame($game);
+        }
+
+        $this->entityManager->persist($postActu);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'PostActu created successfully', 'result' => $postActu], Response::HTTP_CREATED, [], ['groups' => 'post:read']);
+    }
+
 
 }
