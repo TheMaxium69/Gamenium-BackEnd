@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Entity\Picture;
 use App\Entity\User;
+use App\Entity\UserProvider;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -172,6 +173,12 @@ class UserController extends AbstractController
                 return $this->json(['message' => 'user ban']);
             }
 
+            $providerGestionId = null;
+            $providerUser = $this->manager->getRepository(UserProvider::class)->findOneBy(['user' => $user]);
+            if ($providerUser){
+                $providerGestionId = $providerUser->getProvider()->getId();
+            }
+
             if ($user){
 
                 return $this->json(['message' => 'Connected', 'result' => [
@@ -182,7 +189,8 @@ class UserController extends AbstractController
                     "displaynameUseritium" => $user->getDisplaynameUseritium(),
                     "joinAt" => $user->getJoinAt(),
                     "userRole" => $user->getRoles(),
-                    "themeColor" => $user->getColor()
+                    "themeColor" => $user->getColor(),
+                    "providerGestionId" => $providerGestionId,
                 ]]);
 
             } else {
