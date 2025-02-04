@@ -16,7 +16,7 @@ class User implements UserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'comment:read', 'screenshot:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read', 'commentreply:read', 'default:read', 'historyplateform:read', 'warn:read', 'commentreply:admin', 'comment:admin', 'post:read'])]
+    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'comment:read', 'screenshot:read' , 'historygame:read' , 'like:read', 'picture:read', 'post:read', 'userRate:read', 'badgesversuser:read', 'user:read', 'followProvider:read', 'followPageGame:read', 'follow:read', 'taskusercompleted:read', 'view:read', 'commentreply:read', 'default:read', 'historyplateform:read', 'warn:read', 'commentreply:admin', 'comment:admin', 'post:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -44,15 +44,15 @@ class User implements UserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
+    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read', 'comment:read', 'commentreply:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
     private ?string $displayname_useritium = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'default:read', 'screenshot:read', 'user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read', 'commentreply:read', 'historyplateform:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
+    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'default:read', 'screenshot:read', 'user:read', 'comment:read', 'historygame:read','taskusercompleted:read', 'view:read', 'commentreply:read', 'historyplateform:read', 'commentreply:admin', 'comment:admin', 'warn:read', 'post:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['game:read', 'testRate:read', 'log:read', 'logrole:read', 'useradmin:read', 'user:read','comment:read', 'commentreply:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $displayname = null;
 
     #[ORM\Column(type: Types::TEXT)]

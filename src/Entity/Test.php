@@ -13,12 +13,12 @@ class Test
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['testRate:read'])]
+    #[Groups(['testRate:read', 'game:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['testRate:read'])]
+    #[Groups(['testRate:read', 'game:read'])]
     private ?user $user = null;
 
     #[ORM\ManyToOne]
@@ -27,18 +27,18 @@ class Test
     private ?Game $game = null;
 
     #[ORM\Column]
-    #[Groups(['testRate:read'])]
+    #[Groups(['testRate:read', 'game:read'])]
     private ?int $rating = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['testRate:read'])]
+    #[Groups(['testRate:read', 'game:read'])]
     private ?string $content = null;
 
     #[ORM\Column(length: 255)]
     private ?string $ip = null;
 
     #[ORM\Column]
-    #[Groups(['testRate:read'])]
+    #[Groups(['testRate:read', 'game:read'])]
     private ?\DateTimeImmutable $test_at = null;
 
     public function getId(): ?int

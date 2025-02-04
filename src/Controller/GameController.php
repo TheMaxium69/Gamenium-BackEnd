@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\Test;
 use App\Entity\UserRate;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -76,10 +77,13 @@ class GameController extends AbstractController
             return $this->json(['message' => 'Game not found']);
         } else {
 
+            $testGame = $this->entityManager->getRepository(Test::class)->findBy(['game' => $game]);
+
             $game->setMoyenRateUser($this->entityManager->getRepository(UserRate::class)->calcMoyenByGame($game->getId()));
             $message = [
                 'message' => "good",
-                'result' => $game
+                'result' => $game,
+                'result2' => $testGame
             ];
         }
 
