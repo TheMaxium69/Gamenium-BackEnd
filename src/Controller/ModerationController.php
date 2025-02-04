@@ -330,12 +330,6 @@ class ModerationController extends AbstractController
             return $this->json(['message' => 'undefine of field']);
         }
 
-        $copyPlatform = $this->entityManager->getRepository(HmpCopy::class)->find(['id' => $data['copyPlateform_id']]);
-
-        if(!$copyPlatform){
-            return $this->json(['message' => 'copy of platform not found']);
-        }
-        
         $authorizationHeader = $request->headers->get('Authorization');
 
         /*SI LE TOKEN EST REMPLIE */
@@ -353,27 +347,63 @@ class ModerationController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            $HmpId = $copyPlatform->getHistoryMyPlateform();
-            $user = $HmpId->getUser();
+            $copyPlatform = $this->entityManager->getRepository(HmpCopy::class)->find(['id' => $data['copyPlateform_id']]);
 
-            if(isset($data['edition']) || isset($data['barcode']) || isset($data['content']) || isset($data['purchase_buy_where_name']) || isset($data['purchase_content'])){
-
-
-                if($data['edition']){
+            if($copyPlatform) {  
+                
+                $HmpId = $copyPlatform->getHistoryMyPlateform();
+                $user = $HmpId->getUser();
+    
+               
+    
+                if(isset($data['edition']) && $data['edition']){
                    $copyPlatform->setEdition(null); 
-                } else if ($data['barcode']){
-                    $copyPlatform->setBarcode(null);
-                } else if ($data['content']){
-                    $copyPlatform->setContent(null);
-                } else if ($data['purchase_buy_where_name']) {
-                    $copyPlatform->getPurchase()->setBuyWhere(null);
-                    // TODO : MAXIME DEMMERDE TOI =) 
-                } else if ($data['purchase_content']) {
-                    $copyPlatform->getPurchase()->setContent(null);
+                } else if (isset($data['barcode']) && $data['barcode']){
+                        $copyPlatform->setBarcode(null);
+                } else if (isset($data['content']) && $data['content']){
+                        $copyPlatform->setContent(null);
+                } else if(isset($data['buy_where']) && $data['buy_where']){
+
+                    if ($copyPlatform->getPurchase()){
+    
+                        $buyWhere = $copyPlatform->getPurchase()->getBuyWhere();
+                        $copyPlatform->getPurchase()->setBuyWhere(null);
+    
+                        if ($buyWhere) {
+                            // Récupérer toutes les HmgPurchase associées au buyWhere
+                            $hmgPurchases = $this->entityManager->getRepository(HmgCopyPurchase::class)->findBy(['buy_where' => $buyWhere]);
+    
+                            // Mettre à null le champ buyWhere pour toutes les entités HmgPurchase associées
+                            foreach ($hmgPurchases as $hmgPurchase) {
+                                $hmgPurchase->setBuyWhere(null);
+                                $this->entityManager->persist($hmgPurchase);
+                            }
+    
+                            // Supprimer le buyWhere
+                            $copyPlatform->getPurchase()->setBuyWhere(null);
+                            $this->entityManager->remove($buyWhere);
+                        }
+    
+                    } else {
+                        return $this->json(['message' => 'error, no update']);
+                    }
+    
+    
+                } else if (isset($data['purchase_content']) && $data['purchase_content']) {
+
+                    if($copyPlatform->getPurchase()){
+
+                        $copyPlatform->getPurchase()->setContent(null);
+
+                    } else {
+                        return $this->json(['message' => 'error no update']);
+                    } 
+
                 } else {
                     return $this->json(['message' => 'error, no update']);
                 }
-
+                
+                $this->entityManager->persist($copyPlatform);
                 /* FOR LOG */
                 $newLog = new Log();
                 $newLog->setWhy("HMP EDITED");
@@ -381,17 +411,16 @@ class ModerationController extends AbstractController
                 $newLog->setModeratedBy($moderated);
                 $newLog->setCreatedAt(new \DateTimeImmutable());
                 $this->entityManager->persist($newLog);
-                $this->entityManager->flush();
                 /* FOR LOG */
-    
-                $this->entityManager->persist($copyPlatform);
+        
+   
                 $this->entityManager->flush();
+        
+                    return $this->json(['message' => 'good']);
     
-                return $this->json(['message' => 'good']);
-
-            } else {
-                return $this->json(['message' => 'data incomplete']);
-            }
+                } else {
+                    return $this->json(['message' => 'copy of platform not found']);
+                }
 
         } else {
             return $this->json(['message' => 'no token']);
