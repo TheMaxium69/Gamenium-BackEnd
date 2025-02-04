@@ -248,7 +248,7 @@ class PostActuController extends AbstractController
         
         $userRoles = $user->getRoles();
         $isOwner = $postActu->getUser()->getId() === $user->getId();
-        $canModifyAll = in_array('ROLE_WRITE_SUPER', $userRoles) || in_array('ROLE_WRITE_RESPONSABLE', $userRoles);
+        $canModifyAll = in_array('ROLE_WRITE_SUPER', $userRoles) || in_array('ROLE_WRITE_RESPONSABLE', $userRoles) || in_array('PROVIDER', $userRoles) || in_array('PROVIDER_ADMIN', $userRoles);
 
         if (!$isOwner && !$canModifyAll) {
             return $this->json(['message' => 'You do not have permission to edit this post'], Response::HTTP_FORBIDDEN);

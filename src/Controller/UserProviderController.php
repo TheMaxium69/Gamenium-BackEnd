@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Entity\Picture;
 use App\Entity\PostActu;
+use App\Entity\Provider;
 use App\Entity\User;
 use App\Entity\UserProvider;
 use App\Repository\PostActuRepository;
@@ -225,6 +226,4 @@ class UserProviderController extends AbstractController
 
         return $this->json(['message' => 'PostActu created successfully', 'result' => $postActu], Response::HTTP_CREATED, [], ['groups' => 'post:read']);
     }
-
-
 }
