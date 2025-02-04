@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\HistoryMyGame;
+use App\Entity\HistoryMyPlateform;
+use App\Entity\HmgCopy;
 use App\Entity\Log;
 use App\Entity\PostActu;
 use App\Entity\User;
@@ -212,6 +215,55 @@ class StatController extends AbstractController
         }
 
     }
+
+
+    #[Route('/stats/copy', name: 'app_stats_copy')]
+    public function getStatsCopy(Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $myUser = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$myUser) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $myUser->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $nb_hmg = $this->entityManager->getRepository(HistoryMyGame::class)->count();
+            $nb_hmg_copy = $this->entityManager->getRepository(HmgCopy::class)->count();
+            $hmg_average = $nb_hmg_copy / $nb_hmg;
+            $nb_hmp = $this->entityManager->getRepository(HistoryMyPlateform::class)->count();
+            $nb_hmp_copy = $this->entityManager->getRepository(HmgCopy::class)->count();
+            $hmp_average = $nb_hmp_copy / $nb_hmp;
+
+            $result = [
+                'nb_hmg' => $nb_hmg,
+                'nb_hmg_copy' => $nb_hmg_copy,
+                'nb_hmg_average' => $hmg_average,
+                'nb_hmp' => $nb_hmp,
+                'nb_hmp_copy' => $nb_hmp_copy,
+                'nb_hmp_average' => $hmp_average,
+            ];
+
+            return $this->json(['message' => 'good', 'result' => $result]);
+
+        } else {
+
+            return $this->json(['message' => 'no token']);
+
+        }
+
+    }
+
 
 
 
