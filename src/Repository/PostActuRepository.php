@@ -27,6 +27,7 @@ class PostActuRepository extends ServiceEntityRepository
             ->andWhere('p.title LIKE :searchValue')
             ->setParameter('searchValue', '%' . $searchValue . '%')
             ->setMaxResults($limit)
+            ->orderBy('p.id', 'DESC')
             ->getQuery()
             ->getResult();
     }
