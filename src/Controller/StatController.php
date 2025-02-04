@@ -264,6 +264,53 @@ class StatController extends AbstractController
 
     }
 
+    #[Route('/stats/gameOne/{id}', name: 'app_stats_game_one')]
+    public function getStatsGameOne(int $id, Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $myUser = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+            if (!$myUser) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $myUser->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id' => $id]);
+            if (!$game) {
+                return $this->json(['message' => 'game not found']);
+            }
+
+            $hmgs = $this->entityManager->getRepository(HistoryMyGame::class)->findBy(['game' => $game]);
+
+            $nb_hmg_copy = 0;
+            foreach ($hmgs as $hmg) {
+                $nb_hmg_copy = $nb_hmg_copy + $this->entityManager->getRepository(HmgCopy::class)->count(['HistoryMyGame' => $hmg]);
+            }
+
+            $result = [
+                'hmg' => count($hmgs),
+                'hmgCopy' => $nb_hmg_copy,
+            ];
+
+            return $this->json(['message' => 'good', 'result' => $result]);
+
+        } else {
+
+            return $this->json(['message' => 'no token']);
+
+        }
+
+    }
+
 
 
 
