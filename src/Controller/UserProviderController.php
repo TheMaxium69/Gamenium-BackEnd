@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Picture;
 use App\Entity\User;
 use App\Entity\UserProvider;
-use App\Entity\Provider;
+use App\Repository\PostActuRepository;
 use App\Repository\ProviderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +19,8 @@ class UserProviderController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private ProviderRepository  $providerRepository
+        private ProviderRepository  $providerRepository,
+        private PostActuRepository $postActuRepository,
     ) {}
 
 
@@ -70,7 +71,6 @@ class UserProviderController extends AbstractController
     #[Route('/provider/{id}', name: 'update_provider', methods: ['PUT'])]
     public function updateProvider(int $id, Request $request): JsonResponse
     {
-        $provider = $this->providerRepository->find($id);
         $authorizationHeader = $request->headers->get('Authorization');
 
         if (strpos($authorizationHeader, 'Bearer ') === 0) {
@@ -92,6 +92,8 @@ class UserProviderController extends AbstractController
             if (!$userProvider) {
                 return $this->json(['message' => 'no provider']);
             }
+
+            $provider = $this->providerRepository->find($id);
 
             $data = json_decode($request->getContent(), true);
             if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
@@ -117,5 +119,44 @@ class UserProviderController extends AbstractController
         }
     }
 
+    #[Route('/provider/search-postactus', name: 'search_postactus_by_provider', methods: ['POST'])]
+    public function searchPostActuByProvider(Request $request): JsonResponse
+    {
+        //TOKEN
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+            //RECUPERATION DU USER
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+            //VERIF DES ROLES USER
+            if (!array_intersect(['ROLE_PROVIDER', 'ROLE_PROVIDER_ADMIN'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+            //VERIFIE LE LIENS AU PROVIDER
+            $userProvider = $this->entityManager->getRepository(UserProvider::class)->findOneBy(['user' => $user]);
+
+            if (!$userProvider) {
+                return $this->json(['message' => 'no provider']);
+            }
+        }
+
+
+        $data = json_decode($request->getContent(), true);
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $searchValue = $data['searchValue'] ?? '';
+        $limit = $data['limit'];
+
+        $results = $this->postActuRepository->searchPostActuByProvider($userProvider->getProvider()->getId(), $searchValue, $limit);
+    
+        return $this->json($results, 200, [], ['groups' => 'post:read']);
+    }
 
 }

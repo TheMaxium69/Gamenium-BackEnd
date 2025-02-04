@@ -86,6 +86,18 @@ class PostActuRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function searchPostActuByProvider(int $providerId, string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('p')
+            ->Where('p.Provider = :provider')
+            ->andWhere('p.title LIKE :search OR p.content LIKE :search')
+            ->setParameter('provider', $providerId)
+            ->setParameter('searchValue', "%$searchValue%")
+            ->orderBy('p.created_at', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
 //    /**
 //     * @return PostActu[] Returns an array of PostActu objects
