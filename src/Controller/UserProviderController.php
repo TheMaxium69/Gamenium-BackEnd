@@ -212,11 +212,13 @@ class UserProviderController extends AbstractController
         $postActu->setCreatedAt(new \DateTimeImmutable());
         $postActu->setNbEdit(0);
         $postActu->setUser($user);
+        $postActu->setIsDeleted(false);
         $postActu->setProvider($provider);
         $postActu->setPicture($picture);
         if ($game) {
             $postActu->setGame($game);
         }
+    
 
         $this->entityManager->persist($postActu);
         $this->entityManager->flush();
