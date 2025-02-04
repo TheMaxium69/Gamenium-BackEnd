@@ -182,7 +182,7 @@ class StatController extends AbstractController
             $nb_hmp_edited = $this->entityManager->getRepository(Log::class)->count(['why' => 'HMP EDITED']);
             $nb_comment_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'COMMENT DELETE']);
             $nb_screen_delete = $this->entityManager->getRepository(Log::class)->count(['why' => 'SCREEN DELETE']);
-            $nb_user_ban = $this->entityManager->getRepository(Log::class)->count(['why' => 'USER BAN']);
+            $nb_user_ban = $this->entityManager->getRepository(Log::class)->count(['why' => 'BAN USER']);
 
             $result = [
                 'nb_sanction' => $nb_sanction,
@@ -193,7 +193,7 @@ class StatController extends AbstractController
                     'HMP EDITED',
                     'COMMENT DELETE',
                     'SCREEN DELETE',
-                    'USER BAN'
+                    'BAN USER'
                 ],
                 'nb_types' => [
                     $nb_pp_delete,
