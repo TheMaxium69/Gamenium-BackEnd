@@ -200,7 +200,7 @@ class Warn
         return $this;
     }
 
-    public function isIsManage(): ?bool
+    public function getIsManage(): ?bool
     {
         return $this->is_manage;
     }

@@ -303,13 +303,19 @@ class WarnController extends AbstractController
             //on vérifie que le user a bien l'un des roles
             if (!in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) && 
             !in_array('ROLE_MODO_SUPER', $user->getRoles()) && 
-            !in_array('ROLE_MODO', $user->getRoles()))
+            !in_array('ROLE_MODO', $user->getRoles()) &&
+            !in_array('ROLE_OWNER', $user->getRoles()) &&
+            !in_array('ROLE_ADMIN', $user->getRoles()) )
             {
                 return $this->json(['message' => 'no permission']);
             }
 
             //Une fois qu'on sait qu'il a les permissions on modifie la variable is_manage à true
-            $warn->setIsManage(true);
+            if ($warn->getIsManage() === false){
+                $warn->setIsManage(true);
+            } else {
+                $warn->setIsManage(false);
+            }
     
             $this->entityManager->persist($warn);
             $this->entityManager->flush();
