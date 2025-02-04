@@ -90,9 +90,9 @@ class PostActuRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->Where('p.Provider = :provider')
-            ->andWhere('p.title LIKE :search OR p.content LIKE :search')
+            ->andWhere('p.title LIKE :searchValue OR p.content LIKE :searchValue')
             ->setParameter('provider', $providerId)
-            ->setParameter('searchValue', "%$searchValue%")
+            ->setParameter('searchValue', "%" . $searchValue . "%")
             ->orderBy('p.created_at', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()

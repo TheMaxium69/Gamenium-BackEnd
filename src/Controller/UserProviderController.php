@@ -143,20 +143,25 @@ class UserProviderController extends AbstractController
             if (!$userProvider) {
                 return $this->json(['message' => 'no provider']);
             }
+
+            $data = json_decode($request->getContent(), true);
+            if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+                return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $results = $this->postActuRepository->searchPostActuByProvider($userProvider->getProvider()->getId(), $searchValue, $limit);
+
+            return $this->json($results, 200, [], ['groups' => 'post:read']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
         }
 
 
-        $data = json_decode($request->getContent(), true);
-        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-            return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
-        }
 
-        $searchValue = $data['searchValue'] ?? '';
-        $limit = $data['limit'];
-
-        $results = $this->postActuRepository->searchPostActuByProvider($userProvider->getProvider()->getId(), $searchValue, $limit);
-    
-        return $this->json($results, 200, [], ['groups' => 'post:read']);
     }
 
 }
