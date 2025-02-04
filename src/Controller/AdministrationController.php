@@ -4,10 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Badge;
 use App\Entity\BadgeVersUser;
+use App\Entity\Game;
 use App\Entity\HistoryMyGame;
 use App\Entity\Log;
 use App\Entity\LogRole;
+use App\Entity\Picture;
+use App\Entity\PostActu;
 use App\Entity\ProfilSocialNetwork;
+use App\Entity\Provider;
 use App\Entity\User;
 use App\Entity\UserRate;
 use App\Entity\View;
@@ -74,6 +78,73 @@ class AdministrationController extends AbstractController
 
     }
 
+    #[Route('-postactus-search', name: 'search_postactus_admin', methods: ['POST'])]
+    public function searchPostActuAdmin(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $searchValue = $data['searchValue'] ?? '';
+        $limit = $data['limit'];
+
+        $results = $this->entityManager->getRepository(PostActu::class)->searchPostActuByNameWithView($searchValue, $limit);
+
+        $finalResults = [];
+        foreach($results as $onePostActu){
+
+            /* JSON */
+            $onePostActu['picture'] = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $onePostActu['picture_id']]);
+            $onePostActu['Provider'] = $this->entityManager->getRepository(Provider::class)->findOneBy(['id' => $onePostActu['provider_id']]);
+
+            /* nameVariable */
+            $onePostActu = array_merge($onePostActu, [
+                'picture' => $onePostActu['picture'],
+                'Provider' => $onePostActu['Provider'],
+            ]);
+
+            $finalResults[] = $onePostActu;
+        }
+
+        return $this->json($finalResults, 200, [], ['groups' => 'postactu:read']);
+    }
+
+    #[Route('-games-search', name: 'search_games_admin', methods: ['POST'])]
+    public function searchGamesAdmin(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $searchValue = $data['searchValue'] ?? '';
+        $limit = $data['limit'];
+
+        $results = $this->entityManager->getRepository(Game::class)->searchByName($searchValue, $limit);
+
+        $finalResults = [];
+        foreach($results as $oneGame){
+
+            /* JSON */
+            $oneGame['image'] = json_decode($oneGame['image']);
+            $oneGame['imageTags'] = json_decode($oneGame['image_tags']);
+            $oneGame['originalGameRating'] = json_decode($oneGame['original_game_rating']);
+            $oneGame['platforms'] = json_decode($oneGame['platforms']);
+            $oneGame['moyenRateUser'] = $this->entityManager->getRepository(UserRate::class)->calcMoyenByGame($oneGame['id']);
+
+            /* nameVariable */
+            $oneGame = array_merge($oneGame, [
+                'dateLastUpdated' => $oneGame['date_last_updated'],
+                'expectedReleaseDay' => $oneGame['expected_release_day'],
+                'expectedReleaseMonth' => $oneGame['expected_release_month'],
+                'expectedReleaseYear' => $oneGame['expected_release_year'],
+                'id_GiantBomb' => $oneGame['id_giant_bomb'],
+                'siteDetailUrl' => $oneGame['site_detail_url'],
+                'originalReleaseDate' => $oneGame['original_release_date'],
+                'numberOfUserReviews' => $oneGame['number_of_user_reviews'],
+            ]);
+
+
+
+
+            $finalResults[] = $oneGame;
+        }
+
+        return $this->json($finalResults, 200, []);
+    }
 
     // Get Profil User By Id
     #[Route('-profil/{id}', name: 'one_profil', methods:['GET'])]

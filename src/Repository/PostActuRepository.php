@@ -31,6 +31,24 @@ class PostActuRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function searchPostActuByNameWithView(string $searchValue, int $limit = 10): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+                SELECT p.*, COUNT(v.id) AS views_count
+                FROM post_actu p
+                LEFT JOIN view v ON v.post_actu_id = p.id
+                WHERE p.title LIKE "%'. $searchValue .'%"
+                GROUP BY p.id
+                ORDER BY views_count DESC
+                LIMIT '. $limit .';
+            ';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+
+        return $result->fetchAllAssociative();
+    }
+
     public function getLatestPostActu(int $limit = 5): array
     {
         return $this->createQueryBuilder('p')
