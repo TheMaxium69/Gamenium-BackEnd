@@ -67,9 +67,9 @@ class UserProviderController extends AbstractController
             return $this->json(['message' => 'no token']);
         }
 
-
-
     }
+
+
     /* UPDATE */
     #[Route('/provider/{id}', name: 'update_provider', methods: ['PUT'])]
     public function updateProvider(int $id, Request $request): JsonResponse
@@ -100,7 +100,7 @@ class UserProviderController extends AbstractController
 
             $data = json_decode($request->getContent(), true);
             if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-                return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
+                return $this->json(['message' => 'Invalid JSON format']);
             }
 
             if (isset($data['displayName'])) $provider->setDisplayName($data['displayName']);
@@ -111,14 +111,14 @@ class UserProviderController extends AbstractController
                 if ($picture) {
                     $provider->setPicture($picture);
                 } else {
-                    return $this->json(['message' => 'Invalid picture ID'], Response::HTTP_BAD_REQUEST);
+                    return $this->json(['message' => 'Invalid picture ID']);
                 }
             }
 
             $this->entityManager->persist($provider);
             $this->entityManager->flush();
 
-            return $this->json(['message' => 'Provider updated successfully', 'updated' => $provider], Response::HTTP_OK, [], ['groups' => 'provider:read']);
+            return $this->json(['message' => 'Provider updated successfully', 'updated' => $provider], 200, [], ['groups' => 'provider:read']);
         }
     }
 
@@ -149,7 +149,7 @@ class UserProviderController extends AbstractController
 
             $data = json_decode($request->getContent(), true);
             if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-                return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
+                return $this->json(['message' => 'Invalid JSON format']);
             }
 
             $searchValue = $data['searchValue'] ?? '';
@@ -171,30 +171,30 @@ class UserProviderController extends AbstractController
         $authorizationHeader = $request->headers->get('Authorization');
 
         if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
-            return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'No token provided']);
         }
 
         $token = substr($authorizationHeader, 7);
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
         
         if (!$user) {
-            return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'Invalid token']);
         }
 
         if (!array_intersect(['ROLE_PROVIDER', 'ROLE_PROVIDER_ADMIN'], $user->getRoles())) {
-            return $this->json(['message' => 'No permission'], Response::HTTP_FORBIDDEN);
+            return $this->json(['message' => 'No permission']);
         }
 
         
         $userProvider = $this->entityManager->getRepository(UserProvider::class)->findOneBy(['user' => $user]);
         if (!$userProvider) {
-            return $this->json(['message' => 'No provider linked to user'], Response::HTTP_FORBIDDEN);
+            return $this->json(['message' => 'No provider linked to user']);
         }
         $provider = $userProvider->getProvider();
 
         $data = json_decode($request->getContent(), true);
         if (!$data || !isset($data['title'], $data['content'], $data['picture_id'])) {
-            return $this->json(['message' => 'Missing required fields'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Missing required fields']);
         }
 
         
@@ -203,7 +203,7 @@ class UserProviderController extends AbstractController
         
         $picture = $this->entityManager->getRepository(Picture::class)->find($data['picture_id']);
         if (!$picture) {
-            return $this->json(['message' => 'Invalid picture ID'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Invalid picture ID']);
         }
 
         
@@ -224,7 +224,7 @@ class UserProviderController extends AbstractController
         $this->entityManager->persist($postActu);
         $this->entityManager->flush();
 
-        return $this->json(['message' => 'PostActu created successfully', 'result' => $postActu], Response::HTTP_CREATED, [], ['groups' => 'post:read']);
+        return $this->json(['message' => 'PostActu created successfully', 'result' => $postActu], 200, [], ['groups' => 'post:read']);
     }
 
     #[Route('/provider/edit-article/{id}', name: 'update_postactu_provider', methods: ['PUT'])]
@@ -232,33 +232,33 @@ class UserProviderController extends AbstractController
     {
         $postActu = $this->postActuRepository->find($id);
         if (!$postActu) {
-            return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'PostActu not found']);
         }
 
        
         $authorizationHeader = $request->headers->get('Authorization');
         if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
-            return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'No token provided']);
         }
         $token = substr($authorizationHeader, 7);
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
         if (!$user) {
-            return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'Invalid token']);
         }
 
         
         $userRoles = $user->getRoles();
         $isOwner = $postActu->getUser()->getId() === $user->getId();
-        $canModifyAll = in_array('PROVIDER', $userRoles) || in_array('PROVIDER_ADMIN', $userRoles);
+        $canModifyAll = in_array('ROLE_PROVIDER', $userRoles) || in_array('ROLE_PROVIDER_ADMIN', $userRoles);
 
         if (!$isOwner && !$canModifyAll) {
-            return $this->json(['message' => 'You do not have permission to edit this post'], Response::HTTP_FORBIDDEN);
+            return $this->json(['message' => 'You do not have permission to edit this post']);
         }
 
       
         $data = json_decode($request->getContent(), true);
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-            return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Invalid JSON format']);
         }
 
         
@@ -277,7 +277,7 @@ class UserProviderController extends AbstractController
             if ($picture) {
                 $postActu->setPicture($picture);
             } else {
-                return $this->json(['message' => 'Invalid picture ID'], Response::HTTP_BAD_REQUEST);
+                return $this->json(['message' => 'Invalid picture ID']);
             }
         }
 
@@ -288,6 +288,6 @@ class UserProviderController extends AbstractController
         $this->entityManager->persist($postActu);
         $this->entityManager->flush();
 
-        return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], Response::HTTP_OK, [], ['groups' => 'post:read']);
+        return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], 200, [], ['groups' => 'post:read']);
     }
 }
