@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Badge;
 use App\Entity\BadgeVersUser;
+use App\Entity\Picture;
 use App\Entity\User;
 use App\Repository\BadgeRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -201,6 +202,62 @@ class BadgeController extends AbstractController
 
 
     }
+
+    #[Route('/create-badge', name: 'create_badge', methods: ['POST'])]
+    public function createBadge(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        
+        if (!isset($data['name'], $data['picture_id'], $data['unlockDescription'])) {
+            return $this->json(['message' => 'Missing required fields']);
+        }
+
+        
+        $authorizationHeader = $request->headers->get('Authorization');
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided']);
+        }
+
+        $token = substr($authorizationHeader, 7);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token']);
+        }
+
+        if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+            return $this->json(['message' => 'No permission']);
+        }
+
+        
+        $picture = $this->entityManager->getRepository(Picture::class)->find($data['picture_id']);
+        if (!$picture) {
+            return $this->json(['message' => 'Invalid picture ID']);
+        }
+
+        
+        $badge = new Badge();
+        $badge->setName($data['name']);
+        $badge->setPicture($picture);
+        $badge->setUnlockDescription($data['unlockDescription']);
+        $badge->setCreatedAt(new \DateTimeImmutable());
+
+        
+        $this->entityManager->persist($badge);
+        $this->entityManager->flush();
+
+        return $this->json([
+            'message' => 'Badge created successfully',
+            'result' => $badge
+        ], Response::HTTP_CREATED, [], ['groups' => 'badge:read']);
+    }
+
 
 
 }
