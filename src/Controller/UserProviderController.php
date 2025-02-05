@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\LogActu;
 use App\Entity\Picture;
 use App\Entity\PostActu;
 use App\Entity\Provider;
@@ -220,8 +221,17 @@ class UserProviderController extends AbstractController
             $postActu->setGame($game);
         }
     
-
         $this->entityManager->persist($postActu);
+
+        $logActu = new LogActu();
+        $logActu->setUser($user);  
+        $logActu->setActu($postActu);  
+        $logActu->setAction("Création d'article Provider");
+        $logActu->setCreatedAt(new \DateTimeImmutable());
+        $logActu->setActionBy($user);  
+
+        $this->entityManager->persist($logActu);
+
         $this->entityManager->flush();
 
         return $this->json(['message' => 'PostActu created successfully', 'result' => $postActu], 200, [], ['groups' => 'post:read']);
@@ -286,6 +296,17 @@ class UserProviderController extends AbstractController
         $postActu->setNbEdit(($postActu->getNbEdit() ?? 0) + 1);
 
         $this->entityManager->persist($postActu);
+
+        /* LOG */
+        $logActu = new LogActu();
+        $logActu->setUser($postActu->getUser()); 
+        $logActu->setActu($postActu); 
+        $logActu->setAction("Modification d'article provider");
+        $logActu->setCreatedAt(new \DateTimeImmutable());
+        $logActu->setActionBy($user); 
+
+        $this->entityManager->persist($logActu);
+
         $this->entityManager->flush();
 
         return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], 200, [], ['groups' => 'post:read']);
@@ -323,6 +344,16 @@ class UserProviderController extends AbstractController
 
         $postActu->setIsDeleted(true);
         $this->entityManager->persist($postActu);
+
+        $logActu = new LogActu();
+        $logActu->setUser($postActu->getUser()); 
+        $logActu->setActu($postActu); 
+        $logActu->setAction("Suppression d'article Provider");
+        $logActu->setCreatedAt(new \DateTimeImmutable());
+        $logActu->setActionBy($user); 
+
+        $this->entityManager->persist($logActu);
+
         $this->entityManager->flush();
 
         return $this->json(['message' => 'PostActu marked as deleted successfully']);
