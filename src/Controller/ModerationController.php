@@ -261,6 +261,11 @@ class ModerationController extends AbstractController
 
             $picture->setIsDeleted(true);
             $this->entityManager->persist($picture);
+            
+            // SET NULL DE LA PHOTO
+            $user->setPp(null);
+            $this->entityManager->persist($user);
+
             $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
