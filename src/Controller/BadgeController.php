@@ -80,4 +80,65 @@ class BadgeController extends AbstractController
         }
     }
 
+    #[Route('/addbadge', name: 'add_badge', methods: ['POST'])]
+    public function addBadge(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['id_user']) && !isset($data['id_badge'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $badge = $this->entityManager->getRepository(Badge::class)->findOneBy(['id' => $data['id_badge']]);
+            if (!$badge) {
+                return $this->json(['message' => 'badge not found']);
+            }
+
+            $pendingUser = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $data['id_user']]);
+            if (!$pendingUser) {
+                return $this->json(['message' => 'user not found']);
+            }
+
+            $badgeToUser = new BadgeVersUser();
+            $badgeToUser->setUser($pendingUser);
+            $badgeToUser->setBadge($badge);
+            $badgeToUser->setCreatedAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($badgeToUser);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+
+
+    }
+
+
 }
