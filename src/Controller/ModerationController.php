@@ -68,7 +68,12 @@ class ModerationController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            $user = $comment->getUser();
+            $user = $comment->getUser(); /* Auteur de ce comment */
+
+            // IS_DELETE COMMENTAIRE
+            $comment->setIsDeleted(true);
+            $this->entityManager->persist($comment);
+            $this->entityManager->flush();
 
             /* FOR LOG */
             $newLog = new Log();
@@ -80,25 +85,7 @@ class ModerationController extends AbstractController
             $this->entityManager->flush();
             /* FOR LOG */
 
-            // R I P le serveur =)
-
-            // Verifier les réponses + delete + warn
-            $commentReplyAll = $this->entityManager->getRepository(CommentReply::class)->findBy(['comment' => $comment]);
-            foreach ($commentReplyAll as $commentReplyOne) {
-                $commentReplyOne->setIsDeleted(true);
-                $this->entityManager->persist($commentReplyOne);
-
-                $warnCommentReply = $this->entityManager->getRepository(Warn::class)->findOneBy(['commentReply' => $commentReplyOne]);
-                $warnCommentReply->setIsManage(true);
-                $warnCommentReply->setModeratedBy($moderated);
-                $this->entityManager->persist($warnCommentReply);
-            }
-
-            // IS_DELETE COMMENTAIRE
-            $comment->setIsDeleted(true);
-            $this->entityManager->persist($comment);
-            
-            // GESTION IS MANAGE COMMENTAiRE
+            // GESTION DE TOUTE LES WARN DE CE COMMENT
             $warnCommentAll = $this->entityManager->getRepository(Warn::class)->findBy(['comment' => $comment]);
             foreach ($warnCommentAll as $warnCommentOne) {
                 $warnCommentOne->setIsManage(true);
@@ -106,7 +93,19 @@ class ModerationController extends AbstractController
                 $this->entityManager->persist($warnCommentOne);
             }
 
+            // GESTION DES ENFANTS (COMMENT REPLY)
+            $commentReplyAll = $this->entityManager->getRepository(CommentReply::class)->findBy(['comment' => $comment]);
+            foreach ($commentReplyAll as $commentReplyOne) {
+                $commentReplyOne->setIsDeleted(true);
+                $this->entityManager->persist($commentReplyOne);
 
+                $warnCommentReplyAll = $this->entityManager->getRepository(Warn::class)->findBy(['commentReply' => $commentReplyOne]);
+                foreach ($warnCommentReplyAll as $warnCommentReplyOne) {
+                    $warnCommentReplyOne->setIsManage(true);
+                    $warnCommentReplyOne->setModeratedBy($moderated);
+                    $this->entityManager->persist($warnCommentReplyOne);
+                }
+            }
             $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
@@ -154,6 +153,9 @@ class ModerationController extends AbstractController
             }
 
             $user = $commentReply->getUser();
+            $commentReply->setIsDeleted(true);
+            $this->entityManager->persist($commentReply);
+            $this->entityManager->flush();
 
             /* FOR LOG */
             $newLog = new Log();
@@ -164,10 +166,6 @@ class ModerationController extends AbstractController
             $this->entityManager->persist($newLog);
             $this->entityManager->flush();
             /* FOR LOG */
-
-            $commentReply->setIsDeleted(true);
-            $this->entityManager->persist($commentReply);
-            $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
 
@@ -214,6 +212,9 @@ class ModerationController extends AbstractController
             }
 
             $user = $actu->getUser();
+            $actu->setIsDeleted(true);
+            $this->entityManager->persist($actu);
+            $this->entityManager->flush();
 
             /* FOR LOG */
             $newLog = new Log();
@@ -225,9 +226,6 @@ class ModerationController extends AbstractController
             $this->entityManager->flush();
             /* FOR LOG */
 
-            $actu->setIsDeleted(true);
-            $this->entityManager->persist($actu);
-            $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
 
@@ -274,6 +272,14 @@ class ModerationController extends AbstractController
             }
 
             $picture = $user->getPp();
+            $picture->setIsDeleted(true);
+            $this->entityManager->persist($picture);
+
+            // SET NULL DE LA PHOTO
+            $user->setPp(null);
+            $this->entityManager->persist($user);
+
+            $this->entityManager->flush();
 
             /* FOR LOG */
             $newLog = new Log();
@@ -284,15 +290,6 @@ class ModerationController extends AbstractController
             $this->entityManager->persist($newLog);
             $this->entityManager->flush();
             /* FOR LOG */
-
-            $picture->setIsDeleted(true);
-            $this->entityManager->persist($picture);
-            
-            // SET NULL DE LA PHOTO
-            $user->setPp(null);
-            $this->entityManager->persist($user);
-
-            $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
 
