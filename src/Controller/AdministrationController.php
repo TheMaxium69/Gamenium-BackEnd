@@ -785,6 +785,9 @@ class AdministrationController extends AbstractController
     function canBanRole($rolesModerateur, $rolesUser){
         
         $canManageRole = $this->canManageRole($rolesModerateur);
+        if (in_array('ROLE_MODO', $rolesModerateur, true) || in_array('ROLE_MODO_SUPER', $rolesModerateur, true)) {
+            $canManageRole[] = 'ROLE_BETA';
+        }
 
         foreach ($rolesUser as $role) {
             if (!in_array($role, $canManageRole, true) && $role !== 'ROLE_BAN') {
