@@ -16,6 +16,7 @@ use App\Entity\Picture;
 use App\Entity\PostActu;
 use App\Entity\User;
 use App\Entity\UserRate;
+use App\Entity\Warn;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -79,8 +80,33 @@ class ModerationController extends AbstractController
             $this->entityManager->flush();
             /* FOR LOG */
 
+            // R I P le serveur =)
+
+            // Verifier les réponses + delete + warn
+            $commentReplyAll = $this->entityManager->getRepository(CommentReply::class)->findBy(['comment' => $comment]);
+            foreach ($commentReplyAll as $commentReplyOne) {
+                $commentReplyOne->setIsDeleted(true);
+                $this->entityManager->persist($commentReplyOne);
+
+                $warnCommentReply = $this->entityManager->getRepository(Warn::class)->findOneBy(['commentReply' => $commentReplyOne]);
+                $warnCommentReply->setIsManage(true);
+                $warnCommentReply->setModeratedBy($moderated);
+                $this->entityManager->persist($warnCommentReply);
+            }
+
+            // IS_DELETE COMMENTAIRE
             $comment->setIsDeleted(true);
             $this->entityManager->persist($comment);
+            
+            // GESTION IS MANAGE COMMENTAiRE
+            $warnCommentAll = $this->entityManager->getRepository(Warn::class)->findBy(['comment' => $comment]);
+            foreach ($warnCommentAll as $warnCommentOne) {
+                $warnCommentOne->setIsManage(true);
+                $warnCommentOne->setModeratedBy($moderated);
+                $this->entityManager->persist($warnCommentOne);
+            }
+
+
             $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
