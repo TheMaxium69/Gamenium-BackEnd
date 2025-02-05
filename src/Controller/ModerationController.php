@@ -167,6 +167,15 @@ class ModerationController extends AbstractController
             $this->entityManager->flush();
             /* FOR LOG */
 
+            $warnReplyAll = $this->entityManager->getRepository(Warn::class)->findBy(['commentReply' => $commentReply]);
+            foreach ($warnReplyAll as $warnReplyOne) {
+                $warnReplyOne->setIsManage(true);
+                $warnReplyOne->setModeratedBy($moderated);
+                $this->entityManager->persist($warnReplyOne);
+            }
+            $this->entityManager->flush();
+
+
             return $this->json(['message' => 'good']);
 
         } else {
@@ -225,8 +234,15 @@ class ModerationController extends AbstractController
             $this->entityManager->persist($newLog);
             $this->entityManager->flush();
             /* FOR LOG */
-
-
+            
+            $warnActuAll = $this->entityManager->getRepository(Warn::class)->findBy(['actu' => $actu]);
+            foreach ($warnActuAll as $warnActuOne) {
+                $warnActuOne->setIsManage(true);
+                $warnActuOne->setModeratedBy($moderated);
+                $this->entityManager->persist($warnActuOne);
+            }
+            $this->entityManager->flush();
+            
             return $this->json(['message' => 'good']);
 
         } else {
@@ -272,14 +288,16 @@ class ModerationController extends AbstractController
             }
 
             $picture = $user->getPp();
-            $picture->setIsDeleted(true);
-            $this->entityManager->persist($picture);
 
-            // SET NULL DE LA PHOTO
-            $user->setPp(null);
-            $this->entityManager->persist($user);
-
-            $this->entityManager->flush();
+            if ($picture) {
+                $picture->setIsDeleted(true);
+                $this->entityManager->persist($picture);
+    
+                // SET NULL DE LA PHOTO
+                $user->setPp(null);
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+            }
 
             /* FOR LOG */
             $newLog = new Log();
@@ -290,6 +308,14 @@ class ModerationController extends AbstractController
             $this->entityManager->persist($newLog);
             $this->entityManager->flush();
             /* FOR LOG */
+            
+            $warnProfilAll = $this->entityManager->getRepository(Warn::class)->findBy(['profil' => $user]);
+            foreach ($warnProfilAll as $warnProfilOne) {
+                $warnProfilOne->setIsManage(true);
+                $warnProfilOne->setModeratedBy($moderated);
+                $this->entityManager->persist($warnProfilOne);
+            }
+            $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
 
