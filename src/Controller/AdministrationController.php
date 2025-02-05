@@ -143,7 +143,7 @@ class AdministrationController extends AbstractController
                     "displayname" => $userOne->getDisplayname(),
                     "displayname_useritium" => $userOne->getDisplaynameUseritium(),
                     "color" => $userOne->getColor(),
-                    "picture" => $picture,
+                    "pp" => $picture,
                     "roles" => $userOne->getRoles(),
                     "badges" => $userBadges,
                 ];
