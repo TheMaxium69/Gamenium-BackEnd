@@ -266,7 +266,14 @@ class AdministrationController extends AbstractController
             !in_array('ROLE_ADMIN', $user->getRoles()) && 
             !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) && 
             !in_array('ROLE_MODO_SUPER', $user->getRoles()) && 
-            !in_array('ROLE_MODO', $user->getRoles())) 
+            !in_array('ROLE_MODO', $user->getRoles()) &&
+            !in_array('ROLE_WRITE_RESPONSABLE', $user->getRoles()) &&
+            !in_array('ROLE_WRITE_SUPER', $user->getRoles()) &&
+            !in_array('ROLE_WRITE', $user->getRoles()) &&
+            !in_array('ROLE_TEST_RESPONSABLE', $user->getRoles()) &&
+            !in_array('ROLE_TEST', $user->getRoles()) &&
+            !in_array('ROLE_PROVIDER_ADMIN', $user->getRoles()) &&
+            !in_array('ROLE_PROVIDER', $user->getRoles()) )
             {
                 return $this->json(['message' => 'no permission']);
             }
@@ -395,7 +402,14 @@ class AdministrationController extends AbstractController
                 !in_array('ROLE_ADMIN', $user->getRoles()) &&
                 !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) &&
                 !in_array('ROLE_MODO_SUPER', $user->getRoles()) &&
-                !in_array('ROLE_MODO', $user->getRoles())) {
+                !in_array('ROLE_MODO', $user->getRoles()) &&
+                !in_array('ROLE_WRITE_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_WRITE_SUPER', $user->getRoles()) &&
+                !in_array('ROLE_WRITE', $user->getRoles()) &&
+                !in_array('ROLE_TEST_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_TEST', $user->getRoles()) &&
+                !in_array('ROLE_PROVIDER_ADMIN', $user->getRoles()) &&
+                !in_array('ROLE_PROVIDER', $user->getRoles()) ) {
                 return $this->json(['message' => 'no permission']);
             }
 

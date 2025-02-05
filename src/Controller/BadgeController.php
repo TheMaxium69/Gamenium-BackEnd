@@ -219,7 +219,18 @@ class BadgeController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE','ROLE_MODO_SUPER','ROLE_MODO'], $user->getRoles())) {
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+                !in_array('ROLE_ADMIN', $user->getRoles()) &&
+                !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_MODO_SUPER', $user->getRoles()) &&
+                !in_array('ROLE_MODO', $user->getRoles()) &&
+                !in_array('ROLE_WRITE_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_WRITE_SUPER', $user->getRoles()) &&
+                !in_array('ROLE_WRITE', $user->getRoles()) &&
+                !in_array('ROLE_TEST_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_TEST', $user->getRoles()) &&
+                !in_array('ROLE_PROVIDER_ADMIN', $user->getRoles()) &&
+                !in_array('ROLE_PROVIDER', $user->getRoles()) ) {
                 return $this->json(['message' => 'no permission']);
             }
 
