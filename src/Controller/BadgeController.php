@@ -155,5 +155,52 @@ class BadgeController extends AbstractController
 
     }
 
+    #[Route('/user-with-badge/{id}', name: 'user_with_badge', methods: ['GET'])]
+    public function getUserWithBadge(int $id, Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE','ROLE_MODO_SUPER','ROLE_MODO'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $badge = $this->entityManager->getRepository(Badge::class)->findOneBy(['id' => $id]);
+            if (!$badge) {
+                return $this->json(['message' => 'badge not found']);
+            }
+
+            $badgeVersUser = $this->entityManager->getRepository(BadgeVersUser::class)->findBy(['badge' => $badge]);
+
+            $users = [];
+            foreach ($badgeVersUser as $entry) {
+                $users[] = $entry->getUser();
+            }
+
+            $result = [
+                "message" => "good",
+                "result" => $badge,
+                "result2" => $users,
+            ];
+
+            return $this->json($result, 200, [], ['groups' => 'badge:read']);
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+
+
+    }
+
 
 }
