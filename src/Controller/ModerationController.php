@@ -571,7 +571,7 @@ class ModerationController extends AbstractController
                 $this->entityManager->remove($tag);
             } else if(isset($data['screenshot_id']) && $data['screenshot_id']){
 
-                $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->find(['id' => $data['screenshot_id']]);
+                $screenshot = $this->entityManager->getRepository(HmgScreenshot::class)->findOneBy(['id' => $data['screenshot_id']]);
                 if(!$screenshot) {
                     return $this->json(['message' => 'Object not found']);
                 }
@@ -581,6 +581,8 @@ class ModerationController extends AbstractController
                 $picture = $screenshot->getPicture();
                 $picture->setIsDeleted(true);
                 $this->entityManager->persist($picture);
+
+                $this->entityManager->remove($screenshot);
                 
             }else{
                 return $this->json(['message' => 'undefine of field']);
