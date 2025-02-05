@@ -22,6 +22,7 @@ class LogActuRepository extends ServiceEntityRepository
             ->leftJoin('l.user', 'u')
             ->leftJoin('l.actu', 'a')
             ->where('l.action LIKE :searchValue')
+            ->orWhere('l.route LIKE :searchValue')
             ->orWhere('u.username LIKE :searchValue')
             ->orWhere('a.title LIKE :searchValue')
             ->setParameter('searchValue', '%' . $searchValue . '%')

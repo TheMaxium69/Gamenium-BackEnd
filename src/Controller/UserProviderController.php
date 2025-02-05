@@ -226,9 +226,9 @@ class UserProviderController extends AbstractController
         $logActu = new LogActu();
         $logActu->setUser($user);  
         $logActu->setActu($postActu);  
-        $logActu->setAction("Création d'article Provider");
+        $logActu->setAction("CREATE");
+        $logActu->setRoute("PROVIDER");
         $logActu->setCreatedAt(new \DateTimeImmutable());
-        $logActu->setActionBy($user);  
 
         $this->entityManager->persist($logActu);
 
@@ -299,11 +299,11 @@ class UserProviderController extends AbstractController
 
         /* LOG */
         $logActu = new LogActu();
-        $logActu->setUser($postActu->getUser()); 
+        $logActu->setUser($user);
         $logActu->setActu($postActu); 
-        $logActu->setAction("Modification d'article provider");
+        $logActu->setAction("EDIT");
+        $logActu->setRoute("PROVIDER");
         $logActu->setCreatedAt(new \DateTimeImmutable());
-        $logActu->setActionBy($user); 
 
         $this->entityManager->persist($logActu);
 
@@ -346,11 +346,11 @@ class UserProviderController extends AbstractController
         $this->entityManager->persist($postActu);
 
         $logActu = new LogActu();
-        $logActu->setUser($postActu->getUser()); 
+        $logActu->setUser($user);
         $logActu->setActu($postActu); 
-        $logActu->setAction("Suppression d'article Provider");
+        $logActu->setAction("DELETE");
+        $logActu->setRoute("PROVIDER");
         $logActu->setCreatedAt(new \DateTimeImmutable());
-        $logActu->setActionBy($user); 
 
         $this->entityManager->persist($logActu);
 

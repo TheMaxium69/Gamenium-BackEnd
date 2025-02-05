@@ -33,10 +33,9 @@ class LogActu
     #[Groups(['logactu:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(length: 255)]
     #[Groups(['logactu:read'])]
-    private ?User $action_by = null;
+    private ?string $route = null;
 
     public function getId(): ?int
     {
@@ -91,14 +90,14 @@ class LogActu
         return $this;
     }
 
-    public function getActionBy(): ?User
+    public function getRoute(): ?string
     {
-        return $this->action_by;
+        return $this->route;
     }
 
-    public function setActionBy(?User $action_by): static
+    public function setRoute(string $route): static
     {
-        $this->action_by = $action_by;
+        $this->route = $route;
 
         return $this;
     }

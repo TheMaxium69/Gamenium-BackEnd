@@ -13,7 +13,7 @@ class PostActu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['post:read' ,'comment:read' , 'like:read','followPageGame:read', 'view:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['logactu:read','post:read' ,'comment:read' , 'like:read','followPageGame:read', 'view:read', 'warn:read', 'commentreply:admin', 'comment:admin'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -34,7 +34,7 @@ class PostActu
 
 
     #[ORM\ManyToOne(inversedBy: 'postActus', targetEntity: Provider::class)]
-    #[Groups(['post:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['logactu:read', 'post:read', 'commentreply:admin', 'comment:admin'])]
     private ?Provider $Provider = null;
 
     #[ORM\ManyToOne(inversedBy: 'postActus', targetEntity: GameProfile::class)]
@@ -47,16 +47,16 @@ class PostActu
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['post:read'])]
+    #[Groups(['logactu:read', 'post:read'])]
     private ?user $user = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['post:read', 'view:read', 'warn:read', 'comment:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['logactu:read', 'post:read', 'view:read', 'warn:read', 'comment:read', 'commentreply:admin', 'comment:admin'])]
     private ?string $title = null;
 
     #[ORM\ManyToOne(targetEntity: Picture::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['warn:read', 'post:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['logactu:read', 'warn:read', 'post:read', 'commentreply:admin', 'comment:admin'])]
     private ?Picture $picture = null;
 
     #[ORM\Column]

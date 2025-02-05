@@ -127,9 +127,9 @@ class PostActuController extends AbstractController
         $logActu = new LogActu();
         $logActu->setUser($user);  
         $logActu->setActu($postActu);  
-        $logActu->setAction("Création d'article");
+        $logActu->setAction("CREATE");
+        $logActu->setRoute("WRITE");
         $logActu->setCreatedAt(new \DateTimeImmutable());
-        $logActu->setActionBy($user);  
 
         $this->entityManager->persist($logActu);
 
@@ -318,11 +318,11 @@ class PostActuController extends AbstractController
 
         /* LOG */
         $logActu = new LogActu();
-        $logActu->setUser($postActu->getUser()); 
+        $logActu->setUser($user);
         $logActu->setActu($postActu); 
-        $logActu->setAction("Modification d'article");
+        $logActu->setAction("EDIT");
+        $logActu->setRoute("WRITE");
         $logActu->setCreatedAt(new \DateTimeImmutable());
-        $logActu->setActionBy($user); 
 
         $this->entityManager->persist($logActu);
         $this->entityManager->flush();
@@ -365,11 +365,11 @@ class PostActuController extends AbstractController
         $this->entityManager->persist($postActu);
 
         $logActu = new LogActu();
-        $logActu->setUser($postActu->getUser()); 
-        $logActu->setActu($postActu); 
-        $logActu->setAction("Suppression d'article");
+        $logActu->setUser($user);
+        $logActu->setActu($postActu);
+        $logActu->setAction("DELETE");
+        $logActu->setRoute("WRITE");
         $logActu->setCreatedAt(new \DateTimeImmutable());
-        $logActu->setActionBy($user); 
 
         $this->entityManager->persist($logActu);
         $this->entityManager->flush();
