@@ -113,6 +113,7 @@ class HmgScreenshotController extends AbstractController
             $picture->setUrl($API_URL . "/" . $UPLOAD_DIR . $fileName);
             $picture->setIp($newIp);
             $picture->setUser($user);
+            $picture->setIsDeleted(false);
             $picture->setPostedAt(new \DateTime());
 
             $this->entityManager->persist($picture);
