@@ -156,6 +156,52 @@ class BadgeController extends AbstractController
 
     }
 
+    #[Route('/remove-badge/{id}', name: 'remove_badge', methods: ['DELETE'])]
+    public function removeBadge(int $id, Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $badge = $this->entityManager->getRepository(Badge::class)->findOneBy(['id' => $id]);
+            if (!$badge) {
+                return $this->json(['message' => 'badge not found']);
+            }
+
+            // Check if les gens on le badge
+            $existingBadgeToUser = $this->entityManager->getRepository(BadgeVersUser::class)->findBy(['badge' => $badge]);
+            if ($existingBadgeToUser) {
+                foreach ($existingBadgeToUser as $oneBadgeUser) {
+                   $this->entityManager->remove($oneBadgeUser);
+                   $this->entityManager->flush();
+                }
+            }
+
+            $this->entityManager->remove($badge);
+            $this->entityManager->flush();
+            return $this->json(['message' => 'good']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+
+
+    }
+
     #[Route('/user-with-badge/{id}', name: 'user_with_badge', methods: ['GET'])]
     public function getUserWithBadge(int $id, Request $request): JsonResponse
     {
