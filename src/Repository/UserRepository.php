@@ -31,6 +31,16 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function searchRoleByUser(string $roleName, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.roles LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $roleName . '%')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

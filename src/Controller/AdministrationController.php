@@ -361,6 +361,65 @@ class AdministrationController extends AbstractController
      *
      *
      * */
+    #[Route('-role-one', name: 'role_one', methods: ['POST'])]
+    public function getRoleOne(Request $request): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        /*SI LE JSON A PAS DE SOUCI */
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->json(['message' => 'Invalid JSON format']);
+        }
+
+        /*SI LES CHAMP SON REMPLIE */
+        if (!isset($data['ROLE_NAME'])){
+            return $this->json(['message' => 'undefine of field']);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'user token not found']);
+            }
+
+            //on vérifie que le user a bien l'un des roles
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+                !in_array('ROLE_ADMIN', $user->getRoles()) &&
+                !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_MODO_SUPER', $user->getRoles()) &&
+                !in_array('ROLE_MODO', $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $limit = $data['limit'];
+            $roleName = $data['ROLE_NAME'];
+
+            $userMaybe = $this->entityManager->getRepository(User::class)->searchRoleByUser($roleName, $limit);
+
+            $results = [];
+            foreach ($userMaybe as $userOne) {
+                foreach ($userOne->getRoles() as $role) {
+                    if ($role === $roleName) {
+                        $results[] = $userOne;
+                    }
+                }
+            }
+
+            return $this->json($results, 200, [], ['groups' => 'usermodo:read']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }
+
 
     #[Route('-ban/{id}', name: 'ban_admin', methods: ['GET'])]
     public function toggleBan(Request $request, int $id): JsonResponse
