@@ -80,8 +80,8 @@ class BadgeController extends AbstractController
         }
     }
 
-    #[Route('/addbadge', name: 'add_badge', methods: ['POST'])]
-    public function addBadge(Request $request): JsonResponse
+    #[Route('/togglebadge', name: 'toggle_badge', methods: ['POST'])]
+    public function toggleBadge(Request $request): JsonResponse
     {
 
         $data = json_decode($request->getContent(), true);
@@ -123,15 +123,30 @@ class BadgeController extends AbstractController
                 return $this->json(['message' => 'user not found']);
             }
 
-            $badgeToUser = new BadgeVersUser();
-            $badgeToUser->setUser($pendingUser);
-            $badgeToUser->setBadge($badge);
-            $badgeToUser->setCreatedAt(new \DateTimeImmutable());
 
-            $this->entityManager->persist($badgeToUser);
-            $this->entityManager->flush();
+            // Check if the pendingUser already has this badge
+            $existingBadgeToUser = $this->entityManager->getRepository(BadgeVersUser::class)->findOneBy(['user' => $pendingUser, 'badge' => $badge]);
+            if ($existingBadgeToUser) {
 
-            return $this->json(['message' => 'good']);
+                $this->entityManager->remove($existingBadgeToUser);
+                $this->entityManager->flush();
+
+                return $this->json(['message' => 'delete success']);
+
+            } else {
+                $badgeToUser = new BadgeVersUser();
+                $badgeToUser->setUser($pendingUser);
+                $badgeToUser->setBadge($badge);
+                $badgeToUser->setCreatedAt(new \DateTimeImmutable());
+
+                $this->entityManager->persist($badgeToUser);
+                $this->entityManager->flush();
+
+                return $this->json(['message' => 'add success']);
+            }
+
+
+
 
         } else {
             return $this->json(['message' => 'no token']);
