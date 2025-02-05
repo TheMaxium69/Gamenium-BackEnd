@@ -83,6 +83,88 @@ class AdministrationController extends AbstractController
 
     }
 
+    #[Route('-profils-search', name: 'search_profils_admin', methods: ['POST'])]
+    public function searchProfils(Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+
+            $userAll = $this->entityManager->getRepository(User::class)->searchUserByName($searchValue, $limit);
+
+            $userResult = [];
+            foreach ($userAll as $userOne) {
+
+                $badgeVersUser = $this->entityManager->getRepository(BadgeVersUser::class)->findBy(['user' => $userOne]);
+                $userBadges = [];
+
+                if ($badgeVersUser) {
+                    foreach ($badgeVersUser as $badge) {
+                        $userBadges[] = [
+                            'id' => $badge->getBadge()->getId(),
+                            "name" => $badge->getBadge()->getName(),
+                            "pictureUrl" => $badge->getBadge()->getPicture()->getUrl()
+                        ];
+                    }
+                }
+
+                if ($userOne->getPp() !== null) {
+                    $picture = [
+                        'id' => $userOne->getPp()->getId(),
+                        'url' => $userOne->getPp()->getUrl()
+                    ];
+                } else {
+                    $picture = null;
+                }
+
+                $userResult[] = [
+                    "id" => $userOne->getId(),
+                    "username" => $userOne->getUsername(),
+                    "displayname" => $userOne->getDisplayname(),
+                    "displayname_useritium" => $userOne->getDisplaynameUseritium(),
+                    "color" => $userOne->getColor(),
+                    "picture" => $picture,
+                    "roles" => $userOne->getRoles(),
+                    "badges" => $userBadges,
+                ];
+            }
+
+
+
+
+            return $this->json($userResult, 200, []);
+
+
+
+
+        } else {
+
+            return $this->json(['message' => 'no permission']);
+
+        }
+
+    }
+
     #[Route('-postactus-search', name: 'search_postactus_admin', methods: ['POST'])]
     public function searchPostActuAdmin(Request $request): JsonResponse
     {
@@ -198,11 +280,10 @@ class AdministrationController extends AbstractController
 
             $userBadges = [];
             foreach ($badgeVersUser as $badge) {
-                $badgeName = $badge->getBadge()->getName();
-                $badgePicture = $badge->getBadge()->getPicture()->getUrl();
                 $userBadges[] = [
-                    "name" => $badgeName,
-                    "pictureUrl" => $badgePicture
+                    'id' => $badge->getBadge()->getId(),
+                    "name" => $badge->getBadge()->getName(),
+                    "pictureUrl" => $badge->getBadge()->getPicture()->getUrl()
                 ];
             }
             
@@ -224,9 +305,6 @@ class AdministrationController extends AbstractController
             } else {
                 $ipUsed = "no permission";
             }
-
-
-
 
             $message = [
                 'message' => "good",
