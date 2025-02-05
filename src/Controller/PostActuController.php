@@ -290,6 +290,40 @@ class PostActuController extends AbstractController
         return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], Response::HTTP_OK, [], ['groups' => 'post:read']);
     }
 
+    #[Route('/postactus/delete/{id}', name: 'delete_postactu', methods: ['PUT'])]
+    public function deletePostActuIsDelete(int $id, Request $request): JsonResponse
+    {
+        $postActu = $this->postActuRepository->find($id);
 
+        if (!$postActu) {
+            return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $authorizationHeader = $request->headers->get('Authorization');
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided']);
+        }
+
+        $token = substr($authorizationHeader, 7);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token']);
+        }
+
+        $userRoles = $user->getRoles();
+        $isOwner = $postActu->getUser()->getId() === $user->getId();
+        $canModifyAll = in_array('ROLE_WRITE_RESPONSABLE', $userRoles) || in_array('ROLE_ADMIN', $userRoles) || in_array('ROLE_OWNER', $userRoles) || in_array('ROLE_MODO_RESPONSABLE', $userRoles) || in_array('ROLE_MODO_SUPER', $userRoles) || in_array('ROLE_MODO', $userRoles);
+
+        if (!$isOwner && !$canModifyAll) {
+            return $this->json(['message' => 'You do not have permission to delete this post']);
+        }
+
+        $postActu->setIsDeleted(true);
+        $this->entityManager->persist($postActu);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'PostActu marked as deleted successfully']);
+    }
 
 }

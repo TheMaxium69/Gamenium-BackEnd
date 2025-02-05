@@ -290,4 +290,42 @@ class UserProviderController extends AbstractController
 
         return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], 200, [], ['groups' => 'post:read']);
     }
+
+    #[Route('/provider/deletePostActu/{id}', name: 'delete_postactu_provider', methods: ['PUT'])]
+    public function deletePostActuByProvider(int $id, Request $request): JsonResponse
+    {
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided']);
+        }
+
+        $token = substr($authorizationHeader, 7);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token']);
+        }
+
+        if (!array_intersect(['ROLE_PROVIDER_ADMIN', 'ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $user->getRoles())) {
+            return $this->json(['message' => 'No permission']);
+        }
+
+        $postActu = $this->entityManager->getRepository(PostActu::class)->find($id);
+        if (!$postActu) {
+            return $this->json(['message' => 'PostActu not found']);
+        }
+
+        $userProvider = $this->entityManager->getRepository(UserProvider::class)->findOneBy(['user' => $user]);
+        if (!$userProvider || $postActu->getProvider()->getId() !== $userProvider->getProvider()->getId()) {
+            return $this->json(['message' => 'This post does not belong to your provider']);
+        }
+
+        $postActu->setIsDeleted(true);
+        $this->entityManager->persist($postActu);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'PostActu marked as deleted successfully']);
+    }
+
 }
