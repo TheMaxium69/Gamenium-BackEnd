@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\LogActuRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LogActuRepository::class)]
 class LogActu
@@ -11,24 +12,30 @@ class LogActu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['logactu:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['logactu:read'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['logactu:read'])]
     private ?PostActu $actu = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['logactu:read'])]
     private ?string $action = null;
 
     #[ORM\Column]
+    #[Groups(['logactu:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['logactu:read'])]
     private ?User $action_by = null;
 
     public function getId(): ?int
