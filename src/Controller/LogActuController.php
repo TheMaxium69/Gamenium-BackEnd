@@ -19,7 +19,7 @@ class LogActuController extends AbstractController
 
 
     #[Route('/log-actu-view', name: 'app_log_actu')]
-    public function logroleview(Request $request): JsonResponse
+    public function logActuView(Request $request): JsonResponse
     {
         $authorizationHeader = $request->headers->get('Authorization');
 
@@ -43,7 +43,7 @@ class LogActuController extends AbstractController
             $searchValue = $data['searchValue'] ?? '';
             $limit = $data['limit'];
 
-            $results = $this->entityManager->getRepository(LogActu::class)->searchLogByName($searchValue, $limit);
+            $results = $this->entityManager->getRepository(LogActu::class)->searchLogByAction($searchValue, $limit);
 
             return $this->json($results, 200, [], ['groups' => 'logactu:read']);
 

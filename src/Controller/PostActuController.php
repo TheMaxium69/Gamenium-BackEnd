@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\LogActu;
 use App\Entity\Picture;
 use App\Entity\PostActu;
 use App\Entity\Provider;
@@ -121,7 +122,20 @@ class PostActuController extends AbstractController
         }
         
         $this->entityManager->persist($postActu);
+
+         /* LOG */
+        $logActu = new LogActu();
+        $logActu->setUser($user);  
+        $logActu->setActu($postActu);  
+        $logActu->setAction("Création d'article");
+        $logActu->setCreatedAt(new \DateTimeImmutable());
+        $logActu->setActionBy($user);  
+
+        $this->entityManager->persist($logActu);
+
         $this->entityManager->flush();
+
+    
     }
 
        return $this->json(['message' => 'PostActu created successfully'], Response::HTTP_CREATED);
@@ -231,45 +245,57 @@ class PostActuController extends AbstractController
     {
         $postActu = $this->postActuRepository->find($id);
         if (!$postActu) {
-            return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'PostActu not found']);
         }
 
-       
         $authorizationHeader = $request->headers->get('Authorization');
         if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
-            return $this->json(['message' => 'No token provided'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'No token provided']);
         }
+
         $token = substr($authorizationHeader, 7);
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
         if (!$user) {
-            return $this->json(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['message' => 'Invalid token']);
         }
 
-        
         $userRoles = $user->getRoles();
         $isOwner = $postActu->getUser()->getId() === $user->getId();
-        $canModifyAll = in_array('ROLE_WRITE_SUPER', $userRoles) || in_array('ROLE_WRITE_RESPONSABLE', $userRoles) || in_array('PROVIDER', $userRoles) || in_array('PROVIDER_ADMIN', $userRoles);
+        $canModifyAll = in_array('ROLE_WRITE_SUPER', $userRoles) || in_array('ROLE_WRITE_RESPONSABLE', $userRoles) || in_array('ROLE_PROVIDER', $userRoles) || in_array('ROLE_PROVIDER_ADMIN', $userRoles);
 
         if (!$isOwner && !$canModifyAll) {
             return $this->json(['message' => 'You do not have permission to edit this post'], Response::HTTP_FORBIDDEN);
         }
 
-      
         $data = json_decode($request->getContent(), true);
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-            return $this->json(['message' => 'Invalid JSON format'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'Invalid JSON format']);
         }
 
-        
-        if (isset($data['title'])) $postActu->setTitle($data['title']);
-        if (isset($data['content'])) $postActu->setContent($data['content']);
+        // Vérif si changement on été fait
+        $hasChanges = false;
+
+        if (isset($data['title']) && $data['title'] !== $postActu->getTitle()) {
+            $postActu->setTitle($data['title']);
+            $hasChanges = true;
+        }
+        if (isset($data['content']) && $data['content'] !== $postActu->getContent()) {
+            $postActu->setContent($data['content']);
+            $hasChanges = true;
+        }
         if (isset($data['game_id'])) {
             $game = $this->entityManager->getRepository(Game::class)->find($data['game_id']);
-            if ($game) $postActu->setGame($game);
+            if ($game && $game !== $postActu->getGame()) {
+                $postActu->setGame($game);
+                $hasChanges = true;
+            }
         }
         if (isset($data['provider_id'])) {
             $provider = $this->entityManager->getRepository(Provider::class)->find($data['provider_id']);
-            if ($provider) $postActu->setProvider($provider);
+            if ($provider && $provider !== $postActu->getProvider()) {
+                $postActu->setProvider($provider);
+                $hasChanges = true;
+            }
         }
         if (isset($data['picture_id'])) {
             $picture = $this->entityManager->getRepository(Picture::class)->find($data['picture_id']);
@@ -280,14 +306,30 @@ class PostActuController extends AbstractController
             }
         }
 
-      
+        // Si pas de changement on log pas 
+        if (!$hasChanges) {
+            return $this->json(['message' => 'No changes detected']);
+        }
+
         $postActu->setLastEdit(new \DateTime());
         $postActu->setNbEdit(($postActu->getNbEdit() ?? 0) + 1);
 
         $this->entityManager->persist($postActu);
+
+        /* LOG */
+        $logActu = new LogActu();
+        $logActu->setUser($postActu->getUser()); 
+        $logActu->setActu($postActu); 
+        $logActu->setAction("Modification d'article");
+        $logActu->setCreatedAt(new \DateTimeImmutable());
+        $logActu->setActionBy($user); 
+
+        $this->entityManager->persist($logActu);
         $this->entityManager->flush();
 
-        return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], Response::HTTP_OK, [], ['groups' => 'post:read']);
+        return $this->json([
+            'message' => 'PostActu updated successfully'
+        ], Response::HTTP_OK, [], ['groups' => 'post:read']);
     }
 
     #[Route('/postactus/delete/{id}', name: 'delete_postactu', methods: ['PUT'])]
@@ -296,7 +338,7 @@ class PostActuController extends AbstractController
         $postActu = $this->postActuRepository->find($id);
 
         if (!$postActu) {
-            return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
+            return $this->json(['message' => 'PostActu not found']);
         }
 
         $authorizationHeader = $request->headers->get('Authorization');
@@ -321,6 +363,15 @@ class PostActuController extends AbstractController
 
         $postActu->setIsDeleted(true);
         $this->entityManager->persist($postActu);
+
+        $logActu = new LogActu();
+        $logActu->setUser($postActu->getUser()); 
+        $logActu->setActu($postActu); 
+        $logActu->setAction("Suppression d'article");
+        $logActu->setCreatedAt(new \DateTimeImmutable());
+        $logActu->setActionBy($user); 
+
+        $this->entityManager->persist($logActu);
         $this->entityManager->flush();
 
         return $this->json(['message' => 'PostActu marked as deleted successfully']);

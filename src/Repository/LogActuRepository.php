@@ -8,11 +8,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<LogActu>
- *
- * @method LogActu|null find($id, $lockMode = null, $lockVersion = null)
- * @method LogActu|null findOneBy(array $criteria, array $orderBy = null)
- * @method LogActu[]    findAll()
- * @method LogActu[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class LogActuRepository extends ServiceEntityRepository
 {
@@ -20,29 +15,19 @@ class LogActuRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, LogActu::class);
     }
-
-//    /**
-//     * @return LogActu[] Returns an array of LogActu objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('l.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?LogActu
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    // recherche par type d'action / titre / ou username
+    public function searchLogByAction(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('l')
+            ->leftJoin('l.user', 'u')
+            ->leftJoin('l.actu', 'a')
+            ->where('l.action LIKE :searchValue')
+            ->orWhere('u.username LIKE :searchValue')
+            ->orWhere('a.title LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->orderBy('l.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
