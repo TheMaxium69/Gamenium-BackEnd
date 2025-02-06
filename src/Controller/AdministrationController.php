@@ -193,6 +193,32 @@ class AdministrationController extends AbstractController
         return $this->json($finalResults, 200, [], ['groups' => 'postactu:read']);
     }
 
+    #[Route('-provider-search', name: 'search_provider_admin', methods: ['POST'])]
+    public function searchProviderAdmin(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $searchValue = $data['searchValue'] ?? '';
+        $limit = $data['limit'];
+
+        $results = $this->entityManager->getRepository(Provider::class)->searchProviderByNameWithView($searchValue, $limit);
+
+        $finalResults = [];
+        foreach($results as $oneProvider){
+
+            /* JSON */
+            $oneProvider['picture'] = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $oneProvider['picture_id']]);
+
+            /* nameVariable */
+            $oneProvider = array_merge($oneProvider, [
+                'picture' => $oneProvider['picture'],
+            ]);
+
+            $finalResults[] = $oneProvider;
+        }
+
+        return $this->json($finalResults, 200, [], ['groups' => 'postactu:read']);
+    }
+
     #[Route('-games-search', name: 'search_games_admin', methods: ['POST'])]
     public function searchGamesAdmin(Request $request): JsonResponse
     {

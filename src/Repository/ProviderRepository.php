@@ -31,6 +31,24 @@ class ProviderRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function searchProviderByNameWithView(string $searchValue, int $limit = 10): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+                SELECT p.*, COUNT(v.id) AS views_count
+                FROM provider p
+                LEFT JOIN view v ON v.provider_id = p.id
+                WHERE p.tag_name LIKE "%'. $searchValue .'%"
+                GROUP BY p.id
+                ORDER BY views_count DESC
+                LIMIT '. $limit .';
+            ';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+
+        return $result->fetchAllAssociative();
+    }
+
 //    /**
 //     * @return Provider[] Returns an array of Provider objects
 //     */
