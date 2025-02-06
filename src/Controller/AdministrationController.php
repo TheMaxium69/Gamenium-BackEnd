@@ -168,55 +168,154 @@ class AdministrationController extends AbstractController
     #[Route('-postactus-search', name: 'search_postactus_admin', methods: ['POST'])]
     public function searchPostActuAdmin(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        $searchValue = $data['searchValue'] ?? '';
-        $limit = $data['limit'];
 
-        $results = $this->entityManager->getRepository(PostActu::class)->searchPostActuByNameWithView($searchValue, $limit);
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        $finalResults = [];
-        foreach($results as $onePostActu){
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
 
-            /* JSON */
-            $onePostActu['picture'] = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $onePostActu['picture_id']]);
-            $onePostActu['Provider'] = $this->entityManager->getRepository(Provider::class)->findOneBy(['id' => $onePostActu['provider_id']]);
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-            /* nameVariable */
-            $onePostActu = array_merge($onePostActu, [
-                'picture' => $onePostActu['picture'],
-                'Provider' => $onePostActu['Provider'],
-            ]);
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
 
-            $finalResults[] = $onePostActu;
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $results = $this->entityManager->getRepository(PostActu::class)->searchPostActuByNameWithView($searchValue, $limit);
+
+            $finalResults = [];
+            foreach ($results as $onePostActu) {
+
+                /* JSON */
+                $onePostActu['picture'] = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $onePostActu['picture_id']]);
+                $onePostActu['Provider'] = $this->entityManager->getRepository(Provider::class)->findOneBy(['id' => $onePostActu['provider_id']]);
+
+                /* nameVariable */
+                $onePostActu = array_merge($onePostActu, [
+                    'picture' => $onePostActu['picture'],
+                    'Provider' => $onePostActu['Provider'],
+                ]);
+
+                $finalResults[] = $onePostActu;
+            }
+
+            return $this->json($finalResults, 200, [], ['groups' => 'postactu:read']);
+
+        } else {
+
+            return $this->json(['message' => 'no token']);
+
         }
-
-        return $this->json($finalResults, 200, [], ['groups' => 'postactu:read']);
     }
 
     #[Route('-provider-search', name: 'search_provider_admin', methods: ['POST'])]
     public function searchProviderAdmin(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        $searchValue = $data['searchValue'] ?? '';
-        $limit = $data['limit'];
 
-        $results = $this->entityManager->getRepository(Provider::class)->searchProviderByNameWithView($searchValue, $limit);
+        $authorizationHeader = $request->headers->get('Authorization');
 
-        $finalResults = [];
-        foreach($results as $oneProvider){
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
 
-            /* JSON */
-            $oneProvider['picture'] = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $oneProvider['picture_id']]);
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
 
-            /* nameVariable */
-            $oneProvider = array_merge($oneProvider, [
-                'picture' => $oneProvider['picture'],
-            ]);
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
 
-            $finalResults[] = $oneProvider;
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $results = $this->entityManager->getRepository(Provider::class)->searchProviderByNameWithView($searchValue, $limit);
+
+            $finalResults = [];
+            foreach ($results as $oneProvider) {
+
+                /* JSON */
+                $oneProvider['picture'] = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $oneProvider['picture_id']]);
+
+                /* nameVariable */
+                $oneProvider = array_merge($oneProvider, [
+                    'picture' => $oneProvider['picture'],
+                ]);
+
+                $finalResults[] = $oneProvider;
+            }
+
+            return $this->json($finalResults, 200, [], ['groups' => 'postactu:read']);
+        } else {
+            return $this->json(['message' => 'no token']);
         }
+    }
 
-        return $this->json($finalResults, 200, [], ['groups' => 'postactu:read']);
+    #[Route('-profilview-search', name: 'search_profil_view_admin', methods: ['POST'])]
+    public function searchProfilViewAdmin(Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $results = $this->entityManager->getRepository(User::class)->searchProfilByNameWithView($searchValue, $limit);
+
+            $finalResults = [];
+            foreach ($results as $oneProfil) {
+
+                /* JSON */
+                $picture = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $oneProfil['pp_id']]);
+                $nbView = $this->entityManager->getRepository(View::class)->count(['profile' => $oneProfil['id']]);
+
+                $userResult = [
+                    "id" => $oneProfil['id'],
+                    "username" => $oneProfil['username'],
+                    "displayname" => $oneProfil['displayname'],
+                    "displayname_useritium" => $oneProfil['displayname_useritium'],
+                    "color" => $oneProfil['color'],
+                    "pp" => $picture,
+                    "nbView" => $nbView,
+                    "roles" => json_decode($oneProfil['roles'])
+                ];
+
+                $finalResults[] = $userResult;
+            }
+
+            return $this->json($finalResults, 200, [], ['groups' => 'user:read']);
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
     }
 
     #[Route('-games-search', name: 'search_games_admin', methods: ['POST'])]

@@ -41,6 +41,24 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function searchProfilByNameWithView(string $searchValue, int $limit = 10): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+                SELECT u.*, COUNT(v.id) AS views_count
+                FROM user u
+                LEFT JOIN view v ON v.profile_id = u.id
+                WHERE u.username LIKE "%'. $searchValue .'%"
+                GROUP BY u.id
+                ORDER BY views_count DESC
+                LIMIT '. $limit .';
+            ';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+
+        return $result->fetchAllAssociative();
+    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */
