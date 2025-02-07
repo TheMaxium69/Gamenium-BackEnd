@@ -630,7 +630,43 @@ class ModerationController extends AbstractController
 
             $usersRandom = $this->entityManager->getRepository(User::class)->getRandomUser(2);
 
-            return $this->json(['message' => 'good', "result" => $usersRandom]);
+
+            $i = 0;
+            foreach ($usersRandom as $userRandom) {
+
+                $tempUser = [];
+
+
+                $picture = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $userRandom['pp_id']]);
+
+
+                $tempUser = [
+                    "id" => $userRandom['id'],
+                    "username" => $userRandom['username'],
+                    "displayname" => $userRandom['displayname'],
+                    "displayname_useritium" => $userRandom['displayname_useritium'],
+                    "color" => $userRandom['color'],
+                    "pp" => $picture,
+                    "roles" => json_decode($userRandom['roles']),
+                ];
+
+
+                if ($i == 0){
+                    $firstUser = $tempUser;
+                } else if ($i == 1){
+                    $secondUser = $tempUser;
+                }
+
+
+                $i++;
+            }
+
+
+
+
+
+
+            return $this->json(['message' => 'good', "result" => $firstUser, "result2"=>$secondUser ], 200, [], ['groups'=> 'picture:read']);
             
 
         } else {
