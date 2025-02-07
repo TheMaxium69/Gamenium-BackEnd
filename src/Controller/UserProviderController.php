@@ -359,4 +359,54 @@ class UserProviderController extends AbstractController
         return $this->json(['message' => 'PostActu marked as deleted successfully']);
     }
 
+    //Crée -> Link User Provider
+    #[Route('/user-provider/link', name: 'link_user_provider', methods: ['POST'])]
+    public function linkUserToProvider(Request $request): JsonResponse
+    {
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'Invalid token']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+                return $this->json(['message' => 'No permission']);
+            }
+
+            $data = json_decode($request->getContent(), true);
+            if (!isset($data['user_id'], $data['provider_id'])) {
+                return $this->json(['message' => 'Champ manquant']);
+            }
+
+            $targetUser = $this->entityManager->getRepository(User::class)->find($data['user_id']);
+            $provider = $this->entityManager->getRepository(Provider::class)->find($data['provider_id']);
+
+            if (!$targetUser || !$provider) {
+                return $this->json(['message' => 'Utilisateur ou Provider non trouver']);
+            }
+
+            // Vérifier si l'association existe déjà
+            $existingLink = $this->entityManager->getRepository(UserProvider::class)->findOneBy(['user' => $targetUser]);
+            if ($existingLink) {
+                return $this->json(['message' => 'Utilisateur déjà relié à ce provider']);
+            }
+
+            // Créer l'association
+            $userProvider = new UserProvider();
+            $userProvider->setUser($targetUser);
+            $userProvider->setProvider($provider);
+            $this->entityManager->persist($userProvider);
+            $this->entityManager->flush();
+
+            return $this->json(['message' => 'good'], Response::HTTP_CREATED);
+        }
+
+        return $this->json(['message' => 'No token'], Response::HTTP_UNAUTHORIZED);
+    }
+
+
 }
