@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserProviderRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserProviderRepository::class)]
 class UserProvider
