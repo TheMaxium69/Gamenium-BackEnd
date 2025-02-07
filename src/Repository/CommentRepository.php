@@ -21,6 +21,24 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
+    // Recherche par username/displayName_useretium/post_title/content
+    public function searchComment(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.user', 'u')
+            ->leftJoin('c.post', 'p')
+            ->where('c.content LIKE :searchValue')
+            ->orWhere('u.username LIKE :searchValue')
+            ->orWhere('u.displayname_useritium LIKE :searchValue')
+            ->orWhere('p.title LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->orderBy('c.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
 //    /**
 //     * @return Comment[] Returns an array of Comment objects
 //     */

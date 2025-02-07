@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Badge;
 use App\Entity\BadgeVersUser;
+use App\Entity\Comment;
+use App\Entity\CommentReply;
 use App\Entity\Game;
 use App\Entity\HistoryMyGame;
 use App\Entity\Log;
@@ -468,6 +470,85 @@ class AdministrationController extends AbstractController
 
     }
 
+    #[Route('-comment-search', name: 'search_comment_admin', methods: ['POST'])]
+    public function searchComment(Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $comments = $this->entityManager->getRepository(Comment::class)->searchComment($searchValue, $limit);
+
+            return $this->json($comments, 200, [], ['groups' => 'comment:admin']);
+            
+            
+
+        } else {
+
+            return $this->json(['message' => 'Token invalide']);
+
+        }
+
+    }
+
+    #[Route('-comment-reply-search', name: 'search_comment_reply_admin', methods: ['POST'])]
+    public function searchCommentReply(Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $commentsreply = $this->entityManager->getRepository(CommentReply::class)->searchCommentReply($searchValue, $limit);
+
+            return $this->json($commentsreply, 200, [], ['groups' => 'commentreply:admin']);
+            
+            
+
+        } else {
+
+            return $this->json(['message' => 'Token invalide']);
+
+        }
+
+    }
 
 
 
