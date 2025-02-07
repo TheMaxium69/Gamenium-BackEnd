@@ -18,6 +18,7 @@ use App\Entity\User;
 use App\Entity\UserRate;
 use App\Entity\Warn;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -601,6 +602,36 @@ class ModerationController extends AbstractController
             $this->entityManager->flush();
 
             return $this->json(['message' => 'good']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }
+
+    #[Route('-profil-random', name: 'app_moderation_profil_random', methods:['GET'])]
+    public function randomProfil(Request $request): JsonResponse {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $moderator = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderator) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderator->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $usersRandom = $this->entityManager->getRepository(User::class)->getRandomUser(2);
+
+            return $this->json(['message' => 'good', "result" => $usersRandom]);
+            
 
         } else {
             return $this->json(['message' => 'no token']);
