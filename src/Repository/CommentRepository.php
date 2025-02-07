@@ -38,6 +38,33 @@ class CommentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getRandomComment(int $searchNumber): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $resultComments = [];
+        $selectedIds = [];
+
+        for ($i = 1; $i <= $searchNumber; $i++) { 
+
+            do {
+                $sql = 'SELECT * FROM comment ORDER BY RAND() LIMIT 1';
+                
+                $stmt = $conn->prepare($sql);
+                $result = $stmt->executeQuery();
+                
+                $comment = $result->fetchAssociative(); 
+            
+            } while (in_array($comment['id'], $selectedIds));
+
+            $selectedIds[] = $comment['id'];
+
+            if ($comment) {
+                $resultComments[] = $comment;
+            }
+        }
+
+        return $resultComments;
+    }
 
 //    /**
 //     * @return Comment[] Returns an array of Comment objects

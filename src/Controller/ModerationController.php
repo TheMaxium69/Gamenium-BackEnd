@@ -842,4 +842,108 @@ class ModerationController extends AbstractController
             return $this->json(['message' => 'no token']);
         }
     }   
+
+    #[Route('-comment-random', name: 'app_moderation_comment_random', methods:['GET'])]
+    public function randomComment(Request $request): JsonResponse {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /* SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $moderator = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderator) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderator->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $commentsRandom = $this->entityManager->getRepository(Comment::class)->getRandomComment(2);
+
+            $i = 0;
+            foreach ($commentsRandom as $commentRandom) {
+
+                $tempComment = [];
+
+                $userComment = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $commentRandom['user_id']]);
+
+                $tempComment = [
+                    "id" => $commentRandom['id'],
+                    "content" => $commentRandom['content'],
+                    "user" => $userComment,
+                ];
+
+                if ($i == 0){
+                    $firstComment = $tempComment;
+                } else if ($i == 1){
+                    $secondComment = $tempComment;
+                }
+
+
+                $i++;
+            }
+
+            return $this->json(['message' => 'good', "result" => $firstComment, "result2"=>$secondComment ], 200, [], ['groups'=> 'comment:admin']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }
+
+    #[Route('-comment-reply-random', name: 'app_moderation_comment_reply_random', methods:['GET'])]
+    public function randomCommentReply(Request $request): JsonResponse {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /* SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $moderator = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderator) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderator->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $commentsReplyRandom = $this->entityManager->getRepository(CommentReply::class)->getRandomCommentReply(2);
+
+            $i = 0;
+            foreach ($commentsReplyRandom as $commentReplyRandom) {
+
+                $tempCommentReply = [];
+
+                $userCommentReply = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $commentReplyRandom['user_id']]);
+
+                $tempCommentReply = [
+                    "id" => $commentReplyRandom['id'],
+                    "content" => $commentReplyRandom['content'],
+                    "user" => $userCommentReply,
+                ];
+
+                if ($i == 0){
+                    $firstCommentReply = $tempCommentReply;
+                } else if ($i == 1){
+                    $secondCommentReply = $tempCommentReply;
+                }
+
+
+                $i++;
+            }
+
+            return $this->json(['message' => 'good', "result" => $firstCommentReply, "result2"=>$secondCommentReply ], 200, [], ['groups'=> 'commentreply:admin']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }
 }
