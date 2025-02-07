@@ -14,6 +14,7 @@ use App\Entity\HmpCopy;
 use App\Entity\Log;
 use App\Entity\Picture;
 use App\Entity\PostActu;
+use App\Entity\Provider;
 use App\Entity\User;
 use App\Entity\UserRate;
 use App\Entity\Warn;
@@ -630,15 +631,12 @@ class ModerationController extends AbstractController
 
             $usersRandom = $this->entityManager->getRepository(User::class)->getRandomUser(2);
 
-
             $i = 0;
             foreach ($usersRandom as $userRandom) {
 
                 $tempUser = [];
 
-
                 $picture = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $userRandom['pp_id']]);
-
 
                 $tempUser = [
                     "id" => $userRandom['id'],
@@ -661,13 +659,67 @@ class ModerationController extends AbstractController
                 $i++;
             }
 
-
-
-
-
-
             return $this->json(['message' => 'good', "result" => $firstUser, "result2"=>$secondUser ], 200, [], ['groups'=> 'picture:read']);
-            
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }
+
+
+    #[Route('-actu-random', name: 'app_moderation_actu_random', methods:['GET'])]
+    public function randomActu(Request $request): JsonResponse {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $moderator = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderator) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderator->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $actuRandom = $this->entityManager->getRepository(PostActu::class)->getRandomActu(2);
+
+            $i = 0;
+            foreach ($actuRandom as $actuRandom) {
+
+                $tempActu = [];
+
+                $picture = $this->entityManager->getRepository(Picture::class)->findOneBy(['id' => $actuRandom['picture_id']]);
+                $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $actuRandom['user_id']]);
+                $provider = $this->entityManager->getRepository(Provider::class)->findOneBy(['id' => $actuRandom['provider_id']]);
+
+                $tempActu = [
+                    "id" => $actuRandom['id'],
+                    "title" => $actuRandom['title'],
+                    "picture" => $picture,
+                    "user" => $user,
+                    "Provider" =>$provider,
+                    "content" => $actuRandom['content'],
+                    "created_at" => $actuRandom['created_at'],
+                ];
+
+
+                if ($i == 0){
+                    $first = $tempActu;
+                } else if ($i == 1){
+                    $second = $tempActu;
+                }
+
+
+                $i++;
+            }
+
+            return $this->json(['message' => 'good', "result" => $first, "result2"=>$second ], 200, [], ['groups'=> 'post:read']);
 
         } else {
             return $this->json(['message' => 'no token']);

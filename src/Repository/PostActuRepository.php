@@ -100,6 +100,38 @@ class PostActuRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getRandomActu(int $searchNumber): array
+    {
+        $resultActu = [];
+        $actuAllCount = $this->getEntityManager()->getRepository(PostActu::class)->count();
+        $selectedIds = [];
+
+        for ($i = 1; $i <= $searchNumber; $i++) {
+
+            do {
+
+                $randomId = random_int(1, $actuAllCount);
+
+            } while (in_array($randomId, $selectedIds));
+
+            $selectedIds[] = $randomId;
+
+            $conn = $this->getEntityManager()->getConnection();
+            $sql = 'SELECT * FROM post_actu WHERE id = :id';
+
+            $stmt = $conn->prepare($sql);
+            $result = $stmt->executeQuery(['id' => $randomId]);
+
+            $actu = $result->fetchAssociative();
+
+            if ($actu) {
+                $resultActu[] = $actu;
+            }
+        }
+
+        return $resultActu;
+    }
+
 //    /**
 //     * @return PostActu[] Returns an array of PostActu objects
 //     */
