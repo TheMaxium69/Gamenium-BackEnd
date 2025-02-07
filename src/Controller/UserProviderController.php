@@ -245,11 +245,11 @@ class UserProviderController extends AbstractController
             return $this->json(['message' => 'PostActu not found']);
         }
 
-       
         $authorizationHeader = $request->headers->get('Authorization');
         if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
             return $this->json(['message' => 'No token provided']);
         }
+
         $token = substr($authorizationHeader, 7);
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
         if (!$user) {
@@ -257,6 +257,13 @@ class UserProviderController extends AbstractController
         }
 
         
+        $userProvider = $this->entityManager->getRepository(UserProvider::class)
+            ->findOneBy(['user' => $user, 'provider' => $postActu->getProvider()]);
+
+        if (!$userProvider) {
+            return $this->json(['message' => 'You are no longer linked to this provider. Modification denied.']);
+        }
+
         $userRoles = $user->getRoles();
         $isOwner = $postActu->getUser()->getId() === $user->getId();
         $canModifyAll = in_array('ROLE_PROVIDER', $userRoles) || in_array('ROLE_PROVIDER_ADMIN', $userRoles);
@@ -265,13 +272,11 @@ class UserProviderController extends AbstractController
             return $this->json(['message' => 'You do not have permission to edit this post']);
         }
 
-      
         $data = json_decode($request->getContent(), true);
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
             return $this->json(['message' => 'Invalid JSON format']);
         }
 
-        
         if (isset($data['title'])) $postActu->setTitle($data['title']);
         if (isset($data['content'])) $postActu->setContent($data['content']);
         if (isset($data['game_id'])) {
@@ -291,7 +296,6 @@ class UserProviderController extends AbstractController
             }
         }
 
-      
         $postActu->setLastEdit(new \DateTime());
         $postActu->setNbEdit(($postActu->getNbEdit() ?? 0) + 1);
 
@@ -300,7 +304,7 @@ class UserProviderController extends AbstractController
         /* LOG */
         $logActu = new LogActu();
         $logActu->setUser($user);
-        $logActu->setActu($postActu); 
+        $logActu->setActu($postActu);
         $logActu->setAction("EDIT");
         $logActu->setRoute("PROVIDER");
         $logActu->setCreatedAt(new \DateTimeImmutable());
@@ -311,6 +315,7 @@ class UserProviderController extends AbstractController
 
         return $this->json(['message' => 'PostActu updated successfully', 'updated' => $postActu], 200, [], ['groups' => 'post:read']);
     }
+
 
     #[Route('/provider/deletePostActu/{id}', name: 'delete_postactu_provider', methods: ['PUT'])]
     public function deletePostActuByProvider(int $id, Request $request): JsonResponse
