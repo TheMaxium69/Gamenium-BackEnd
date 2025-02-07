@@ -21,6 +21,44 @@ class HistoryMyPlateformRepository extends ServiceEntityRepository
         parent::__construct($registry, HistoryMyPlateform::class);
     }
 
+    public function getRandomHmp(int $searchNumber): array
+    {
+        $resultHmps = [];
+        $selectedIds = [];
+        $hmpAllCount = $this->getEntityManager()->getRepository(HistoryMyPlateform::class)->count();
+
+        for ($i = 1; $i <= $searchNumber; $i++) { 
+
+            do {
+
+                $randomId = random_int(1, $hmpAllCount);
+
+            } while (in_array($randomId, $selectedIds));
+
+            $selectedIds[] = $randomId;
+
+            $conn = $this->getEntityManager()->getConnection();
+            $sql = '
+                        SELECT hmp.*
+                        FROM history_my_plateform AS hmp
+                        LEFT JOIN user u ON u.id = hmp.user_id
+                        LEFT JOIN plateform p ON p.id = hmp.plateform_id
+                        WHERE hmp.id = :id
+                    ';
+
+            $stmt = $conn->prepare($sql);
+            $result = $stmt->executeQuery(['id' => $randomId]);
+    
+            $hmp = $result->fetchAssociative(); 
+            
+            if ($hmp) {
+                $resultHmps[] = $hmp;
+            }
+        }
+        // var_dump($resultHmgs);
+        return $resultHmps;
+
+    }
 //    /**
 //     * @return HistoryMyPlateform[] Returns an array of HistoryMyPlateform objects
 //     */

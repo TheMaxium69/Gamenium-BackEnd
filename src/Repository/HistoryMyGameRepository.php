@@ -21,6 +21,46 @@ class HistoryMyGameRepository extends ServiceEntityRepository
         parent::__construct($registry, HistoryMyGame::class);
     }
 
+    public function getRandomHmg(int $searchNumber): array
+    {
+        $resultHmgs = [];
+        $selectedIds = [];
+        $hmgAllCount = $this->getEntityManager()->getRepository(HistoryMyGame::class)->count();
+
+        for ($i = 1; $i <= $searchNumber; $i++) { 
+
+            do {
+
+                $randomId = random_int(1, $hmgAllCount);
+
+            } while (in_array($randomId, $selectedIds));
+
+            $selectedIds[] = $randomId;
+
+            $conn = $this->getEntityManager()->getConnection();
+            $sql = '
+                        SELECT hmg.*
+                        FROM history_my_game AS hmg
+                        LEFT JOIN user u ON u.id = hmg.user_id
+                        LEFT JOIN game g ON g.id = hmg.game_id
+                        LEFT JOIN plateform p ON p.id = hmg.plateform_id
+                        WHERE hmg.id = :id
+                    ';
+
+            $stmt = $conn->prepare($sql);
+            $result = $stmt->executeQuery(['id' => $randomId]);
+    
+            $hmg = $result->fetchAssociative(); 
+            
+            if ($hmg) {
+                $resultHmgs[] = $hmg;
+            }
+        }
+        // var_dump($resultHmgs);
+        return $resultHmgs;
+
+    }
+
 //    /**
 //     * @return HistoryMyGame[] Returns an array of HistoryMyGame objects
 //     */

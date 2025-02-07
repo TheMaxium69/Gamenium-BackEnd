@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\CommentReply;
+use App\Entity\Game;
 use App\Entity\HistoryMyGame;
+use App\Entity\HistoryMyPlateform;
 use App\Entity\HmgCopy;
 use App\Entity\HmgCopyPurchase;
 use App\Entity\HmgScreenshot;
@@ -13,6 +15,7 @@ use App\Entity\HmgTags;
 use App\Entity\HmpCopy;
 use App\Entity\Log;
 use App\Entity\Picture;
+use App\Entity\Plateform;
 use App\Entity\PostActu;
 use App\Entity\Provider;
 use App\Entity\User;
@@ -725,4 +728,118 @@ class ModerationController extends AbstractController
             return $this->json(['message' => 'no token']);
         }
     }
+
+    #[Route('-hmg-random', name: 'app_moderation_hmg_random', methods:['GET'])]
+    public function randomHmg(Request $request): JsonResponse {
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $moderator = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderator) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderator->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $hmgsRandom = $this->entityManager->getRepository(HistoryMyGame::class)->getRandomHmg(2);
+
+            $i = 0;
+            foreach ($hmgsRandom as $hmgRandom) {
+
+                $temphmg = [];
+
+                $game = $this->entityManager->getRepository(Game::class)->findOneBy(['id'=>$hmgRandom['game_id']]);
+                $userGame = $this->entityManager->getRepository(User::class)->findOneBy(['id'=>$hmgRandom['user_id']]);
+                $platform = $this->entityManager->getRepository(Plateform::class)->findOneBy(['id'=>$hmgRandom['plateform_id']]);
+
+
+                $temphmg = [
+                    "id" => $hmgRandom['id'],
+                    "myGame" => [
+                        "user" => $userGame,
+                        "game" => $game,
+                        "plateform" => $platform,
+                        "id"=> $hmgRandom['id'],
+                        "is_pinned"=> $hmgRandom['is_pinned'],
+                        "added_at"=> $hmgRandom['added_at'],
+                        "difficulty_rating"=> $hmgRandom['difficulty_rating'],
+                        "lifetime_rating"=> $hmgRandom['lifetime_rating']
+                    ]
+                ];
+
+                if ($i == 0){
+                    $firstHmg = $temphmg;
+                } else if ($i == 1){
+                    $secondHmg = $temphmg;
+                }
+
+
+                $i++;
+            }
+
+            return $this->json(['message' => 'good', "result" => $firstHmg, "result2"=>$secondHmg], 200, [], ['groups'=> 'historygame:read']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }   
+    #[Route('-hmp-random', name: 'app_moderation_hmp_random', methods:['GET'])]
+    public function randomHmp(Request $request): JsonResponse {
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $moderator = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$moderator) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $moderator->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $hmpsRandom = $this->entityManager->getRepository(HistoryMyPlateform::class)->getRandomHmp(2);
+
+            $i = 0;
+            foreach ($hmpsRandom as $hmpRandom) {
+
+                $temphmp = [];
+
+                $user = $this->entityManager->getRepository(User::class)->findOneBy(['id'=>$hmpRandom['user_id']]);
+                $platform = $this->entityManager->getRepository(Plateform::class)->findOneBy(['id'=>$hmpRandom['plateform_id']]);
+
+                $temphmp = [
+                    "id" => $hmpRandom['id'],
+                    "myPlateform" => [
+                        "user" => $user,
+                        "plateform" => $platform,
+                        "added_at"=> $hmpRandom['added_at'],
+                    ]
+                ];
+
+                if ($i == 0){
+                    $firstHmp = $temphmp;
+                } else if ($i == 1){
+                    $secondHmp = $temphmp;
+                }
+                $i++;
+            }
+
+            return $this->json(['message' => 'good', "result" => $firstHmp, "result2"=>$secondHmp], 200, [], ['groups'=> 'historyplateform:read']);
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }   
 }
