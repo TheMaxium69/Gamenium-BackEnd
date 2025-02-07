@@ -25,6 +25,18 @@ class WarnController extends AbstractController
     ) {}
 
 
+
+    #[Route('warntype', name: 'app_get_warn_type', methods: ['GET'])]
+    public function getAllWarnType(Request $request): JsonResponse
+    {
+
+        $warnType =  $this->entityManager->getRepository(WarnType::class)->findAll();
+
+        return $this->json(['message' => 'good', 'result' => $warnType], 200, [], ['groups' => 'warn:read']);
+
+    }
+
+
     #[Route('/addwarn', name: 'add_warn', methods: ['POST'])]
     public function addWarn(Request $request): JsonResponse
     {
