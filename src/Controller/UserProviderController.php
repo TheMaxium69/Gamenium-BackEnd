@@ -430,9 +430,13 @@ class UserProviderController extends AbstractController
         }
 
         
-        $userProviders = $this->entityManager->getRepository(UserProvider::class)->findAll();
+        $userProviders = $this->entityManager->getRepository(UserProvider::class)->findAllWithRelations();
 
-        return $this->json($userProviders, Response::HTTP_OK, [], ['groups' => 'userprovider:read']);
+        return $this->json([
+            'message' => 'User-Provider associations retrieved successfully',
+            'result' => $userProviders
+        ], Response::HTTP_OK, [], ['groups' => 'userprovider:read']);
+        
     }
 
     //Supprimer 

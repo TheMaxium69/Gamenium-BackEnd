@@ -11,14 +11,17 @@ class UserProvider
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['userprovider:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne (targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['userprovider:read'])]
     private ?user $user = null;
 
     #[ORM\ManyToOne (targetEntity: Provider::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['userprovider:read'])]
     private ?provider $provider = null;
 
     public function getId(): ?int

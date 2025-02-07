@@ -20,6 +20,16 @@ class UserProviderRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, UserProvider::class);
     }
+    public function findAllWithRelations(): array
+    {
+        return $this->createQueryBuilder('up')
+            ->leftJoin('up.user', 'u')
+            ->leftJoin('up.provider', 'p')
+            ->addSelect('u', 'p')
+            ->getQuery()
+            ->getResult();
+    }
+
 
 //    /**
 //     * @return UserProvider[] Returns an array of UserProvider objects
