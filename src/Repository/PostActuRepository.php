@@ -102,30 +102,28 @@ class PostActuRepository extends ServiceEntityRepository
 
     public function getRandomActu(int $searchNumber): array
     {
-        $resultActu = [];
         $actuAllCount = $this->getEntityManager()->getRepository(PostActu::class)->count();
+        $conn = $this->getEntityManager()->getConnection();
+        $resultActu = [];
         $selectedIds = [];
 
         for ($i = 1; $i <= $searchNumber; $i++) {
 
             do {
+                $sql = 'SELECT * FROM post_actu WHERE is_deleted = FALSE ORDER BY RAND() LIMIT 1';
+                
+                $stmt = $conn->prepare($sql);
+                $result = $stmt->executeQuery();
+              
+                $postActu = $result->fetchAssociative(); 
+                
+                
+            } while (in_array($postActu['id'], $selectedIds));
+            
+            $selectedIds[] = $postActu['id'];
 
-                $randomId = random_int(1, $actuAllCount);
-
-            } while (in_array($randomId, $selectedIds));
-
-            $selectedIds[] = $randomId;
-
-            $conn = $this->getEntityManager()->getConnection();
-            $sql = 'SELECT * FROM post_actu WHERE id = :id';
-
-            $stmt = $conn->prepare($sql);
-            $result = $stmt->executeQuery(['id' => $randomId]);
-
-            $actu = $result->fetchAssociative();
-
-            if ($actu) {
-                $resultActu[] = $actu;
+            if ($postActu) {
+                $resultActu[] = $postActu;
             }
         }
 
