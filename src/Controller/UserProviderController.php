@@ -408,5 +408,70 @@ class UserProviderController extends AbstractController
         return $this->json(['message' => 'No token'], Response::HTTP_UNAUTHORIZED);
     }
 
+    // Récup tout les liens existants
+    #[Route('/admin/user-providers', name: 'get_user_providers', methods: ['GET'])]
+    public function getUserProviders(Request $request): JsonResponse
+    {
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided']);
+        }
+
+        $token = substr($authorizationHeader, 7);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token']);
+        }
+
+        if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+            return $this->json(['message' => 'No permission']);
+        }
+
+        
+        $userProviders = $this->entityManager->getRepository(UserProvider::class)->findAll();
+
+        return $this->json($userProviders, Response::HTTP_OK, [], ['groups' => 'userprovider:read']);
+    }
+
+    //Supprimer 
+    #[Route('/admin/user-provider/{userId}/{providerId}', name: 'delete_user_provider', methods: ['DELETE'])]
+    public function deleteUserProvider(int $userId, int $providerId, Request $request): JsonResponse
+    {
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        if (!$authorizationHeader || strpos($authorizationHeader, 'Bearer ') !== 0) {
+            return $this->json(['message' => 'No token provided']);
+        }
+
+        $token = substr($authorizationHeader, 7);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+        if (!$user) {
+            return $this->json(['message' => 'Invalid token']);
+        }
+
+        if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+            return $this->json(['message' => 'No permission']);
+        }
+
+        $userProvider = $this->entityManager->getRepository(UserProvider::class)->findOneBy([
+            'user' => $userId,
+            'provider' => $providerId
+        ]);
+
+        if (!$userProvider) {
+            return $this->json(['message' => 'User-Provider relation not found']);
+        }
+
+        $this->entityManager->remove($userProvider);
+        $this->entityManager->flush();
+
+        return $this->json(['message' => 'User-Provider link deleted successfully'], Response::HTTP_OK);
+    }
+
+
+
 
 }

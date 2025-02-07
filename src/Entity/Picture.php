@@ -14,11 +14,11 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['historyplateform:read', 'logactu:read','usermodo:read', 'postactu:read', 'testRate:read', 'log:read','logrole:read', 'warn:read', 'useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['historyplateform:read', 'logactu:read','usermodo:read', 'postactu:read', 'testRate:read', 'log:read','logrole:read', 'warn:read', 'useradmin:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin','userprovider:read'])]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(['historyplateform:read', 'logactu:read','usermodo:read', 'postactu:read', 'testRate:read', 'log:read','logrole:read', 'useradmin:read', 'warn:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin'])]
+    #[Groups(['historyplateform:read', 'logactu:read','usermodo:read', 'postactu:read', 'testRate:read', 'log:read','logrole:read', 'useradmin:read', 'warn:read', 'gameprofile:read', 'commentreply:read', 'screenshot:read' , 'picture:read' , 'provider:read' , 'badge:read','post:read', 'user:read','comment:read', 'follow:read', 'historygame:read', 'commentreply:admin', 'comment:admin','userprovider:read'])]
     private ?string $url = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
