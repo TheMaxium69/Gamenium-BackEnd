@@ -62,21 +62,8 @@ class UserRepository extends ServiceEntityRepository
     public function getRandomUser(int $searchNumber): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        $userAllCount = $this->getEntityManager()->getRepository(User::class)->count();
         $resultUsers = [];
         $selectedIds = [];
-
-        if ($userAllCount < $searchNumber) {
-            $sql = 'SELECT * FROM user';
-            $stmt = $conn->prepare($sql);
-            $result = $stmt->executeQuery();
-            
-            $user = $result->fetchAssociative(); 
-
-            return $resultUsers[] = $user;
-            return $resultUsers;
-
-        }
 
         for ($i = 1; $i <= $searchNumber; $i++) { 
 

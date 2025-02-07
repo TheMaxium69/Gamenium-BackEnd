@@ -102,7 +102,6 @@ class PostActuRepository extends ServiceEntityRepository
 
     public function getRandomActu(int $searchNumber): array
     {
-        $actuAllCount = $this->getEntityManager()->getRepository(PostActu::class)->count();
         $conn = $this->getEntityManager()->getConnection();
         $resultActu = [];
         $selectedIds = [];
