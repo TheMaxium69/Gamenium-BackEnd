@@ -21,6 +21,35 @@ class PlateformRepository extends ServiceEntityRepository
         parent::__construct($registry, Plateform::class);
     }
 
+
+    public function findRandom(int $searchNumber): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $resultActu = [];
+        $selectedIds = [];
+
+        for ($i = 1; $i <= $searchNumber; $i++) {
+
+            do {
+                $sql = 'SELECT * FROM plateform WHERE id != 99999 ORDER BY RAND() LIMIT 1';
+
+                $stmt = $conn->prepare($sql);
+                $result = $stmt->executeQuery();
+
+                $actu = $result->fetchAssociative();
+
+            } while (in_array($actu['id'], $selectedIds));
+
+            $selectedIds[] = $actu['id'];
+
+            if ($actu) {
+                $resultActu[] = $actu;
+            }
+        }
+
+        return $resultActu;
+    }
+
 //    /**
 //     * @return Plateform[] Returns an array of Plateform objects
 //     */

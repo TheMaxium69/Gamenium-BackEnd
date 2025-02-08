@@ -18,21 +18,41 @@ class PlateformController extends AbstractController
         private PlateformRepository $plateformRepository
     ) {}
 
-    #[Route('/plateforms', name: 'get_all_plateforms', methods: ['GET'])]
-    public function getPlateformAll(): JsonResponse
+//    #[Route('/plateforms', name: 'get_all_plateforms', methods: ['GET'])]
+//    public function getPlateformAll(): JsonResponse
+//    {
+//        $plateforms = $this->plateformRepository->findAll();
+//
+//        if(!$plateforms){
+//            return $this->json(['message' => 'Plateforms not found']);
+//        } else {
+//            $message = [
+//                'message' => "good",
+//                'result' => $plateforms
+//            ];
+//        }
+//
+//        return $this->json($message, 200 , [], ['groups' => 'plateform:read']);
+//    }
+
+    #[Route('/plateforms-random', name: 'get_random_plateforms', methods: ['GET'])]
+    public function getPlateformRandom(): JsonResponse
     {
-        $plateforms = $this->plateformRepository->findAll();
+        $plateforms = $this->plateformRepository->findRandom(1);
 
-        if(!$plateforms){
-            return $this->json(['message' => 'Plateforms not found']);
-        } else {
-            $message = [
-                'message' => "good",
-                'result' => $plateforms
-            ];
-        }
+        $plateformOne = [
+            'id'=> $plateforms[0]['id'],
+            'name'=> $plateforms[0]['name'],
+            'image'=> json_decode($plateforms[0]['image']),
+            'release_date'=> $plateforms[0]['release_date'],
+        ];
 
-        return $this->json($message, 200 , [], ['groups' => 'plateform:read']);
+        $message = [
+            'message' => "good",
+            'result' => $plateformOne
+        ];
+
+        return $this->json($message);
     }
 
     #[Route('/plateform/{id}', name: 'get_one_plateform')]
