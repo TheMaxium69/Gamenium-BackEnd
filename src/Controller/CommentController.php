@@ -264,6 +264,7 @@ class CommentController extends AbstractController
             $comment->setIp($newIp);
             $comment->setLastEdit(new \DateTime());
             $comment->setNbEdit(0);
+            $comment->setIsDeleted(false);
 
             $this->entityManager->persist($comment);
             $this->entityManager->flush();

@@ -84,6 +84,7 @@ class CommentReplyController extends AbstractController
             $commentReply->setIp($newIp);
             $commentReply->setLastEdit(new \DateTime());
             $commentReply->setNbEdit(0);
+            $commentReply->setIsDeleted(false);
 
             $this->entityManager->persist($commentReply);
             $this->entityManager->flush();

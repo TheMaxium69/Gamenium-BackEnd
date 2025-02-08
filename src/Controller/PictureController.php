@@ -80,6 +80,7 @@ class PictureController extends AbstractController
             $picture->setUser($user);
             $picture->setPostedAt(new \DateTime());
             $picture->setIp($newIp);
+            $picture->setIsDeleted(false);
 
             $this->entityManager->persist($picture);
             $this->entityManager->flush();
