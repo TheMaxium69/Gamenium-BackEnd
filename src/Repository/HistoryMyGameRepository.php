@@ -59,6 +59,23 @@ class HistoryMyGameRepository extends ServiceEntityRepository
 
     }
 
+    public function searchHmg(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('h')
+            ->leftJoin('h.user', 'u')
+            ->leftJoin('h.game', 'g')
+            ->where('h.id LIKE :searchValue')
+            ->orWhere('u.username LIKE :searchValue')
+            ->orWhere('u.displayname_useritium LIKE :searchValue')
+            ->orWhere('g.name LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->orderBy('h.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
 //    /**
 //     * @return HistoryMyGame[] Returns an array of HistoryMyGame objects
 //     */

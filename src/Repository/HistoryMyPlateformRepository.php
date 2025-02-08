@@ -57,6 +57,23 @@ class HistoryMyPlateformRepository extends ServiceEntityRepository
         return $resultHmps;
 
     }
+
+    public function searchHmp(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('h')
+            ->leftJoin('h.user', 'u')
+            ->leftJoin('h.plateform', 'p')
+            ->where('h.id LIKE :searchValue')
+            ->orWhere('u.username LIKE :searchValue')
+            ->orWhere('u.displayname_useritium LIKE :searchValue')
+            ->orWhere('p.name LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->orderBy('h.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return HistoryMyPlateform[] Returns an array of HistoryMyPlateform objects
 //     */

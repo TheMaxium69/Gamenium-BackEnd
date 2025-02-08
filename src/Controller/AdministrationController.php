@@ -8,6 +8,7 @@ use App\Entity\Comment;
 use App\Entity\CommentReply;
 use App\Entity\Game;
 use App\Entity\HistoryMyGame;
+use App\Entity\HistoryMyPlateform;
 use App\Entity\Log;
 use App\Entity\LogRole;
 use App\Entity\Picture;
@@ -539,8 +540,87 @@ class AdministrationController extends AbstractController
             $commentsreply = $this->entityManager->getRepository(CommentReply::class)->searchCommentReply($searchValue, $limit);
 
             return $this->json($commentsreply, 200, [], ['groups' => 'commentreply:admin']);
-            
-            
+
+
+
+        } else {
+
+            return $this->json(['message' => 'Token invalide']);
+
+        }
+
+    }
+
+    #[Route('-hmg-search', name: 'search_hmg_admin', methods: ['POST'])]
+    public function searchHmg(Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $hmgs = $this->entityManager->getRepository(HistoryMyGame::class)->searchHmg($searchValue, $limit);
+
+            return $this->json($hmgs, 200, [], ['groups' => 'historygame:read']);
+
+
+
+        } else {
+
+            return $this->json(['message' => 'Token invalide']);
+
+        }
+
+    }
+    #[Route('-hmp-search', name: 'search_hmp_admin', methods: ['POST'])]
+    public function searchHmp(Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER', 'ROLE_MODO_RESPONSABLE', 'ROLE_MODO_SUPER', 'ROLE_MODO'], $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+
+            $data = json_decode($request->getContent(), true);
+            $searchValue = $data['searchValue'] ?? '';
+            $limit = $data['limit'];
+
+            $hmps = $this->entityManager->getRepository(HistoryMyPlateform::class)->searchHmp($searchValue, $limit);
+
+            return $this->json($hmps, 200, [], ['groups' => 'historyplateform:read']);
+
+
 
         } else {
 
