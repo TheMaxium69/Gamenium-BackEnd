@@ -48,7 +48,7 @@ class CommentReplyRepository extends ServiceEntityRepository
         for ($i = 1; $i <= $searchNumber; $i++) { 
 
             do {
-                $sql = 'SELECT * FROM comment_reply ORDER BY RAND() LIMIT 1';
+                $sql = 'SELECT * FROM comment_reply WHERE is_deleted = FALSE ORDER BY RAND() LIMIT 1';
                 
                 $stmt = $conn->prepare($sql);
                 $result = $stmt->executeQuery();
