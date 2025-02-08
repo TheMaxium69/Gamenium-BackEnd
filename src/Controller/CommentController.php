@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Log;
+use App\Entity\LogComment;
 use App\Entity\PostActu;
 use App\Entity\User;
 use App\Repository\CommentReplyRepository;
@@ -318,6 +320,15 @@ class CommentController extends AbstractController
             foreach ($allReply as $reply) {
                 $reply->setComment(null);
             }
+
+            /* LOG */
+            $newLogComment = new LogComment();
+            $newLogComment->setUser($comment->getUser());
+            $newLogComment->setContent($comment->getContent());
+            $newLogComment->setCreatedAt($comment->getCreatedAt());
+            $newLogComment->setDeletedAt(new \DateTimeImmutable());
+            /* LOG */
+
 
             $this->entityManager->remove($comment);
             $this->entityManager->flush();

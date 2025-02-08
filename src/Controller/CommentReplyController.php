@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\CommentReply;
+use App\Entity\LogComment;
 use App\Entity\PostActu;
 use App\Entity\User;
 use App\Repository\CommentReplyRepository;
@@ -167,6 +168,14 @@ class CommentReplyController extends AbstractController
             if ($commentReply->getUser()->getId() != $user->getId()){
                 return $this->json(['message' => 'no have permission']);
             }
+
+            /* LOG */
+            $newLogComment = new LogComment();
+            $newLogComment->setUser($commentReply->getUser());
+            $newLogComment->setContent($commentReply->getContent());
+            $newLogComment->setCreatedAt($commentReply->getCreatedAt());
+            $newLogComment->setDeletedAt(new \DateTimeImmutable());
+            /* LOG */
 
             $this->entityManager->remove($commentReply);
             $this->entityManager->flush();

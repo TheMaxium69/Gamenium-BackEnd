@@ -60,6 +60,7 @@ class PostActu
     private ?Picture $picture = null;
 
     #[ORM\Column]
+    #[Groups(['post:read'])]
     private ?bool $is_deleted = null;
 
     public function getId(): ?int

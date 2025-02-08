@@ -34,9 +34,19 @@ class PostActuController extends AbstractController
         if(!$postActus){
             return $this->json(['message' => 'PostActu not found']);
         } else {
+
+            $postByProviderFinal = [];
+            foreach ($postActus as $post) {
+
+                if (!$post->isIsDeleted()) {
+                    $postByProviderFinal[] = $post;
+                }
+
+            }
+
             $message = [
                 'message' => "good",
-                'result' => $postActus
+                'result' => $postByProviderFinal
             ];
 
             return $this->json($message , 200 , [], ['groups' => 'post:read']);
@@ -49,7 +59,7 @@ class PostActuController extends AbstractController
     {
         $postActu = $this->postActuRepository->find($id);
 
-        if(!$postActu){
+        if(!$postActu || $postActu->isIsDeleted()){
             return $this->json(['message' => 'Post Actu not found']);
         } else {
             $message = [
@@ -141,34 +151,18 @@ class PostActuController extends AbstractController
        return $this->json(['message' => 'PostActu created successfully'], Response::HTTP_CREATED);
    }
 
-   #[Route('/postactus/{id}', name: 'delete_postactu', methods: ['DELETE'])]
-   public function deletePostActu(int $id): JsonResponse
-   {
-       $postActu = $this->postActuRepository->find($id);
-
-       if (!$postActu) {
-           return $this->json(['message' => 'PostActu not found'], Response::HTTP_NOT_FOUND);
-       }
-
-       $this->entityManager->remove($postActu);
-       $this->entityManager->flush();
-
-       return $this->json(['message' => 'PostActu deleted successfully']);
-   }
-    
-
-
     #[Route('/NbPostByProvider/{id}', name: 'get_postactus_by_provider', methods: ['GET'])]
     public function getPostActuByProvider(int $id): JsonResponse
     {
 
         $provider = $this->providerRepository->find($id);
 
-        $postCount = $this->postActuRepository->count(['Provider' => $id]);
     
         if (!$provider) {
-            return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
+            return $this->json(['error' => 'Provider non trouvé']);
         }
+
+        $postCount = $this->postActuRepository->count(['Provider' => $id]);
 
         $response = [
             'message' => 'good',
@@ -184,15 +178,38 @@ class PostActuController extends AbstractController
         $provider = $this->providerRepository->find($id);
 
         if (!$provider) {
-            return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
+            return $this->json(['error' => 'Provider non trouvé']);
         }
 
         $postByProvider = $this->postActuRepository->findByProviderOrderedByDate($provider);
 
-        $response = [
-            'message' => 'good',
-            'result' => $postByProvider,
-        ];
+
+        if ($postByProvider) {
+
+            $postByProviderFinal = [];
+            foreach ($postByProvider as $post) {
+
+                if (!$post->isIsDeleted()) {
+                    $postByProviderFinal[] = $post;
+                }
+
+            }
+
+            $response = [
+                'message' => 'good',
+                'result' => $postByProviderFinal,
+            ];
+
+
+        } else {
+            $response = [
+                'message' => 'good',
+                'result' => $postByProvider,
+            ];
+
+        }
+        
+
 
         return $this->json($response, 200, [], ['groups' => 'post:read']);
     }
@@ -207,8 +224,18 @@ class PostActuController extends AbstractController
         $limit = $data['limit'];
 
         $results = $this->postActuRepository->searchPostActuByName($searchValue, $limit);
-    
-        return $this->json($results, 200, [], ['groups' => 'post:read']);
+
+        $postByProviderFinal = [];
+        foreach ($results as $post) {
+
+            if (!$post->isIsDeleted()) {
+                $postByProviderFinal[] = $post;
+            }
+
+        }
+
+
+        return $this->json($postByProviderFinal, 200, [], ['groups' => 'post:read']);
     }
 
 
@@ -216,25 +243,33 @@ class PostActuController extends AbstractController
     #[Route('/latestactubyprovider/{id}', name: 'get_latest_actu_by_provider', methods: ['GET'])]
     public function getLatestActuByProvider(int $id): JsonResponse
     {
-    $provider = $this->providerRepository->find($id);
+        $provider = $this->providerRepository->find($id);
 
-    if (!$provider) {
-        return $this->json(['error' => 'Provider non trouvé'], Response::HTTP_NOT_FOUND);
-    }
+        if (!$provider) {
+            return $this->json(['error' => 'Provider non trouvé']);
+        }
 
-    $latestActus = $this->postActuRepository->findLatestByProvider($provider);
+        $latestActus = $this->postActuRepository->findLatestByProvider($provider);
 
-    if (empty($latestActus)) {
-        return $this->json(['message' => 'Le fournisseur n\'a pas d\'actualités'], Response::HTTP_NOT_FOUND);
-    }
+        if (empty($latestActus)) {
+            return $this->json(['message' => 'Le fournisseur n\'a pas d\'actualités']);
+        }
 
-    
-    $response = [
-        'message' => 'good',
-        'result' => $latestActus,
-    ];
-    
-    return $this->json($response, 200, [], ['groups' => 'post:read']);
+        $postByProviderFinal = [];
+        foreach ($latestActus as $post) {
+
+            if (!$post->isIsDeleted()) {
+                $postByProviderFinal[] = $post;
+            }
+
+        }
+
+        $response = [
+            'message' => 'good',
+            'result' => $postByProviderFinal,
+        ];
+
+        return $this->json($response, 200, [], ['groups' => 'post:read']);
     }
 
 

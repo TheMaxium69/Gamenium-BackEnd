@@ -168,6 +168,49 @@ class AdministrationController extends AbstractController
 
     }
 
+    #[Route('-postactu/{id}', name: 'get_postactu_by_id_admin', methods: ['GET'])]
+    public function getPostActuByIdAdmin(int $id, Request $request): JsonResponse
+    {
+
+        $authorizationHeader = $request->headers->get('Authorization');
+
+        /*SI LE TOKEN EST REMPLIE */
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            $token = substr($authorizationHeader, 7);
+
+            /*SI LE TOKEN A BIEN UN UTILISATEUR EXITANT - SINON C PAS GRAVE SA SERA ANNONYME */
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['token' => $token]);
+
+            if (!$user) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            if (!in_array('ROLE_OWNER', $user->getRoles()) &&
+                !in_array('ROLE_ADMIN', $user->getRoles()) &&
+                !in_array('ROLE_MODO_RESPONSABLE', $user->getRoles()) &&
+                !in_array('ROLE_MODO_SUPER', $user->getRoles()) &&
+                !in_array('ROLE_MODO', $user->getRoles())) {
+                return $this->json(['message' => 'no permission']);
+            }
+
+            $postActu = $this->entityManager->getRepository(PostActu::class)->find($id);
+
+            if (!$postActu) {
+                return $this->json(['message' => 'Post Actu not found']);
+            } else {
+                $message = [
+                    'message' => "good",
+                    'result' => $postActu
+                ];
+
+                return $this->json($message, 200, [], ['groups' => 'post:read']);
+            }
+
+        } else {
+            return $this->json(['message' => 'no token']);
+        }
+    }
+
     #[Route('-postactus-search', name: 'search_postactus_admin', methods: ['POST'])]
     public function searchPostActuAdmin(Request $request): JsonResponse
     {
