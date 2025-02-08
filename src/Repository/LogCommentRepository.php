@@ -21,6 +21,21 @@ class LogCommentRepository extends ServiceEntityRepository
         parent::__construct($registry, LogComment::class);
     }
 
+    public function searchLogComment(string $searchValue, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('l')
+            ->leftJoin('l.user', 'u')
+            ->where('l.content LIKE :searchValue')
+            ->orWhere('l.id LIKE :searchValue')
+            ->orWhere('u.username LIKE :searchValue')
+            ->orWhere('u.displayname_useritium LIKE :searchValue')
+            ->setParameter('searchValue', '%' . $searchValue . '%')
+            ->setMaxResults($limit)
+            ->orderBy('l.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return LogComment[] Returns an array of LogComment objects
 //     */
