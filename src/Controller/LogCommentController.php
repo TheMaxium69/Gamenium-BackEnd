@@ -19,7 +19,7 @@ class LogCommentController extends AbstractController
         private EntityManagerInterface $entityManager
     ) {}
 
-    #[Route('/log-comment', name: 'app_log_comment')]
+    #[Route('/log-comment', name: 'app_log_comment', methods: ['POST'])]
     public function logComment(Request $request): JsonResponse
     {
         $authorizationHeader = $request->headers->get('Authorization');

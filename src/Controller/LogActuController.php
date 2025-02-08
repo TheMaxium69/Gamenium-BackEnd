@@ -18,7 +18,7 @@ class LogActuController extends AbstractController
     ) {}
 
 
-    #[Route('/log-actu-view', name: 'app_log_actu')]
+    #[Route('/log-actu-view', name: 'app_log_actu', methods: ['POST'])]
     public function logActuView(Request $request): JsonResponse
     {
         $authorizationHeader = $request->headers->get('Authorization');
