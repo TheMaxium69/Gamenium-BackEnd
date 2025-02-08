@@ -44,6 +44,7 @@ class Comment
     private ?user $user = null;
 
     #[ORM\Column]
+    #[Groups(['comment:admin', 'commentreply:admin'])]
     private ?bool $is_deleted = null;
 
     public function getId(): ?int

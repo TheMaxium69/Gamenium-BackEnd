@@ -52,9 +52,12 @@ class CommentController extends AbstractController
 
         $AllComment = [];
         foreach ($comment as $commentOne) {
-            $user = $commentOne->getUser();
-            if (!in_array('ROLE_BAN', $user->getRoles())) {
-                $AllComment[] = $commentOne; // Stocker uniquement les replies sans User_Ban
+
+            if (!$commentOne->isIsDeleted()) {
+                $user = $commentOne->getUser();
+                if (!in_array('ROLE_BAN', $user->getRoles())) {
+                    $AllComment[] = $commentOne; // Stocker uniquement les replies sans User_Ban
+                }
             }
         }
 
@@ -67,9 +70,12 @@ class CommentController extends AbstractController
             if ($tempComReply){
                 $AllCommentReply = [];
                 foreach ($tempComReply as $commentOneReply) {
-                    $user = $commentOneReply->getUser();
-                    if (!in_array('ROLE_BAN', $user->getRoles())) {
-                        $AllCommentReply[] = $commentOneReply; // Stocker uniquement les replies sans User_Ban
+
+                    if (!$commentOneReply->isIsDeleted()){
+                        $user = $commentOneReply->getUser();
+                        if (!in_array('ROLE_BAN', $user->getRoles())) {
+                            $AllCommentReply[] = $commentOneReply; // Stocker uniquement les replies sans User_Ban
+                        }
                     }
                 }
 
@@ -114,10 +120,14 @@ class CommentController extends AbstractController
 
                 $AllComment = [];
                 foreach ($commentAll as $commentOne) {
-                    $user = $commentOne->getUser();
-                    if (!in_array('ROLE_BAN', $user->getRoles())) {
-                        $AllComment[] = $commentOne; // Stocker uniquement les replies sans User_Ban
+
+                    if (!$commentOne->isIsDeleted()){
+                        $user = $commentOne->getUser();
+                        if (!in_array('ROLE_BAN', $user->getRoles())) {
+                            $AllComment[] = $commentOne; // Stocker uniquement les replies sans User_Ban et qu'il n'est pas delete
+                        }
                     }
+
                 }
 
                 $message = [
@@ -327,6 +337,7 @@ class CommentController extends AbstractController
             $newLogComment->setContent($comment->getContent());
             $newLogComment->setCreatedAt($comment->getCreatedAt());
             $newLogComment->setDeletedAt(new \DateTimeImmutable());
+            $this->entityManager->persist($newLogComment);
             /* LOG */
 
 

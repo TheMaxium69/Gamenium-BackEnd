@@ -105,7 +105,15 @@ class CommentReplyController extends AbstractController
 
         $commentReply = $this->entityManager->getRepository(CommentReply::class)->findBy(['comment' => $id]);
 
-        return $this->json(['message' => 'good', 'result' => $commentReply], 200, [], ['groups' => 'commentreply:read']);
+        $commentReplyFinal = [];
+        foreach ($commentReply as $commentReplyOne){
+            if ($commentReplyOne->getIsDeleted()){
+                $commentReplyFinal[] = $commentReplyOne;
+            }
+
+        }
+
+        return $this->json(['message' => 'good', 'result' => $commentReplyFinal], 200, [], ['groups' => 'commentreply:read']);
 
     }
 

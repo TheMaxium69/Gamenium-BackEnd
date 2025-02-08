@@ -542,7 +542,18 @@ class AdministrationController extends AbstractController
 
             $comments = $this->entityManager->getRepository(Comment::class)->searchComment($searchValue, $limit);
 
-            return $this->json($comments, 200, [], ['groups' => 'comment:admin']);
+            $commentFinal = [];
+            foreach ($comments as $comment) {
+
+                if (!$comment->isIsDeleted()){
+                    $commentFinal[] = $comment;
+                }
+
+            }
+
+
+
+            return $this->json($commentFinal, 200, [], ['groups' => 'comment:admin']);
             
             
 
@@ -582,7 +593,18 @@ class AdministrationController extends AbstractController
 
             $commentsreply = $this->entityManager->getRepository(CommentReply::class)->searchCommentReply($searchValue, $limit);
 
-            return $this->json($commentsreply, 200, [], ['groups' => 'commentreply:admin']);
+
+            $commentsreplyFinal = [];
+            foreach ($commentsreply as $comment) {
+
+                if (!$comment->isIsDeleted()){
+                    $commentsreplyFinal[] = $comment;
+                }
+
+            }
+
+
+            return $this->json($commentsreplyFinal, 200, [], ['groups' => 'commentreply:admin']);
 
 
 
