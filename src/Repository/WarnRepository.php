@@ -26,10 +26,10 @@ class WarnRepository extends ServiceEntityRepository
         if ($type === 'comment_reply') {
             $result = $this->createQueryBuilder('v')
                 ->andWhere('v.user = :user')
-                ->andWhere('v.comment_reply = :comment_reply')
+                ->andWhere('v.commentReply = :comment_reply')
                 ->setParameter('user', $user)
-                ->setParameter('Comment_reply', $object)
-                ->orderBy('v.warn_at', 'DESC')
+                ->setParameter('comment_reply', $object)
+                ->orderBy('v.warnAt', 'DESC')
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getOneOrNullResult();
@@ -38,7 +38,7 @@ class WarnRepository extends ServiceEntityRepository
 
             $result = $this->createQueryBuilder('v')
                 ->andWhere('v.user = :user')
-                ->andWhere('v.Comment = :comment')
+                ->andWhere('v.comment = :comment')
                 ->setParameter('user', $user)
                 ->setParameter('comment', $object)
                 ->orderBy('v.warnAt', 'DESC')
@@ -103,7 +103,7 @@ class WarnRepository extends ServiceEntityRepository
         if ($type === 'comment_reply') {
             $result = $this->createQueryBuilder('v')
                 ->andWhere('v.ip = :ip')
-                ->andWhere('v.comment_reply = :comment_reply')
+                ->andWhere('v.commentReply = :comment_reply')
                 ->setParameter('ip', $ip)
                 ->setParameter('comment_reply', $object)
                 ->orderBy('v.warnAt', 'DESC')
