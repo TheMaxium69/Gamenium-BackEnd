@@ -431,6 +431,8 @@ class WarnController extends AbstractController
                 $userIsLock = false; /* notLock - aucun warn */
             }
 
+        } else {
+            $userIsLock = false;
         }
 
 

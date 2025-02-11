@@ -447,6 +447,8 @@ class ViewController extends AbstractController
                 $userIsLock = false; /* notLock - aucune vue */
             }
 
+        } else {
+            $userIsLock = false;
         }
 
 
