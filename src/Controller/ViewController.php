@@ -61,6 +61,7 @@ class ViewController extends AbstractController
         $authorizationHeader = $request->headers->get('Authorization');
 
         /*SI LE TOKEN EST REMPLIE */
+        $user = null;
         if (strpos($authorizationHeader, 'Bearer ') === 0) {
             $token = substr($authorizationHeader, 7);
 
@@ -123,6 +124,7 @@ class ViewController extends AbstractController
 
         $authorizationHeader = $request->headers->get('Authorization');
 
+        $user = null;
         if (strpos($authorizationHeader, 'Bearer ') === 0) {
             $token = substr($authorizationHeader, 7);
 
@@ -186,6 +188,7 @@ class ViewController extends AbstractController
 
         $authorizationHeader = $request->headers->get('Authorization');
 
+        $user = null;
         if (strpos($authorizationHeader, 'Bearer ') === 0) {
             $token = substr($authorizationHeader, 7);
 
@@ -250,6 +253,7 @@ class ViewController extends AbstractController
 
         $authorizationHeader = $request->headers->get('Authorization');
 
+        $user = null;
         if (strpos($authorizationHeader, 'Bearer ') === 0) {
             $token = substr($authorizationHeader, 7);
 
