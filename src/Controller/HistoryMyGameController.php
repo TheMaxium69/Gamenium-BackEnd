@@ -376,7 +376,16 @@ class HistoryMyGameController extends AbstractController
             /*SI LA NOTE A DEJA ETE DONNER*/
             $MyNoteGameSelectedToUser = $this->entityManager->getRepository(UserRate::class)->findOneBy(['user' => $user, 'game' => $game]);
             if ($MyNoteGameSelectedToUser){
-                return $this->json(['message' => 'note existing']);
+
+                if ($MyNoteGameSelectedToUser->getRating() != $noteValide){
+                    $MyNoteGameSelectedToUser->setRating($noteValide);
+                }
+
+                if (!empty($data['content'])){
+                    $MyNoteGameSelectedToUser->setContent($data['content']);
+                }
+
+                return $this->json(['message' => 'add note is game', 'result' => $MyNoteGameSelectedToUser], 200, [], ['groups' => 'userRate:read']);
             }
 
             $userNote = new UserRate();
