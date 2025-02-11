@@ -301,9 +301,9 @@ class ViewController extends AbstractController
                 return $this->json(['message' => 'no permission']);
             }
 
-            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
-                return $this->json(['message' => 'no permission']);
-            }
+//            if (!array_intersect(['ROLE_ADMIN', 'ROLE_OWNER'], $user->getRoles())) {
+//                return $this->json(['message' => 'no permission']);
+//            }
 
             $postActuViews = $this->viewRepository->count(['PostActu' => $postActu]);
 
