@@ -153,10 +153,6 @@ class HistoryMyPlateformController extends AbstractController
 
             $result = [
                 "id" => $historyMyPlateform->getId(),
-            ];
-
-            $result = [
-                "id" => $historyMyPlateform->getId(),
                 "myPlateform" => $historyMyPlateform,
                 "copyPlateform" => [$newCopy]
             ];
