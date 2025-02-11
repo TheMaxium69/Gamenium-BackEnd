@@ -385,6 +385,9 @@ class HistoryMyGameController extends AbstractController
                     $MyNoteGameSelectedToUser->setContent($data['content']);
                 }
 
+                $this->entityManager->persist($MyNoteGameSelectedToUser);
+                $this->entityManager->flush();
+
                 return $this->json(['message' => 'add note is game', 'result' => $MyNoteGameSelectedToUser], 200, [], ['groups' => 'userRate:read']);
             }
 
