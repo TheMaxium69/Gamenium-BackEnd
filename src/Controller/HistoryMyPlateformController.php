@@ -148,9 +148,20 @@ class HistoryMyPlateformController extends AbstractController
             $newCopy->setPurchase($newPurchase);
             
             $this->entityManager->persist($newCopy);
+
             $this->entityManager->flush();
 
-            return $this->json(['message' => 'add plateform is collection', 'result' => $historyMyPlateform], 200, [], ['groups' => 'historyplateform:read']);
+            $result = [
+                "id" => $historyMyPlateform->getId(),
+            ];
+
+            $result = [
+                "id" => $historyMyPlateform->getId(),
+                "myPlateform" => $historyMyPlateform,
+                "copyPlateform" => [$newCopy]
+            ];
+
+            return $this->json(['message' => 'add plateform is collection', 'result' => $result], 200, [], ['groups' => 'historyplateform:read']);
         }
 
         return $this->json(['message' => 'no token']);
