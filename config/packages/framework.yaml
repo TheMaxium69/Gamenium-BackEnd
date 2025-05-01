@@ -16,6 +16,8 @@ framework:
     #fragments: true
     php_errors:
         log: true
+        throw: false
+#        type: E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_STRICT
     trusted_proxies: '%env(TRUSTED_PROXIES)%'
 
 when@test:
