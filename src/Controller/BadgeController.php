@@ -21,7 +21,7 @@ class BadgeController extends AbstractController
         private BadgeRepository $badgeRepository
     ) {}
 
-    #[Route('/badges', name: 'get_all_badges', methods: ['GET'])]
+    #[Route('/badge-all', name: 'get_all_badges', methods: ['GET'])]
     public function getAllBadges(): JsonResponse
     {
         $badges = $this->badgeRepository->findAll();
