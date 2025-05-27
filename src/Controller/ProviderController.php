@@ -18,7 +18,7 @@ class ProviderController extends AbstractController
         private ProviderRepository $providerRepository
         ) {}
 
-    #[Route('/provider-all', name: 'provider_all', methods:'GET')]
+    #[Route('/provider', name: 'provider_all', methods:'GET')]
     public function getProviderAll(): JsonResponse
     {
         $providers = $this->providerRepository->findAll();
