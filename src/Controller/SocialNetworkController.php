@@ -92,6 +92,14 @@ class SocialNetworkController extends AbstractController
 
                     }
 
+                } else if (empty($value['url']) && !empty($value['id_socialnetwork'])){
+
+                    $socialNetwork = $this->entityManager->getRepository(SocialNetwork::class)->findOneBy(['id' => $value['id_socialnetwork']]);
+                    $profilSocialNetwork = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findOneBy(['socialnetwork' => $socialNetwork, 'user'=>$user]);
+
+                    $this->entityManager->remove($profilSocialNetwork);
+                    $this->entityManager->flush();
+
                 }
 
             }
