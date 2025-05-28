@@ -96,9 +96,11 @@ class SocialNetworkController extends AbstractController
 
                     $socialNetwork = $this->entityManager->getRepository(SocialNetwork::class)->findOneBy(['id' => $value['id_socialnetwork']]);
                     $profilSocialNetwork = $this->entityManager->getRepository(ProfilSocialNetwork::class)->findOneBy(['socialnetwork' => $socialNetwork, 'user'=>$user]);
+                    if ($profilSocialNetwork){
+                        $this->entityManager->remove($profilSocialNetwork);
+                        $this->entityManager->flush();
+                    }
 
-                    $this->entityManager->remove($profilSocialNetwork);
-                    $this->entityManager->flush();
 
                 }
 
