@@ -18,6 +18,7 @@ use App\Entity\HmgTags;
 use App\Entity\Plateform;
 use App\Entity\User;
 use App\Entity\UserRate;
+use App\Entity\Warn;
 use App\Repository\HistoryMyGameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -305,6 +306,13 @@ class HistoryMyGameController extends AbstractController
     
                 if ($userRate) {
                     $this->entityManager->remove($userRate);
+                }
+            }
+
+            $warnAll = $this->entityManager->getRepository(Warn::class)->findBy(['hmg' => $myGame]);
+            if($warnAll){
+                foreach ($warnAll as $oneWarn) {
+                    $this->entityManager->remove($oneWarn);
                 }
             }
 
